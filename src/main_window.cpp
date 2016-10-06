@@ -27,5 +27,5 @@ namespace gui {
 		this->show_all();
 	}
 	
-    main_window::~main_window() {}
+	main_window::~main_window() {}
 }

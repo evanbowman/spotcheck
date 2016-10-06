@@ -11,16 +11,16 @@
 
 namespace gui {
 	class main_window : public Gtk::Window {
-    public:
-	    main_window();
+	public:
+		main_window();
 		// The main window should be created once, and should
 		// never need to be moved or copied. If you can think
 		// of a good reason why it needs to be, we can allow
 		// implementation of move operations (Gtk::Window non-
 		// copyable)
-	    main_window(const main_window &) = delete;
-	    main_window(const main_window &&) = delete;
-	    void operator=(const main_window &) = delete;
+		main_window(const main_window &) = delete;
+		main_window(const main_window &&) = delete;
+		void operator=(const main_window &) = delete;
 		void operator=(const main_window &&) = delete;
 		virtual ~main_window();
 	private:
