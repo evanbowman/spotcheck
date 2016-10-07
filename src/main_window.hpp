@@ -2,12 +2,10 @@
 
 #include <gtkmm/filechooserdialog.h>
 #include <pangomm/fontdescription.h>
-#include <gtkmm/scrolledwindow.h>
 #include <gtkmm/stacksidebar.h>
 #include <glibmm/dispatcher.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/separator.h>
-#include <gtkmm/textview.h>
 #include <gtkmm/window.h>
 #include <gtkmm/button.h>
 #include <gtkmm/stack.h>
@@ -17,6 +15,8 @@
 #include <gtkmm/box.h>
 #include <iostream>
 #include <array>
+
+#include "console.hpp"
 
 namespace gui {
 	class main_window : public Gtk::Window {
@@ -47,17 +47,24 @@ namespace gui {
 		// to see.
 		Gtk::ProgressBar m_progress_bar;
 		Gtk::StackSidebar m_sidebar;
-		Gtk::Button m_run_button;
-		Gtk::TextView m_console;
+		Gtk::Button m_run_btn;
+		Gtk::Button m_tiff_btn;
+		Gtk::Button m_gal_btn;
 		Gtk::Stack m_stack;
+	    console m_console;
 		Gtk::Box m_box;
+		bool m_has_tiff;
+		bool m_has_gal;
+		void prepare_new_run();
 		void inflate_analysis_page();
 		void inflate_preferences_page();
 		void inflate_about_page();
 		void window_set_default_properties();
-		void init_console();
 		void on_import_tiff_clicked();
 		void on_import_gal_clicked();
+		void on_run_clicked();
 		void on_worker_thread_msg();
+		void init_buttons();
+		void enable_run();
 	};
 }

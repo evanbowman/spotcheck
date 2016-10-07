@@ -9,8 +9,7 @@ namespace gui {
 		m_sidebar.set_stack(m_stack);
 		m_stack.set_transition_type(Gtk::STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
 		m_dispatcher.connect(sigc::mem_fun(*this, &main_window::on_worker_thread_msg));
-		m_run_button.set_label("run");
-		m_run_button.set_sensitive("false");
+		this->init_buttons();
 		this->inflate_analysis_page();
 		this->inflate_preferences_page();
 		this->inflate_about_page();
@@ -30,7 +29,16 @@ namespace gui {
 	}
 
 	void main_window::on_worker_thread_msg() {
+		// ... TODO ...
+	}
+
+	void main_window::on_run_clicked() {
 		
+	}
+
+	void main_window::enable_run() {
+		m_run_btn.set_sensitive(true);
+		m_console.append_line("\nReady to go! Click run to continue...");
 	}
 
 	void main_window::on_import_gal_clicked() {
@@ -43,6 +51,16 @@ namespace gui {
 		filter_gal->add_pattern("*.gal");
 		dialog.add_filter(filter_gal);
 		int result = dialog.run();
+		if (dialog.run() == Gtk::RESPONSE_OK) {
+			m_gal_btn.set_sensitive(false);
+			std::string success_str("[success] file ");
+			success_str += dialog.get_filename() + " accepted!";
+		    m_console.append_line(success_str);
+			m_has_gal = true;
+			if (m_has_tiff) {
+				this->enable_run();
+			}
+		}
 	}
 
 	void main_window::on_import_tiff_clicked() {
@@ -54,7 +72,16 @@ namespace gui {
 		filter_tiff->set_name("tiff files");
 		filter_tiff->add_pattern("*.tiff");
 		dialog.add_filter(filter_tiff);
-		int result = dialog.run();
+		if (dialog.run() == Gtk::RESPONSE_OK) {
+			m_tiff_btn.set_sensitive(false);
+			std::string success_str("[success] file ");
+			success_str += dialog.get_filename() + " accepted!";
+			m_console.append_line(success_str);
+			m_has_tiff = true;
+			if (m_has_gal) {
+				this->enable_run();
+			}
+		}
 	}
 
 	template <int left, int right, int top, int bottom, typename T>
@@ -71,43 +98,34 @@ namespace gui {
 		Gtk::Box * frames_box = Gtk::manage(new Gtk::Box);
 		Gtk::Frame * tiff_frame = Gtk::manage(new Gtk::Frame);
 		Gtk::Frame * gal_frame = Gtk::manage(new Gtk::Frame);
-		Gtk::Button * tiff_btn = Gtk::manage(new Gtk::Button);
-		Gtk::Button * gal_btn = Gtk::manage(new Gtk::Button);
 		Gtk::Label * tiff_label = Gtk::manage(new Gtk::Label);
 		Gtk::Label * gal_label = Gtk::manage(new Gtk::Label);
 		Gtk::Box * gal_box = Gtk::manage(new Gtk::Box);
 		Gtk::Box * tiff_box = Gtk::manage(new Gtk::Box);
 		tiff_label->set_text("Choose a height map for analysis");
-		tiff_btn->set_label("import .tiff");
-		tiff_btn->signal_clicked().connect(sigc::mem_fun(*this, &main_window::on_import_tiff_clicked));
-		apply_margin<4, 4, 4, 4>(*tiff_btn);
 		apply_margin<4, 4, 10, 8>(*tiff_label);
 		tiff_box->set_orientation(Gtk::ORIENTATION_VERTICAL);
 		tiff_box->pack_start(*tiff_label, Gtk::PACK_EXPAND_WIDGET);
-		tiff_box->pack_start(*tiff_btn, Gtk::PACK_SHRINK);
+		tiff_box->pack_start(m_tiff_btn, Gtk::PACK_SHRINK);
 		tiff_frame->add(*tiff_box);
 		tiff_frame->set_border_width(10);
 		frames_box->pack_start(*tiff_frame, Gtk::PACK_EXPAND_WIDGET);
-		gal_label->set_text("Choose a corresponding metadata file");
-		gal_btn->set_label("import .gal");
-		gal_btn->signal_clicked().connect(sigc::mem_fun(*this, &main_window::on_import_gal_clicked));
-		apply_margin<4, 4, 4, 4>(*gal_btn);
+		gal_label->set_text("Choose a corresponding metadata file");		
 		apply_margin<4, 4, 10, 8>(*gal_label);
 		gal_box->set_orientation(Gtk::ORIENTATION_VERTICAL);
 		gal_box->pack_start(*gal_label, Gtk::PACK_EXPAND_WIDGET);
-		gal_box->pack_start(*gal_btn, Gtk::PACK_SHRINK);
+		gal_box->pack_start(m_gal_btn, Gtk::PACK_SHRINK);
 		gal_frame->add(*gal_box);
 		gal_frame->set_border_width(10);
 		frames_box->pack_start(*gal_frame, Gtk::PACK_EXPAND_WIDGET);
 		box->pack_start(*frames_box, Gtk::PACK_SHRINK);
 		Gtk::ScrolledWindow * scrolled_window = Gtk::manage(new Gtk::ScrolledWindow);
 		apply_margin<10, 10, 0, 8>(*scrolled_window);
-		this->init_console();
 		scrolled_window->add(m_console);
 		box->pack_start(*scrolled_window, Gtk::PACK_EXPAND_WIDGET);
 		Gtk::Box * footer_box = Gtk::manage(new Gtk::Box);
 		footer_box->pack_start(m_progress_bar, Gtk::PACK_EXPAND_WIDGET);
-		footer_box->pack_start(m_run_button, Gtk::PACK_SHRINK);
+		footer_box->pack_start(m_run_btn, Gtk::PACK_SHRINK);
 		box->pack_start(*footer_box, Gtk::PACK_SHRINK);
 		static const char * PAGE_NAME = "Analyze";
 		m_stack.add(*box, PAGE_NAME, PAGE_NAME);
@@ -127,18 +145,25 @@ namespace gui {
 		m_stack.add(*box, PAGE_NAME, PAGE_NAME);
 	}
 
-	void main_window::init_console() {
-		m_console.set_editable(false);
-		Pango::FontDescription font_descr("monospace 11");
-		m_console.override_font(font_descr);
-		Gdk::RGBA rgba;
-		rgba.set_rgba(0.0, 0.169, 0.212);
-		m_console.override_background_color(rgba);
-		rgba.set_rgba(0.514, 0.580, 0.588);
-		m_console.override_color(rgba);
-		auto buffer = m_console.get_buffer();
-		buffer->create_mark("last_line", buffer->end(), true);
+	void main_window::init_buttons() {
+		m_run_btn.set_label("run");
+		m_run_btn.set_sensitive(false);
+		apply_margin<4, 4, 4, 4>(m_gal_btn);
+		apply_margin<4, 4, 4, 4>(m_tiff_btn);
+		m_tiff_btn.set_label("import .tiff");		
+		m_gal_btn.set_label("import .gal");
+		m_tiff_btn.signal_clicked().connect(sigc::mem_fun(*this, &main_window::on_import_tiff_clicked));
+		m_gal_btn.signal_clicked().connect(sigc::mem_fun(*this, &main_window::on_import_gal_clicked));
+		m_run_btn.signal_clicked().connect(sigc::mem_fun(*this, &main_window::on_run_clicked));
 	}
 
+	void main_window::prepare_new_run() {
+		m_has_tiff = false;
+		m_has_gal = false;
+		m_run_btn.set_sensitive(false);
+		m_tiff_btn.set_sensitive(true);
+		m_gal_btn.set_sensitive(true);
+	}
+	
 	main_window::~main_window() {}
 }

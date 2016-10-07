@@ -16,3 +16,4 @@ clean:
 # MANUAL LIST OF DEPENDENCIES, MAKEDEPEND DOESN'T LIKE CAIRO HEADERS
 ./main_window.o: main_window.hpp
 ./main.o: main_window.hpp
+./console.o: console.hpp
