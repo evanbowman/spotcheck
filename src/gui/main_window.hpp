@@ -17,6 +17,8 @@
 #include <array>
 
 #include "../core/work_queue.hpp"
+#include "../core/parse_tiff.hpp"
+#include "../core/parse_gal.hpp"
 #include "../core/option.hpp"
 #include "console.hpp"
 
@@ -74,8 +76,8 @@ namespace gui {
 		// to the console!
 		console m_console;
 		Gtk::Box m_box;
-		core::option<TODO> m_tiff_data;
-		core::option<TODO> m_gal_data;
+		core::option<core::tiff_data> m_tiff_data;
+		core::option<core::gal_data> m_gal_data;
 		void prepare_new_run();
 		void inflate_analysis_page();
 		void inflate_preferences_page();

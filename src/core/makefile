@@ -13,3 +13,5 @@ clean:
 
 # MANUAL LIST OF DEPENDENCIES, MAKEDEPEND DOESN'T LIKE CAIRO HEADERS
 ./work_queue.o: work_queue.hpp smart_thread.hpp
+./parse_tiff.o: parse_tiff.hpp option.hpp
+./parse_gal.o: parse_gal.hpp option.hpp

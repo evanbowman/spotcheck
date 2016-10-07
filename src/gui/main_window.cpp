@@ -89,8 +89,9 @@ namespace gui {
 		int result = dialog.run();
 		if (dialog.run() == Gtk::RESPONSE_OK) {
 			m_gal_btn.set_sensitive(false);
-			m_workq.submit([this]() {
-					// TODO: gal parsing function here...
+			const std::string path = dialog.get_filename();
+			m_workq.submit([&path, this]() {
+					this->m_gal_data = core::parse_gal(path);
 					this->notify_imprt_gal_complete();
 				});
 		}
@@ -107,8 +108,9 @@ namespace gui {
 		dialog.add_filter(filter_tiff);
 		if (dialog.run() == Gtk::RESPONSE_OK) {
 			m_tiff_btn.set_sensitive(false);
-			m_workq.submit([this]() {
-					// TODO: tiff parsing function here...
+			const std::string path = dialog.get_filename();
+			m_workq.submit([&path, this]() {
+					this->m_tiff_data = core::parse_tiff(path);
 					this->notify_imprt_tiff_complete();
 				});
 		}

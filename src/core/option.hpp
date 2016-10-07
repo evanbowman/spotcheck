@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <string>
+#include <array>
 
 namespace core {
 	class null_opt_err : public std::exception {
