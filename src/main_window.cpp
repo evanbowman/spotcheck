@@ -98,7 +98,7 @@ namespace gui {
 		m_textview.override_background_color(rgba);
 		rgba.set_rgba(0.514, 0.580, 0.588);
 		m_textview.override_color(rgba);
-	    scrolled_window->add(m_textview);
+		scrolled_window->add(m_textview);
 		box->pack_start(*scrolled_window, Gtk::PACK_EXPAND_WIDGET);
 		Gtk::Box * footer_box = Gtk::manage(new Gtk::Box);
 		Gtk::Button * start_button = Gtk::manage(new Gtk::Button);
