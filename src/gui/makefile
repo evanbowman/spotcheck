@@ -4,14 +4,15 @@ LDFLAGS = -flto `pkg-config gtkmm-3.0 --libs`
 SOURCES = $(shell find . -name "*.cpp" | awk '{print length, $$0;}' | sort -rn | cut -d ' ' -f 2-)
 OBJECTS = $(SOURCES:.cpp=.o)
 
+all: $(OBJECTS)
 
-all: main.o
-	make -C ./gui/
-	make -C ./core/
-	$(CC) $(LDFLAGS) $(OBJECTS) -o analyzer
-
-main.o: gui/main_window.hpp
-	$(CC) $(CPPFLAGS) -c main.cpp -o main.o
+.cpp.o:
+	$(CC) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	find . -name "*.o" | xargs rm
+	rm *.o
+
+# MANUAL LIST OF DEPENDENCIES, MAKEDEPEND DOESN'T LIKE CAIRO HEADERS
+./main_window.o: main_window.hpp
+./main.o: main_window.hpp ../core/work_queue.hpp
+./console.o: console.hpp

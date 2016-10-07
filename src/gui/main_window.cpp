@@ -1,7 +1,9 @@
 #include "main_window.hpp"
 
+static const size_t POOL_SIZE = 3;
+
 namespace gui {
-	main_window::main_window() {
+	main_window::main_window() : m_workq(POOL_SIZE) {
 		this->window_set_default_properties();
 		this->add(m_box);
 		m_box.pack_start(m_sidebar, Gtk::PACK_SHRINK);
@@ -33,7 +35,7 @@ namespace gui {
 	}
 
 	void main_window::on_run_clicked() {
-		
+		// ... TODO ...
 	}
 
 	void main_window::enable_run() {
