@@ -32,9 +32,9 @@ namespace gui {
 		void operator=(const main_window &&) = delete;
 		virtual ~main_window();
 	private:
-		Gtk::ScrolledWindow m_textview_container;
 		Gtk::ProgressBar m_progress_bar;
 		Gtk::StackSidebar m_sidebar;
+		Gtk::TextView m_textview;
 		Gtk::Stack m_stack;
 		Gtk::Box m_box;
 		void inflate_analysis_page();
