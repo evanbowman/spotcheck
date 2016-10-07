@@ -35,5 +35,7 @@ namespace gui {
 		void inflate_about_page();
 		// Initializes the window size to the default values
 		void window_set_default_properties();
+		// Init look and feel of sidebar
+		void init_sidebar();
 	};
 }
