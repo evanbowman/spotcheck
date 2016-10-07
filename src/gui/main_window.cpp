@@ -78,7 +78,7 @@ namespace gui {
 		if (dialog.run() == Gtk::RESPONSE_OK) {
 			m_gal_btn.set_sensitive(false);
 			const std::string path = dialog.get_filename();
-			m_workq.submit([&, this]() {
+			m_workq.submit([&path, this]() {
 					this->m_gal_data = core::parse_gal(path);
 					this->notify_imprt_gal_complete();
 				});
