@@ -6,10 +6,8 @@ namespace gui {
 		this->add(m_box);
 		this->init_sidebar();
 		m_box.pack_start(m_stack, Gtk::PACK_EXPAND_WIDGET);
-		m_stack.set_transition_type(Gtk::STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
 		m_sidebar.set_stack(m_stack);
 		this->inflate_analysis_page();
-		this->inflate_history_page();
 		this->inflate_preferences_page();
 		this->inflate_about_page();
 		this->show_all();
@@ -17,9 +15,8 @@ namespace gui {
 
 	void main_window::init_sidebar() {
 		Gtk::Box * box = Gtk::manage(new Gtk::Box);
-		box->set_orientation(Gtk::ORIENTATION_VERTICAL);
 		Gdk::RGBA rgba;
-		rgba.set_rgba(0.2, 0.2, 0.28);
+		rgba.set_rgba(0.2, 0.2, 0.25);
 		box->override_background_color(rgba);
 		box->pack_start(m_sidebar, Gtk::PACK_EXPAND_WIDGET);
 		m_box.pack_start(*box, Gtk::PACK_SHRINK);
@@ -33,17 +30,48 @@ namespace gui {
 		this->set_position(Gtk::WIN_POS_CENTER);
 	}
 
+	template <int left, int right, int top, int bottom, typename T>
+	void apply_margin(T & widget) {
+		widget.set_margin_left(left);
+		widget.set_margin_right(right);
+		widget.set_margin_top(top);
+		widget.set_margin_bottom(bottom);
+	}
+	
 	void main_window::inflate_analysis_page() {
 		Gtk::Box * box = Gtk::manage(new Gtk::Box);
 		box->set_orientation(Gtk::ORIENTATION_VERTICAL);
+		Gtk::Box * frames_box = Gtk::manage(new Gtk::Box);
+		Gtk::Frame * tiff_frame = Gtk::manage(new Gtk::Frame);
+		Gtk::Frame * gal_frame = Gtk::manage(new Gtk::Frame);
+		Gtk::Button * tiff_btn = Gtk::manage(new Gtk::Button);
+		Gtk::Button * gal_btn = Gtk::manage(new Gtk::Button);
+		Gtk::Box * gal_box = Gtk::manage(new Gtk::Box);
+		Gtk::Box * tiff_box = Gtk::manage(new Gtk::Box);
+		Gtk::Label * tiff_label = Gtk::manage(new Gtk::Label);
+		Gtk::Label * gal_label = Gtk::manage(new Gtk::Label);
+		tiff_label->set_text("Choose a height map for analysis");
+		gal_label->set_text("Choose a corresponding metadata file");
+		tiff_btn->set_label("import .tiff");
+		gal_btn->set_label("import .gal");
+		apply_margin<4, 4, 4, 4>(*tiff_btn);
+		apply_margin<4, 4, 4, 4>(*gal_btn);
+		apply_margin<4, 4, 8, 6>(*tiff_label);
+		apply_margin<4, 4, 8, 6>(*gal_label);
+		tiff_box->set_orientation(Gtk::ORIENTATION_VERTICAL);
+		gal_box->set_orientation(Gtk::ORIENTATION_VERTICAL);
+		tiff_box->pack_start(*tiff_label, Gtk::PACK_EXPAND_WIDGET);
+		tiff_box->pack_start(*tiff_btn, Gtk::PACK_SHRINK);
+		gal_box->pack_start(*gal_label, Gtk::PACK_EXPAND_WIDGET);
+		gal_box->pack_start(*gal_btn, Gtk::PACK_SHRINK);
+		tiff_frame->add(*tiff_box);
+		gal_frame->add(*gal_box);
+		tiff_frame->set_border_width(10);
+		gal_frame->set_border_width(10);
+		frames_box->pack_start(*tiff_frame, Gtk::PACK_EXPAND_WIDGET);
+		frames_box->pack_start(*gal_frame, Gtk::PACK_EXPAND_WIDGET);
+		box->pack_start(*frames_box, Gtk::PACK_SHRINK);
 		static const char * PAGE_NAME = "Analyze";
-		m_stack.add(*box, PAGE_NAME, PAGE_NAME);
-	}
-
-	void main_window::inflate_history_page() {
-		Gtk::Box * box = Gtk::manage(new Gtk::Box);
-		box->set_orientation(Gtk::ORIENTATION_VERTICAL);
-		static const char * PAGE_NAME = "History";
 		m_stack.add(*box, PAGE_NAME, PAGE_NAME);
 	}
 

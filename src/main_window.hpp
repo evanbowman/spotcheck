@@ -5,6 +5,8 @@
 #include <gtkmm/window.h>
 #include <gtkmm/button.h>
 #include <gtkmm/stack.h>
+#include <gtkmm/image.h>
+#include <gtkmm/frame.h>
 #include <gtkmm/label.h>
 #include <gtkmm/box.h>
 #include <array>
@@ -30,7 +32,6 @@ namespace gui {
 		// The inlfate member functions initialize pages and
 		// add them to the application's sidebar stack
 		void inflate_analysis_page();
-		void inflate_history_page();
 		void inflate_preferences_page();
 		void inflate_about_page();
 		// Initializes the window size to the default values

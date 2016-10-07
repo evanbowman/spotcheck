@@ -1,5 +1,7 @@
+#include <gtkmm/settings.h>
 #include <gtkmm/main.h>
 #include <thread>
+
 #include "main_window.hpp"
 
 int main(int argc, char ** argv) {
