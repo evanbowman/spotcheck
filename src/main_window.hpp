@@ -1,8 +1,12 @@
 #pragma once
 
 #include <gtkmm/filechooserdialog.h>
+#include <pangomm/fontdescription.h>
+#include <gtkmm/scrolledwindow.h>
 #include <gtkmm/stacksidebar.h>
+#include <gtkmm/progressbar.h>
 #include <gtkmm/separator.h>
+#include <gtkmm/textview.h>
 #include <gtkmm/window.h>
 #include <gtkmm/button.h>
 #include <gtkmm/stack.h>
@@ -28,6 +32,8 @@ namespace gui {
 		void operator=(const main_window &&) = delete;
 		virtual ~main_window();
 	private:
+		Gtk::ScrolledWindow m_textview_container;
+		Gtk::ProgressBar m_progress_bar;
 		Gtk::StackSidebar m_sidebar;
 		Gtk::Stack m_stack;
 		Gtk::Box m_box;

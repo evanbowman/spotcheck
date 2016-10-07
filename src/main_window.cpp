@@ -88,6 +88,24 @@ namespace gui {
 		gal_frame->set_border_width(10);
 		frames_box->pack_start(*gal_frame, Gtk::PACK_EXPAND_WIDGET);
 		box->pack_start(*frames_box, Gtk::PACK_SHRINK);
+		apply_margin<10, 10, 0, 8>(m_textview_container);
+		Gtk::TextView * text_view = Gtk::manage(new Gtk::TextView);
+		text_view->set_editable(false);
+		Pango::FontDescription font_descr("monospace 11");
+		text_view->override_font(font_descr);
+		Gdk::RGBA rgba;
+		rgba.set_rgba(0.0, 0.169, 0.212);
+		text_view->override_background_color(rgba);
+		rgba.set_rgba(0.514, 0.580, 0.588);
+		text_view->override_color(rgba);
+		m_textview_container.add(*text_view);
+		box->pack_start(m_textview_container, Gtk::PACK_EXPAND_WIDGET);
+		Gtk::Box * footer_box = Gtk::manage(new Gtk::Box);
+		Gtk::Button * start_button = Gtk::manage(new Gtk::Button);
+		start_button->set_label("run");
+		footer_box->pack_start(m_progress_bar, Gtk::PACK_EXPAND_WIDGET);
+		footer_box->pack_start(*start_button, Gtk::PACK_SHRINK);
+		box->pack_start(*footer_box, Gtk::PACK_SHRINK);
 		static const char * PAGE_NAME = "Analyze";
 		m_stack.add(*box, PAGE_NAME, PAGE_NAME);
 	}
