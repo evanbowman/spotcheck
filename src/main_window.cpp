@@ -4,22 +4,13 @@ namespace gui {
 	main_window::main_window() {
 		this->window_set_default_properties();
 		this->add(m_box);
-		this->init_sidebar();
+		m_box.pack_start(m_sidebar, Gtk::PACK_SHRINK);
 		m_box.pack_start(m_stack, Gtk::PACK_EXPAND_WIDGET);
 		m_sidebar.set_stack(m_stack);
 		this->inflate_analysis_page();
 		this->inflate_preferences_page();
 		this->inflate_about_page();
 		this->show_all();
-	}
-
-	void main_window::init_sidebar() {
-		Gtk::Box * box = Gtk::manage(new Gtk::Box);
-		Gdk::RGBA rgba;
-		rgba.set_rgba(0.2, 0.2, 0.25);
-		box->override_background_color(rgba);
-		box->pack_start(m_sidebar, Gtk::PACK_EXPAND_WIDGET);
-		m_box.pack_start(*box, Gtk::PACK_SHRINK);
 	}
 	
 	void main_window::window_set_default_properties() {

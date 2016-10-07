@@ -35,7 +35,6 @@ namespace gui {
 		void inflate_preferences_page();
 		void inflate_about_page();
 		void window_set_default_properties();
-		void init_sidebar();
 		void on_import_tiff_clicked();
 		void on_import_gal_clicked();
 	};
