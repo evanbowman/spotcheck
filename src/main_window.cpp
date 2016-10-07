@@ -8,6 +8,9 @@ namespace gui {
 		m_box.pack_start(m_stack, Gtk::PACK_EXPAND_WIDGET);
 		m_sidebar.set_stack(m_stack);
 		m_stack.set_transition_type(Gtk::STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
+		m_dispatcher.connect(sigc::mem_fun(*this, &main_window::on_worker_thread_msg));
+		m_run_button.set_label("run");
+		m_run_button.set_sensitive("false");
 		this->inflate_analysis_page();
 		this->inflate_preferences_page();
 		this->inflate_about_page();
@@ -20,6 +23,14 @@ namespace gui {
 		this->set_default_size(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		this->set_size_request(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		this->set_position(Gtk::WIN_POS_CENTER);
+	}
+
+	void main_window::notify() {
+		m_dispatcher.emit();
+	}
+
+	void main_window::on_worker_thread_msg() {
+		
 	}
 
 	void main_window::on_import_gal_clicked() {
@@ -53,7 +64,7 @@ namespace gui {
 		widget.set_margin_top(top);
 		widget.set_margin_bottom(bottom);
 	}
-	
+
 	void main_window::inflate_analysis_page() {
 		Gtk::Box * box = Gtk::manage(new Gtk::Box);
 		box->set_orientation(Gtk::ORIENTATION_VERTICAL);
@@ -62,10 +73,10 @@ namespace gui {
 		Gtk::Frame * gal_frame = Gtk::manage(new Gtk::Frame);
 		Gtk::Button * tiff_btn = Gtk::manage(new Gtk::Button);
 		Gtk::Button * gal_btn = Gtk::manage(new Gtk::Button);
-		Gtk::Box * gal_box = Gtk::manage(new Gtk::Box);
-		Gtk::Box * tiff_box = Gtk::manage(new Gtk::Box);
 		Gtk::Label * tiff_label = Gtk::manage(new Gtk::Label);
 		Gtk::Label * gal_label = Gtk::manage(new Gtk::Label);
+		Gtk::Box * gal_box = Gtk::manage(new Gtk::Box);
+		Gtk::Box * tiff_box = Gtk::manage(new Gtk::Box);
 		tiff_label->set_text("Choose a height map for analysis");
 		tiff_btn->set_label("import .tiff");
 		tiff_btn->signal_clicked().connect(sigc::mem_fun(*this, &main_window::on_import_tiff_clicked));
@@ -91,21 +102,12 @@ namespace gui {
 		box->pack_start(*frames_box, Gtk::PACK_SHRINK);
 		Gtk::ScrolledWindow * scrolled_window = Gtk::manage(new Gtk::ScrolledWindow);
 		apply_margin<10, 10, 0, 8>(*scrolled_window);
-		m_textview.set_editable(false);
-		Pango::FontDescription font_descr("monospace 11");
-		m_textview.override_font(font_descr);
-		Gdk::RGBA rgba;
-		rgba.set_rgba(0.0, 0.169, 0.212);
-		m_textview.override_background_color(rgba);
-		rgba.set_rgba(0.514, 0.580, 0.588);
-		m_textview.override_color(rgba);
-		scrolled_window->add(m_textview);
+		this->init_console();
+		scrolled_window->add(m_console);
 		box->pack_start(*scrolled_window, Gtk::PACK_EXPAND_WIDGET);
 		Gtk::Box * footer_box = Gtk::manage(new Gtk::Box);
-		Gtk::Button * start_button = Gtk::manage(new Gtk::Button);
-		start_button->set_label("run");
 		footer_box->pack_start(m_progress_bar, Gtk::PACK_EXPAND_WIDGET);
-		footer_box->pack_start(*start_button, Gtk::PACK_SHRINK);
+		footer_box->pack_start(m_run_button, Gtk::PACK_SHRINK);
 		box->pack_start(*footer_box, Gtk::PACK_SHRINK);
 		static const char * PAGE_NAME = "Analyze";
 		m_stack.add(*box, PAGE_NAME, PAGE_NAME);
@@ -123,6 +125,19 @@ namespace gui {
 		box->set_orientation(Gtk::ORIENTATION_VERTICAL);
 		static const char * PAGE_NAME = "About";
 		m_stack.add(*box, PAGE_NAME, PAGE_NAME);
+	}
+
+	void main_window::init_console() {
+		m_console.set_editable(false);
+		Pango::FontDescription font_descr("monospace 11");
+		m_console.override_font(font_descr);
+		Gdk::RGBA rgba;
+		rgba.set_rgba(0.0, 0.169, 0.212);
+		m_console.override_background_color(rgba);
+		rgba.set_rgba(0.514, 0.580, 0.588);
+		m_console.override_color(rgba);
+		auto buffer = m_console.get_buffer();
+		buffer->create_mark("last_line", buffer->end(), true);
 	}
 
 	main_window::~main_window() {}
