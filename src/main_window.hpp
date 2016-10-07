@@ -24,9 +24,16 @@ namespace gui {
 		void operator=(const main_window &&) = delete;
 		virtual ~main_window();
 	private:
-		Gtk::Box m_box;
 		Gtk::StackSidebar m_sidebar;
-		Gtk::Separator m_separator;
 		Gtk::Stack m_stack;
+		Gtk::Box m_box;
+		// The inlfate member functions initialize pages and
+		// add them to the application's sidebar stack
+		void inflate_analysis_page();
+		void inflate_history_page();
+		void inflate_preferences_page();
+		void inflate_about_page();
+		// Initializes the window size to the default values
+		void window_set_default_properties();
 	};
 }
