@@ -33,13 +33,17 @@ namespace gui {
 		void operator=(const main_window &) = delete;
 		void operator=(const main_window &&) = delete;
 		virtual ~main_window();
-		void notify();
+		void notify_run_status();
+		void notify_imprt_tiff_complete();
+		void notify_imprt_gal_complete();
 	private:
 		// In macOS and Windows, GUI code needs to happen only
 		// on the main thread. The dispatcher member may be used
 		// to communicate progress from the worker thread to the
 		// main thread.
-		Glib::Dispatcher m_dispatcher;
+		Glib::Dispatcher m_run_dispatch;
+		Glib::Dispatcher m_tiff_dispatch;
+		Glib::Dispatcher m_gal_dispatch;
 		// For GTKmm widget creation, if the widget needs to be
 		// referenced later, include it as a member of the main
 		// window. Otherwise, create it on the heap and tie its
@@ -76,8 +80,10 @@ namespace gui {
 		void window_set_default_properties();
 		void on_import_tiff_clicked();
 		void on_import_gal_clicked();
+		void on_import_tiff_complete();
+		void on_import_gal_complete();
 		void on_run_clicked();
-		void on_worker_thread_msg();
+		void on_run_msg();
 		void init_buttons();
 		void enable_run();
 	};

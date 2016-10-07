@@ -3,14 +3,16 @@
 static const size_t POOL_SIZE = 3;
 
 namespace gui {
-	main_window::main_window() : m_workq(POOL_SIZE) {
+	main_window::main_window() : m_workq(POOL_SIZE), m_has_tiff(false), m_has_gal(false) {
 		this->window_set_default_properties();
 		this->add(m_box);
 		m_box.pack_start(m_sidebar, Gtk::PACK_SHRINK);
 		m_box.pack_start(m_stack, Gtk::PACK_EXPAND_WIDGET);
 		m_sidebar.set_stack(m_stack);
 		m_stack.set_transition_type(Gtk::STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
-		m_dispatcher.connect(sigc::mem_fun(*this, &main_window::on_worker_thread_msg));
+		m_run_dispatch.connect(sigc::mem_fun(*this, &main_window::on_run_msg));
+		m_tiff_dispatch.connect(sigc::mem_fun(*this, &main_window::on_import_tiff_complete));
+		m_gal_dispatch.connect(sigc::mem_fun(*this, &main_window::on_import_gal_complete));
 		this->init_buttons();
 		this->inflate_analysis_page();
 		this->inflate_preferences_page();
@@ -26,11 +28,35 @@ namespace gui {
 		this->set_position(Gtk::WIN_POS_CENTER);
 	}
 
-	void main_window::notify() {
-		m_dispatcher.emit();
+	void main_window::notify_run_status() {
+		m_run_dispatch.emit();
 	}
 
-	void main_window::on_worker_thread_msg() {
+	void main_window::notify_imprt_tiff_complete() {
+		m_tiff_dispatch.emit();
+	}
+
+	void main_window::notify_imprt_gal_complete() {
+		m_gal_dispatch.emit();
+	}
+
+	void main_window::on_import_gal_complete() {
+		m_console.append_line("[success] gal accepted!");
+		m_has_gal = true;
+		if (m_has_tiff) {
+			this->enable_run();
+		}
+	}
+
+	void main_window::on_import_tiff_complete() {
+		m_console.append_line("[success] tiff accepted!");
+		m_has_tiff = true;
+		if (m_has_gal) {
+			this->enable_run();
+		}
+	}
+
+	void main_window::on_run_msg() {
 		// ... TODO ...
 	}
 
@@ -55,13 +81,10 @@ namespace gui {
 		int result = dialog.run();
 		if (dialog.run() == Gtk::RESPONSE_OK) {
 			m_gal_btn.set_sensitive(false);
-			std::string success_str("[success] file ");
-			success_str += dialog.get_filename() + " accepted!";
-			m_console.append_line(success_str);
-			m_has_gal = true;
-			if (m_has_tiff) {
-				this->enable_run();
-			}
+			m_workq.submit([this]() {
+					// TODO: gal parsing function here...
+					this->notify_imprt_gal_complete();
+				});
 		}
 	}
 
@@ -76,13 +99,10 @@ namespace gui {
 		dialog.add_filter(filter_tiff);
 		if (dialog.run() == Gtk::RESPONSE_OK) {
 			m_tiff_btn.set_sensitive(false);
-			std::string success_str("[success] file ");
-			success_str += dialog.get_filename() + " accepted!";
-			m_console.append_line(success_str);
-			m_has_tiff = true;
-			if (m_has_gal) {
-				this->enable_run();
-			}
+			m_workq.submit([this]() {
+					// TODO: tiff parsing function here...
+					this->notify_imprt_tiff_complete();
+				});
 		}
 	}
 

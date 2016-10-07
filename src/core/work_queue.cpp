@@ -16,6 +16,9 @@ namespace core {
 					if (work_routine != nullptr) {
 						work_routine();
 					} else {
+						// Otherwise the threads will constantly poll for work
+						// and eat up the cpu usage. When there's no work available,
+						// go to sleep for a while.
 						std::this_thread::sleep_for(std::chrono::milliseconds(50));
 					}
 				}
@@ -30,8 +33,5 @@ namespace core {
 
 	work_queue::~work_queue() {
 		m_is_running = false;
-		for (auto & thread : m_pool) {
-			thread.join();
-		}
 	}
 }

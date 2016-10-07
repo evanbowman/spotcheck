@@ -12,4 +12,4 @@ clean:
 	rm *.o
 
 # MANUAL LIST OF DEPENDENCIES, MAKEDEPEND DOESN'T LIKE CAIRO HEADERS
-./work_queue.o: work_queue.hpp
+./work_queue.o: work_queue.hpp smart_thread.hpp
