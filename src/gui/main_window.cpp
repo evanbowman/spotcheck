@@ -57,7 +57,7 @@ namespace gui {
 			m_gal_btn.set_sensitive(false);
 			std::string success_str("[success] file ");
 			success_str += dialog.get_filename() + " accepted!";
-		    m_console.append_line(success_str);
+			m_console.append_line(success_str);
 			m_has_gal = true;
 			if (m_has_tiff) {
 				this->enable_run();
