@@ -54,7 +54,6 @@ namespace gui {
 		// lifetime to its parent with Gtk::manage(). This has
 		// the benefit of abstracting data the people don't need
 		// to see.
-		Gtk::ProgressBar m_progress_bar;
 		Gtk::StackSidebar m_sidebar;
 		// The member m_workq provides an abstraction for a
 		// threadpool. Submitting work to it is easy, just call
