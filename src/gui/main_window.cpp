@@ -28,18 +28,6 @@ namespace gui {
 		this->set_position(Gtk::WIN_POS_CENTER);
 	}
 
-	void main_window::notify_run_status() {
-		m_run_dispatch.emit();
-	}
-
-	void main_window::notify_imprt_tiff_complete() {
-		m_tiff_dispatch.emit();
-	}
-
-	void main_window::notify_imprt_gal_complete() {
-		m_gal_dispatch.emit();
-	}
-
 	void main_window::on_import_gal_complete() {
 		if (m_gal_data) {
 			m_console.append_line("[success] gal accepted!");
@@ -90,7 +78,7 @@ namespace gui {
 		if (dialog.run() == Gtk::RESPONSE_OK) {
 			m_gal_btn.set_sensitive(false);
 			const std::string path = dialog.get_filename();
-			m_workq.submit([&path, this]() {
+			m_workq.submit([&, this]() {
 					this->m_gal_data = core::parse_gal(path);
 					this->notify_imprt_gal_complete();
 				});
@@ -199,6 +187,18 @@ namespace gui {
 		m_run_btn.set_sensitive(false);
 		m_tiff_btn.set_sensitive(true);
 		m_gal_btn.set_sensitive(true);
+	}
+
+	void main_window::notify_run_status() {
+		m_run_dispatch.emit();
+	}
+
+	void main_window::notify_imprt_tiff_complete() {
+		m_tiff_dispatch.emit();
+	}
+
+	void main_window::notify_imprt_gal_complete() {
+		m_gal_dispatch.emit();
 	}
 	
 	main_window::~main_window() {}
