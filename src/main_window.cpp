@@ -7,6 +7,7 @@ namespace gui {
 		m_box.pack_start(m_sidebar, Gtk::PACK_SHRINK);
 		m_box.pack_start(m_stack, Gtk::PACK_EXPAND_WIDGET);
 		m_sidebar.set_stack(m_stack);
+		m_stack.set_transition_type(Gtk::STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
 		this->inflate_analysis_page();
 		this->inflate_preferences_page();
 		this->inflate_about_page();
