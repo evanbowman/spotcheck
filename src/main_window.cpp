@@ -30,6 +30,30 @@ namespace gui {
 		this->set_position(Gtk::WIN_POS_CENTER);
 	}
 
+	void main_window::on_import_gal_clicked() {
+		Gtk::FileChooserDialog dialog("Choose a file", Gtk::FILE_CHOOSER_ACTION_OPEN);
+		dialog.set_transient_for(*this);
+		dialog.add_button("cancel", Gtk::RESPONSE_CANCEL);
+		dialog.add_button("open", Gtk::RESPONSE_OK);
+		auto filter_gal = Gtk::FileFilter::create();
+		filter_gal->set_name("gal files");
+		filter_gal->add_pattern("*.gal");
+		dialog.add_filter(filter_gal);
+		int result = dialog.run();
+	}
+
+	void main_window::on_import_tiff_clicked() {
+		Gtk::FileChooserDialog dialog("Choose a file", Gtk::FILE_CHOOSER_ACTION_OPEN);
+		dialog.set_transient_for(*this);
+		dialog.add_button("cancel", Gtk::RESPONSE_CANCEL);
+		dialog.add_button("open", Gtk::RESPONSE_OK);
+		auto filter_tiff = Gtk::FileFilter::create();
+		filter_tiff->set_name("tiff files");
+		filter_tiff->add_pattern("*.tiff");
+		dialog.add_filter(filter_tiff);
+		int result = dialog.run();
+	}
+
 	template <int left, int right, int top, int bottom, typename T>
 	void apply_margin(T & widget) {
 		widget.set_margin_left(left);
@@ -51,24 +75,26 @@ namespace gui {
 		Gtk::Label * tiff_label = Gtk::manage(new Gtk::Label);
 		Gtk::Label * gal_label = Gtk::manage(new Gtk::Label);
 		tiff_label->set_text("Choose a height map for analysis");
-		gal_label->set_text("Choose a corresponding metadata file");
 		tiff_btn->set_label("import .tiff");
-		gal_btn->set_label("import .gal");
+		tiff_btn->signal_clicked().connect(sigc::mem_fun(*this, &main_window::on_import_tiff_clicked));
 		apply_margin<4, 4, 4, 4>(*tiff_btn);
-		apply_margin<4, 4, 4, 4>(*gal_btn);
-		apply_margin<4, 4, 8, 6>(*tiff_label);
-		apply_margin<4, 4, 8, 6>(*gal_label);
+		apply_margin<4, 4, 10, 8>(*tiff_label);
 		tiff_box->set_orientation(Gtk::ORIENTATION_VERTICAL);
-		gal_box->set_orientation(Gtk::ORIENTATION_VERTICAL);
 		tiff_box->pack_start(*tiff_label, Gtk::PACK_EXPAND_WIDGET);
 		tiff_box->pack_start(*tiff_btn, Gtk::PACK_SHRINK);
+		tiff_frame->add(*tiff_box);
+		tiff_frame->set_border_width(10);
+		frames_box->pack_start(*tiff_frame, Gtk::PACK_EXPAND_WIDGET);
+		gal_label->set_text("Choose a corresponding metadata file");
+		gal_btn->set_label("import .gal");
+		gal_btn->signal_clicked().connect(sigc::mem_fun(*this, &main_window::on_import_gal_clicked));
+		apply_margin<4, 4, 4, 4>(*gal_btn);
+		apply_margin<4, 4, 10, 8>(*gal_label);
+		gal_box->set_orientation(Gtk::ORIENTATION_VERTICAL);
 		gal_box->pack_start(*gal_label, Gtk::PACK_EXPAND_WIDGET);
 		gal_box->pack_start(*gal_btn, Gtk::PACK_SHRINK);
-		tiff_frame->add(*tiff_box);
 		gal_frame->add(*gal_box);
-		tiff_frame->set_border_width(10);
 		gal_frame->set_border_width(10);
-		frames_box->pack_start(*tiff_frame, Gtk::PACK_EXPAND_WIDGET);
 		frames_box->pack_start(*gal_frame, Gtk::PACK_EXPAND_WIDGET);
 		box->pack_start(*frames_box, Gtk::PACK_SHRINK);
 		static const char * PAGE_NAME = "Analyze";

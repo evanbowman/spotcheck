@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gtkmm/filechooserdialog.h>
 #include <gtkmm/stacksidebar.h>
 #include <gtkmm/separator.h>
 #include <gtkmm/window.h>
@@ -9,6 +10,7 @@
 #include <gtkmm/frame.h>
 #include <gtkmm/label.h>
 #include <gtkmm/box.h>
+#include <iostream>
 #include <array>
 
 namespace gui {
@@ -29,14 +31,12 @@ namespace gui {
 		Gtk::StackSidebar m_sidebar;
 		Gtk::Stack m_stack;
 		Gtk::Box m_box;
-		// The inlfate member functions initialize pages and
-		// add them to the application's sidebar stack
 		void inflate_analysis_page();
 		void inflate_preferences_page();
 		void inflate_about_page();
-		// Initializes the window size to the default values
 		void window_set_default_properties();
-		// Init look and feel of sidebar
 		void init_sidebar();
+		void on_import_tiff_clicked();
+		void on_import_gal_clicked();
 	};
 }
