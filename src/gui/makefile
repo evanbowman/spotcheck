@@ -13,6 +13,6 @@ clean:
 	rm *.o
 
 # MANUAL LIST OF DEPENDENCIES, MAKEDEPEND DOESN'T LIKE CAIRO HEADERS
-./main_window.o: main_window.hpp
-./main.o: main_window.hpp ../core/work_queue.hpp
+./main_window.o: main_window.hpp ../core/work_queue.hpp ../core/option.hpp
+./main.o: main_window.hpp
 ./console.o: console.hpp

@@ -3,7 +3,7 @@
 static const size_t POOL_SIZE = 3;
 
 namespace gui {
-	main_window::main_window() : m_workq(POOL_SIZE), m_has_tiff(false), m_has_gal(false) {
+	main_window::main_window() : m_workq(POOL_SIZE), m_tiff_data{}, m_gal_data{} {
 		this->window_set_default_properties();
 		this->add(m_box);
 		m_box.pack_start(m_sidebar, Gtk::PACK_SHRINK);
@@ -41,18 +41,26 @@ namespace gui {
 	}
 
 	void main_window::on_import_gal_complete() {
-		m_console.append_line("[success] gal accepted!");
-		m_has_gal = true;
-		if (m_has_tiff) {
-			this->enable_run();
+		if (m_gal_data) {
+			m_console.append_line("[success] gal accepted!");
+			if (m_tiff_data) {
+				this->enable_run();
+			}
+		} else {
+			m_console.append_line("[error] failed to parse gal");
+			m_gal_btn.set_sensitive(true);
 		}
 	}
 
 	void main_window::on_import_tiff_complete() {
-		m_console.append_line("[success] tiff accepted!");
-		m_has_tiff = true;
-		if (m_has_gal) {
-			this->enable_run();
+		if (m_tiff_data) {
+			m_console.append_line("[success] tiff accepted!");
+			if (m_gal_data) {
+				this->enable_run();
+			}
+		} else {
+			m_console.append_line("[error] failed to parse tiff");
+			m_tiff_btn.set_sensitive(true);
 		}
 	}
 
@@ -180,8 +188,8 @@ namespace gui {
 	}
 
 	void main_window::prepare_new_run() {
-		m_has_tiff = false;
-		m_has_gal = false;
+		m_tiff_data = {};
+		m_gal_data = {};
 		m_run_btn.set_sensitive(false);
 		m_tiff_btn.set_sensitive(true);
 		m_gal_btn.set_sensitive(true);

@@ -17,7 +17,11 @@
 #include <array>
 
 #include "../core/work_queue.hpp"
+#include "../core/option.hpp"
 #include "console.hpp"
+
+// templates instantiated with TODO require an unimplemented type
+using TODO = int;
 
 namespace gui {
 	class main_window : public Gtk::Window {
@@ -59,7 +63,7 @@ namespace gui {
 		// calculations within a gtk widget signal handler, or the
 		// app will become unresponsive. Delegate work to the thread
 		// pool instead!
-	    core::work_queue m_workq;
+		core::work_queue m_workq;
 		Gtk::Button m_run_btn;
 		Gtk::Button m_tiff_btn;
 		Gtk::Button m_gal_btn;
@@ -69,10 +73,10 @@ namespace gui {
 		// it. While a thread is running a calculation, be nice
 		// to the user and print some incremental status messages
 		// to the console!
-	    console m_console;
+		console m_console;
 		Gtk::Box m_box;
-		bool m_has_tiff;
-		bool m_has_gal;		
+		core::option<TODO> m_tiff_data;
+		core::option<TODO> m_gal_data;
 		void prepare_new_run();
 		void inflate_analysis_page();
 		void inflate_preferences_page();
