@@ -63,7 +63,7 @@ namespace core {
 			}
 		}
 		operator bool() { return m_initialized; }
-		const T & value() const {
+		const T & unwrap() const {
 			if (!m_initialized) throw null_opt_err();
 			return *(T *)m_bytes.data();
 		}

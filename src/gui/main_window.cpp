@@ -1,9 +1,7 @@
 #include "main_window.hpp"
 
-static const size_t POOL_SIZE = 3;
-
 namespace gui {
-	main_window::main_window() : m_workq(POOL_SIZE), m_tiff_data{}, m_gal_data{} {
+	main_window::main_window() : m_workq(std::thread::hardware_concurrency()) {
 		this->window_set_default_properties();
 		this->add(m_box);
 		m_box.pack_start(m_sidebar, Gtk::PACK_SHRINK);
@@ -13,14 +11,14 @@ namespace gui {
 		m_run_complete_dispatch.connect(sigc::mem_fun(*this, &main_window::on_run_complete));
 		m_tiff_dispatch.connect(sigc::mem_fun(*this, &main_window::on_import_tiff_complete));
 		m_gal_dispatch.connect(sigc::mem_fun(*this, &main_window::on_import_gal_complete));
-		m_run_update_dispatch.connect(sigc::mem_fun(*this, &main_window::on_run_update));
+		m_run_progress_dispatch.connect(sigc::mem_fun(*this, &main_window::on_run_progress));
 		this->init_buttons();
 		this->inflate_analysis_page();
 		this->inflate_preferences_page();
 		this->inflate_about_page();
 		this->show_all();
 	}
-	
+
 	void main_window::window_set_default_properties() {
 		static const uint16_t DEFAULT_WIDTH = 800;
 		static const uint16_t DEFAULT_HEIGHT = 520;
@@ -30,7 +28,7 @@ namespace gui {
 	}
 
 	void main_window::on_import_gal_complete() {
-		if (m_gal_data) {
+		if (m_work_items) {
 			m_console.append_line("[success] gal accepted!");
 			if (m_tiff_data) {
 				this->enable_run();
@@ -44,7 +42,7 @@ namespace gui {
 	void main_window::on_import_tiff_complete() {
 		if (m_tiff_data) {
 			m_console.append_line("[success] tiff accepted!");
-			if (m_gal_data) {
+			if (m_work_items) {
 				this->enable_run();
 			}
 		} else {
@@ -53,19 +51,27 @@ namespace gui {
 		}
 	}
 
-	void main_window::on_run_update() {
-	    m_console.append_line("working...");
+	void main_window::on_run_progress() {
+	    m_console.append_line("finished a work item...");
 	}
 
 	void main_window::on_run_complete() {
-		m_console.append_line("run complete...");
+		m_console.append_line("run complete!");
 	}
 
 	void main_window::on_run_clicked() {
-	    m_workq.submit([this]() {
-				for (int i = 0; i < 50; i += 1) {
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
-					this->notify_run_update();
+		for (auto & work_item : m_work_items.unwrap()) {
+			m_workq.submit([this]() {
+					// TODO: process work item and tiff
+					this->notify_run_progress();
+				});
+		}
+		// Because the work_queue is FIFO, last asynchronous request (below)
+		// that checks for completion won't run until the work is complete
+		// or nearly complete. Isn't that convenient!
+		m_workq.submit([this]() {
+				while (this->m_workq.has_work() /* or 1 active worker */) {
+					std::this_thread::sleep_for(std::chrono::seconds(1));
 				}
 				this->notify_run_complete();
 			});
@@ -91,7 +97,7 @@ namespace gui {
 			m_gal_btn.set_sensitive(false);
 			const std::string path = dialog.get_filename();
 			m_workq.submit([&path, this]() {
-					this->m_gal_data = core::parse_gal(path);
+					this->m_work_items = core::parse_gal(path);
 					this->notify_imprt_gal_complete();
 				});
 		}
@@ -193,14 +199,14 @@ namespace gui {
 
 	void main_window::prepare_new_run() {
 		m_tiff_data = {};
-		m_gal_data = {};
+		m_work_items = {};
 		m_run_btn.set_sensitive(false);
 		m_tiff_btn.set_sensitive(true);
 		m_gal_btn.set_sensitive(true);
 	}
 
-	void main_window::notify_run_update() {
-		m_run_update_dispatch.emit();
+	void main_window::notify_run_progress() {
+		m_run_progress_dispatch.emit();
 	}
 
 	void main_window::notify_run_complete() {

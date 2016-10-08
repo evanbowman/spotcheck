@@ -20,10 +20,11 @@ namespace core {
 		// arguments and have void return type. Parameters may
 		// be passed via lambda capture modes.
 		void submit(std::function<void()> && work);
+		const bool has_work() const;
 		~work_queue();
 	private:
 		bool m_is_running;
-		std::mutex m_queue_mtx;
+		mutable std::mutex m_queue_mtx;
 		std::vector<smart_thread> m_pool;
 		std::queue<std::function<void()>> m_queue;
 	};

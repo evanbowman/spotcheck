@@ -22,9 +22,6 @@
 #include "../core/option.hpp"
 #include "console.hpp"
 
-// templates instantiated with TODO require an unimplemented type
-using TODO = int;
-
 namespace gui {
 	class main_window : public Gtk::Window {
 	public:
@@ -39,7 +36,7 @@ namespace gui {
 		void operator=(const main_window &) = delete;
 		void operator=(const main_window &&) = delete;
 		virtual ~main_window();
-		void notify_run_update();
+		void notify_run_progress();
 		void notify_run_complete();
 		void notify_imprt_tiff_complete();
 		void notify_imprt_gal_complete();
@@ -49,7 +46,7 @@ namespace gui {
 		// to communicate progress from the worker thread to the
 		// main thread.
 		Glib::Dispatcher m_run_complete_dispatch;
-		Glib::Dispatcher m_run_update_dispatch;
+		Glib::Dispatcher m_run_progress_dispatch;
 		Glib::Dispatcher m_tiff_dispatch;
 		Glib::Dispatcher m_gal_dispatch;
 		// For GTKmm widget creation, if the widget needs to be
@@ -79,7 +76,7 @@ namespace gui {
 		console m_console;
 		Gtk::Box m_box;
 		core::option<core::tiff_data> m_tiff_data;
-		core::option<core::gal_data> m_gal_data;
+		core::option<std::vector<core::work_unit>> m_work_items;
 		void prepare_new_run();
 		void inflate_analysis_page();
 		void inflate_preferences_page();
@@ -90,7 +87,7 @@ namespace gui {
 		void on_import_tiff_complete();
 		void on_import_gal_complete();
 		void on_run_clicked();
-		void on_run_update();
+		void on_run_progress();
 		void on_run_complete();
 		void init_buttons();
 		void enable_run();

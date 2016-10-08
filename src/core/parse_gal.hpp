@@ -1,12 +1,14 @@
 #pragma once
 
+#include <vector>
+
 #include "option.hpp"
 
 namespace core {
-	struct gal_data {
+	struct work_unit {
 		// Implement the structure...
 	};
 
-	option<gal_data> parse_gal(const std::string & filename);
+	option<std::vector<work_unit>> parse_gal(const std::string & filename);
 }
 

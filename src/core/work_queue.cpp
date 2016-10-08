@@ -34,4 +34,9 @@ namespace core {
 	work_queue::~work_queue() {
 		m_is_running = false;
 	}
+
+	const bool work_queue::has_work() const {
+		std::lock_guard<std::mutex> queue_grd(m_queue_mtx);
+		return !m_queue.empty();
+	}
 }
