@@ -15,6 +15,7 @@
 #include <gtkmm/box.h>
 #include <iostream>
 #include <array>
+#include <cmath>
 
 #include "../core/work_queue.hpp"
 #include "../core/parse_tiff.hpp"
