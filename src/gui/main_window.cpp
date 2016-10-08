@@ -1,7 +1,6 @@
 #include "main_window.hpp"
 
 namespace gui {
-
 	static const unsigned MIN_THRDS = 1;
 	
 	main_window::main_window() : m_workq(std::max(MIN_THRDS, std::thread::hardware_concurrency())) {
@@ -33,7 +32,7 @@ namespace gui {
 	}
 
 	void main_window::on_import_gal_complete() {
-		if (m_work_items) {
+		if (m_work_groups) {
 			m_console.append_line("[success] gal accepted!");
 			if (m_tiff_data) {
 				this->enable_run();
@@ -47,7 +46,7 @@ namespace gui {
 	void main_window::on_import_tiff_complete() {
 		if (m_tiff_data) {
 			m_console.append_line("[success] tiff accepted!");
-			if (m_work_items) {
+			if (m_work_groups) {
 				this->enable_run();
 			}
 		} else {
@@ -57,7 +56,7 @@ namespace gui {
 	}
 
 	void main_window::on_run_progress() {
-		m_console.append_line("completed work item...");
+		m_console.append_line("completed work group...");
 	}
 
 	void main_window::on_run_complete() {
@@ -65,16 +64,13 @@ namespace gui {
 	}
 
 	void main_window::on_run_clicked() {
-		for (const auto & work_item : m_work_items.unwrap()) {
-			m_workq.submit([&work_item, this]() {
-			    // TODO: do something with the return value of analyze_unit...
-				analyze_unit(work_item, this->m_tiff_data.unwrap());
+		for (const auto & group : m_work_groups.unwrap()) {
+			m_workq.submit([&group, this]() {
+			    const core::tiff_data & tiff = this->m_tiff_data.unwrap();
+				this->m_analysis_results.push_back(analyze_group(group, tiff));
 				this->notify_run_progress();
 			});
 		}
-		// Because the work_queue is FIFO, last asynchronous request (below)
-		// that checks for completion won't run until the work is complete
-		// or nearly complete. Isn't that convenient!
 		m_workq.submit([this]() {
 			while (this->m_workq.has_work() || this->m_workq.current_load() > 1) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -102,7 +98,7 @@ namespace gui {
 			m_gal_btn.set_sensitive(false);
 			const std::string path = dialog.get_filename();
 			m_workq.submit([&path, this]() {
-				this->m_work_items = core::parse_gal(path);
+				this->m_work_groups = core::parse_gal(path);
 				this->notify_imprt_gal_complete();
 			});
 		}
@@ -204,7 +200,7 @@ namespace gui {
 
 	void main_window::prepare_new_run() {
 		m_tiff_data = {};
-		m_work_items = {};
+		m_work_groups = {};
 		m_run_btn.set_sensitive(false);
 		m_tiff_btn.set_sensitive(true);
 		m_gal_btn.set_sensitive(true);

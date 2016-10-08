@@ -5,10 +5,10 @@
 #include "option.hpp"
 
 namespace core {
-	struct work_unit {
+	struct work_group {
 		// Implement the structure...
 	};
 
-	option<std::vector<work_unit>> parse_gal(const std::string & filename);
+	option<std::vector<work_group>> parse_gal(const std::string & filename);
 }
 

@@ -17,7 +17,7 @@
 #include <array>
 #include <cmath>
 
-#include "../core/analyze_unit.hpp"
+#include "../core/analyze_group.hpp"
 #include "../core/work_queue.hpp"
 #include "../core/parse_tiff.hpp"
 #include "../core/parse_gal.hpp"
@@ -78,7 +78,8 @@ namespace gui {
 		console m_console;
 		Gtk::Box m_box;
 		core::option<core::tiff_data> m_tiff_data;
-		core::option<std::vector<core::work_unit>> m_work_items;
+		core::option<std::vector<core::work_group>> m_work_groups;
+		std::vector<core::analysis_result> m_analysis_results;
 		void prepare_new_run();
 		void inflate_analysis_page();
 		void inflate_preferences_page();
