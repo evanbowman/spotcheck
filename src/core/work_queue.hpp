@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <atomic>
 #include <chrono>
 #include <queue>
 #include <mutex>
@@ -21,9 +22,12 @@ namespace core {
 		// be passed via lambda capture modes.
 		void submit(std::function<void()> && work);
 		const bool has_work() const;
+		const int current_load() const;
 		~work_queue();
 	private:
 		bool m_is_running;
+		int m_load;
+		mutable std::mutex m_load_mtx;
 		mutable std::mutex m_queue_mtx;
 		std::vector<smart_thread> m_pool;
 		std::queue<std::function<void()>> m_queue;

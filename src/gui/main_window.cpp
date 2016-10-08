@@ -52,7 +52,7 @@ namespace gui {
 	}
 
 	void main_window::on_run_progress() {
-	    m_console.append_line("finished a work item...");
+	    m_console.append_line("completed work item...");
 	}
 
 	void main_window::on_run_complete() {
@@ -62,19 +62,19 @@ namespace gui {
 	void main_window::on_run_clicked() {
 		for (auto & work_item : m_work_items.unwrap()) {
 			m_workq.submit([this]() {
-					// TODO: process work item and tiff
-					this->notify_run_progress();
-				});
+				// TODO: process work item
+			    this->notify_run_progress();
+		    });
 		}
 		// Because the work_queue is FIFO, last asynchronous request (below)
 		// that checks for completion won't run until the work is complete
 		// or nearly complete. Isn't that convenient!
 		m_workq.submit([this]() {
-				while (this->m_workq.has_work() /* or 1 active worker */) {
-					std::this_thread::sleep_for(std::chrono::seconds(1));
-				}
-				this->notify_run_complete();
-			});
+		    while (this->m_workq.has_work() || this->m_workq.current_load() > 1) {
+		    	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		    }
+		    this->notify_run_complete();
+	    });
 		m_run_btn.set_sensitive(false);
 	}
 
@@ -97,9 +97,9 @@ namespace gui {
 			m_gal_btn.set_sensitive(false);
 			const std::string path = dialog.get_filename();
 			m_workq.submit([&path, this]() {
-					this->m_work_items = core::parse_gal(path);
-					this->notify_imprt_gal_complete();
-				});
+			    this->m_work_items = core::parse_gal(path);
+		    	this->notify_imprt_gal_complete();
+	    	});
 		}
 	}
 
@@ -116,9 +116,9 @@ namespace gui {
 			m_tiff_btn.set_sensitive(false);
 			const std::string path = dialog.get_filename();
 			m_workq.submit([&path, this]() {
-					this->m_tiff_data = core::parse_tiff(path);
-					this->notify_imprt_tiff_complete();
-				});
+		    	this->m_tiff_data = core::parse_tiff(path);
+	    		this->notify_imprt_tiff_complete();
+    		});
 		}
 	}
 
