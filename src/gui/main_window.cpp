@@ -1,7 +1,10 @@
 #include "main_window.hpp"
 
 namespace gui {
-	main_window::main_window() : m_workq(std::max(1, std::thread::hardware_concurrency())) {
+
+	static const unsigned MIN_THRDS = 1;
+	
+	main_window::main_window() : m_workq(std::max(MIN_THRDS, std::thread::hardware_concurrency())) {
 		this->window_set_default_properties();
 		this->add(m_box);
 		m_box.pack_start(m_sidebar, Gtk::PACK_SHRINK);
