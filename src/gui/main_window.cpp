@@ -5,6 +5,8 @@ namespace gui {
 		this->window_set_default_properties();
 		this->add(m_box);
 		m_box.pack_start(m_sidebar, Gtk::PACK_SHRINK);
+		Gtk::Separator * separator = Gtk::manage(new Gtk::Separator(Gtk::ORIENTATION_VERTICAL));
+		m_box.pack_start(*separator, Gtk::PACK_SHRINK);
 		m_box.pack_start(m_stack);
 		m_sidebar.set_stack(m_stack);
 		m_stack.set_transition_type(Gtk::STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);

@@ -15,10 +15,8 @@ namespace gui {
 		// Gtk::TextView::set_*_margin are confusingly named, they
 		// actually set the padding.
 		static const int padding = 6;
-		// m_textview.set_bottom_margin(padding);
-		// m_textview.set_top_margin(padding);
-		// m_textview.set_left_margin(padding);
-		// m_textview.set_right_margin(padding);
+		m_textview.set_left_margin(padding);
+		m_textview.set_right_margin(padding);
 		this->add(m_textview);
 	}
 

@@ -7,6 +7,9 @@ OBJECTS = $(SOURCES:.cpp=.o)
 all: main.o
 	make -C ./gui/
 	make -C ./core/
+# clang doesn't seem to care, but gcc is VERY particular about the
+# placement of linker and compiler flags (putting LDFLAGS in front
+# of OBJECTS won't compile
 	$(CC) $(CPPFLAGS) $(OBJECTS) $(LDFLAGS) -o analyzer
 
 main.o: gui/main_window.hpp
