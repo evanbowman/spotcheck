@@ -10,9 +10,10 @@ namespace gui {
 		m_box.pack_start(m_stack);
 		m_sidebar.set_stack(m_stack);
 		m_stack.set_transition_type(Gtk::STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
-		m_run_dispatch.connect(sigc::mem_fun(*this, &main_window::on_run_msg));
+		m_run_complete_dispatch.connect(sigc::mem_fun(*this, &main_window::on_run_complete));
 		m_tiff_dispatch.connect(sigc::mem_fun(*this, &main_window::on_import_tiff_complete));
 		m_gal_dispatch.connect(sigc::mem_fun(*this, &main_window::on_import_gal_complete));
+		m_run_update_dispatch.connect(sigc::mem_fun(*this, &main_window::on_run_update));
 		this->init_buttons();
 		this->inflate_analysis_page();
 		this->inflate_preferences_page();
@@ -52,12 +53,23 @@ namespace gui {
 		}
 	}
 
-	void main_window::on_run_msg() {
-		// ... TODO ...
+	void main_window::on_run_update() {
+	    m_console.append_line("working...");
+	}
+
+	void main_window::on_run_complete() {
+		m_console.append_line("run complete...");
 	}
 
 	void main_window::on_run_clicked() {
-		// ... TODO ...
+	    m_workq.submit([this]() {
+				for (int i = 0; i < 50; i += 1) {
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					this->notify_run_update();
+				}
+				this->notify_run_complete();
+			});
+		m_run_btn.set_sensitive(false);
 	}
 
 	void main_window::enable_run() {
@@ -139,10 +151,8 @@ namespace gui {
 		gal_frame->set_border_width(10);
 		frames_box->pack_start(*gal_frame);
 		box->pack_start(*frames_box, Gtk::PACK_SHRINK);
-		Gtk::ScrolledWindow * scrolled_window = Gtk::manage(new Gtk::ScrolledWindow);
-		apply_margin<10, 10, 0, 8>(*scrolled_window);
-		scrolled_window->add(m_console);
-		box->pack_start(*scrolled_window);
+		apply_margin<10, 10, 0, 8>(m_console);
+		box->pack_start(m_console);
 		Gtk::Box * footer_box = Gtk::manage(new Gtk::Box);
 		Gtk::Box * whitespace_left = Gtk::manage(new Gtk::Box);
 		Gtk::Box * whitespace_right = Gtk::manage(new Gtk::Box);
@@ -189,8 +199,12 @@ namespace gui {
 		m_gal_btn.set_sensitive(true);
 	}
 
-	void main_window::notify_run_status() {
-		m_run_dispatch.emit();
+	void main_window::notify_run_update() {
+		m_run_update_dispatch.emit();
+	}
+
+	void main_window::notify_run_complete() {
+		m_run_complete_dispatch.emit();
 	}
 
 	void main_window::notify_imprt_tiff_complete() {

@@ -25,6 +25,11 @@ namespace gui {
 	void console::append_line(const std::string & str) {
 	    auto buffer = m_textview.get_buffer();
 		buffer->insert_at_cursor(str + "\n");
+		Gtk::TextIter it = buffer->end();
+		it.set_line_offset(0);
+		auto mark = buffer->get_mark("last_line");
+		buffer->move_mark(mark, it);
+		m_textview.scroll_to(mark);
 	}
 
 	console::~console() {}

@@ -39,7 +39,8 @@ namespace gui {
 		void operator=(const main_window &) = delete;
 		void operator=(const main_window &&) = delete;
 		virtual ~main_window();
-		void notify_run_status();
+		void notify_run_update();
+		void notify_run_complete();
 		void notify_imprt_tiff_complete();
 		void notify_imprt_gal_complete();
 	private:
@@ -47,7 +48,8 @@ namespace gui {
 		// on the main thread. The dispatcher member may be used
 		// to communicate progress from the worker thread to the
 		// main thread.
-		Glib::Dispatcher m_run_dispatch;
+		Glib::Dispatcher m_run_complete_dispatch;
+		Glib::Dispatcher m_run_update_dispatch;
 		Glib::Dispatcher m_tiff_dispatch;
 		Glib::Dispatcher m_gal_dispatch;
 		// For GTKmm widget creation, if the widget needs to be
@@ -88,7 +90,8 @@ namespace gui {
 		void on_import_tiff_complete();
 		void on_import_gal_complete();
 		void on_run_clicked();
-		void on_run_msg();
+		void on_run_update();
+		void on_run_complete();
 		void init_buttons();
 		void enable_run();
 	};
