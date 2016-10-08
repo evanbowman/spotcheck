@@ -17,6 +17,7 @@
 #include <array>
 #include <cmath>
 
+#include "../core/analyze_unit.hpp"
 #include "../core/work_queue.hpp"
 #include "../core/parse_tiff.hpp"
 #include "../core/parse_gal.hpp"

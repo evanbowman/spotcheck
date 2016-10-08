@@ -65,9 +65,10 @@ namespace gui {
 	}
 
 	void main_window::on_run_clicked() {
-		for (auto & work_item : m_work_items.unwrap()) {
-			m_workq.submit([this]() {
-				// TODO: process work item
+		for (const auto & work_item : m_work_items.unwrap()) {
+			m_workq.submit([&work_item, this]() {
+			    // TODO: do something with the return value of analyze_unit...
+				analyze_unit(work_item, this->m_tiff_data.unwrap());
 				this->notify_run_progress();
 			});
 		}
@@ -97,7 +98,6 @@ namespace gui {
 		filter_gal->set_name("gal files");
 		filter_gal->add_pattern("*.gal");
 		dialog.add_filter(filter_gal);
-		int result = dialog.run();
 		if (dialog.run() == Gtk::RESPONSE_OK) {
 			m_gal_btn.set_sensitive(false);
 			const std::string path = dialog.get_filename();
