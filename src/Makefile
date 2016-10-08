@@ -1,6 +1,6 @@
-CC = g++
-CPPFLAGS = -std=c++11 -O2 -flto `pkg-config gtkmm-3.0 --cflags`
-LDFLAGS = -flto `pkg-config gtkmm-3.0 --libs`
+CC = clang++
+CPPFLAGS = -std=c++11 -O2 `pkg-config gtkmm-3.0 --cflags`
+LDFLAGS = `pkg-config gtkmm-3.0 --cflags --libs`
 SOURCES = $(shell find . -name "*.cpp" | awk '{print length, $$0;}' | sort -rn | cut -d ' ' -f 2-)
 OBJECTS = $(SOURCES:.cpp=.o)
 
