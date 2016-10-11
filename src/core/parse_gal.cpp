@@ -1,8 +1,5 @@
 #include "parse_gal.hpp"
 
-#include <iostream>
-#include <thread>
-
 namespace core {
 	option<std::vector<work_group>> parse_gal(const std::string & filename) {
 		// TODO:
