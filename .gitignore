@@ -5,3 +5,6 @@
 
 # c++ object files
 *.o
+
+# compiled executable
+spotcheck

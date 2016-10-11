@@ -10,7 +10,7 @@ all: main.o
 # clang doesn't seem to care, but gcc is VERY particular about the
 # placement of linker and compiler flags (putting LDFLAGS in front
 # of OBJECTS won't compile
-	$(CC) $(CPPFLAGS) $(OBJECTS) $(LDFLAGS) -o analyzer
+	$(CC) $(CPPFLAGS) $(OBJECTS) $(LDFLAGS) -o spotcheck
 
 main.o: gui/main_window.hpp
 	$(CC) $(CPPFLAGS) -c main.cpp -o main.o

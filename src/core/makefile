@@ -15,4 +15,4 @@ clean:
 ./work_queue.o: work_queue.hpp smart_thread.hpp
 ./parse_tiff.o: parse_tiff.hpp option.hpp
 ./parse_gal.o: parse_gal.hpp option.hpp
-./analyze_unit.o: analyze_unit.hpp parse_tiff.hpp parse_gal.hpp
+./analyze_group.o: analyze_group.hpp parse_tiff.hpp parse_gal.hpp
