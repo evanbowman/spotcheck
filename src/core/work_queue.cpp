@@ -4,7 +4,7 @@ namespace core {
 	work_queue::work_queue(const size_t pool_size) : m_is_running(true), m_load(0) {
 		for (int i = 0; i < pool_size; i += 1) {
 			m_pool.emplace_back([this]() {
-			    while (this->m_is_running) {
+				while (this->m_is_running) {
 					std::function<void()> work_routine;
 					{
 						std::lock_guard<std::mutex> queue_grd(this->m_queue_mtx);

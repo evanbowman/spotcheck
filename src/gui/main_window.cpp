@@ -66,7 +66,7 @@ namespace gui {
 	void main_window::on_run_clicked() {
 		for (const auto & group : m_work_groups.unwrap()) {
 			m_workq.submit([&group, this]() {
-			    const core::tiff_data & tiff = this->m_tiff_data.unwrap();
+				const core::tiff_data & tiff = this->m_tiff_data.unwrap();
 				this->m_analysis_results.push_back(analyze_group(group, tiff));
 				this->notify_run_progress();
 			});
