@@ -1,8 +1,7 @@
 {
     "name": "spotcheck",
-    "version": "1.0.0",
-    "description": "",
-    "main": "frontend/layouts/index.html",
+    "version": "0.0.1",
+    "main": "frontend/layouts/startup.html",
     "scripts": {
 	"test": "echo \"Error: no test specified\" && exit 1"
     },
