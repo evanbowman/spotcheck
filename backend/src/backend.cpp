@@ -11,6 +11,7 @@ void backend::init(v8::Local<v8::Object> exports) {
     tpl->SetClassName(v8::String::NewFromUtf8(isolate, "Backend"));
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
     NODE_SET_PROTOTYPE_METHOD(tpl, "import_source_image", import_source_image);
+    NODE_SET_PROTOTYPE_METHOD(tpl, "import_source_gal", import_source_gal);
     constructor.Reset(isolate, tpl->GetFunction());
     exports->Set(v8::String::NewFromUtf8(isolate, "Backend"),
                  tpl->GetFunction());
