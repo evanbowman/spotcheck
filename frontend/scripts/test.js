@@ -1,5 +1,5 @@
 function onTestClicked() {
-    global.backend.workloadTest(() => {
-	document.getElementById("demo").innerHTML = "It worked!";
-    });
+    // global.backend.loadSourceImage(() => {
+	// document.getElementById("demo").innerHTML = "It worked!";
+    // });
 }

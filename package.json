@@ -8,10 +8,10 @@
     "author": "",
     "license": "MIT",
     "window": {
-	"toolbar": false,
-	"width": 800,
-	"height": 600,
-	"min_width": 800,
-	"min_height": 600
+        "toolbar": false,
+        "width": 800,
+        "height": 600,
+        "min_width": 800,
+        "min_height": 600
     }
 }
