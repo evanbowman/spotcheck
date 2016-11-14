@@ -11,6 +11,7 @@
 #include <cmath>
 #include <v8.h>
 
+#include "option.hpp"
 #include "async.hpp"
 
 class backend : public node::ObjectWrap {
@@ -22,5 +23,5 @@ private:
     static void alloc(const callback_info & args);
     static void import_source_image(const callback_info & args);
     static void import_source_gal(const callback_info & args);
-    static cv::Mat m_source_image;
+    static option<cv::Mat> m_source_image;
 };

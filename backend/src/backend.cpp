@@ -2,7 +2,7 @@
 
 v8::Persistent<v8::Function> backend::constructor;
 
-cv::Mat backend::m_source_image;
+option<cv::Mat> backend::m_source_image;
 
 void backend::init(v8::Local<v8::Object> exports) {
     using membr_type = void (*)(const callback_info &);
