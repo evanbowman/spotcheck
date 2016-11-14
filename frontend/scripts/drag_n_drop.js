@@ -5,20 +5,35 @@ function ready(fn) {
         document.addEventListener('DOMContentLoaded', fn);
     }
 }
-ready(function() {
+
+function updateFrame(elemId, dropResponse) {
     window.ondragover = function(e) { e.preventDefault(); return false };
     window.ondrop = function(e) { e.preventDefault(); return false };
-    var holder = document.getElementById('holder');
+    var holder = document.getElementById(elemId);
     holder.ondragover = function() { this.className = 'hover'; return false; };
     holder.ondragleave = function() { this.className = ''; return false; };
     holder.ondrop = function(e) {
         e.preventDefault();
 	for (var i = 0; i < e.dataTransfer.files.length; ++i) {
-	    global.backend.import_source_image(() => {
-		window.alert("Upload successful...");
-	    }, e.dataTransfer.files[i].path);
+	    dropResponse(e.dataTransfer.files[i].path);
 	}
 	this.className = '';
         return false;
     };
+}
+
+ready(() => {
+    updateFrame('tiff-frame', (path) => {
+	global.backend.import_source_image(() => {
+	    window.alert('Import complete...');
+	}, path);
+    });
+});
+
+ready(() => {
+    updateFrame('gal-frame', (path) => {
+	global.backend.import_source_gal(() => {
+	    window.alert('Import complete...');
+	}, path);
+    });
 });
