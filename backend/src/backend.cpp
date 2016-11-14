@@ -2,14 +2,14 @@
 
 v8::Persistent<v8::Function> backend::constructor;
 
-option<cv::Mat> backend::m_source_image;
+cv::Mat backend::m_source_image;
 
 void backend::init(v8::Local<v8::Object> exports) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 2> mappings = {
+    static const std::array<std::pair<const char *, membr_type>, 3> mappings = {
         {{"import_source_image", import_source_image},
-         {"import_source_gal", import_source_gal}}
-    };
+         {"import_source_gal", import_source_gal},
+         {"launch_analysis", launch_analysis}}};
     static const char * js_class_name = "backend";
     v8::Isolate * isolate = exports->GetIsolate();
     v8::Local<v8::FunctionTemplate> tpl =
@@ -37,8 +37,8 @@ void backend::import_source_image(const callback_info & args) {
     v8::String::Utf8Value str_arg(args[1]->ToString());
     std::string path(*str_arg);
     async::start(js_callback, [path] {
-            m_source_image = cv::imread(path, CV_LOAD_IMAGE_COLOR);
-        });
+        m_source_image = cv::imread(path, CV_LOAD_IMAGE_COLOR);
+    });
 }
 
 void backend::import_source_gal(const callback_info & args) {
@@ -47,6 +47,14 @@ void backend::import_source_gal(const callback_info & args) {
     v8::String::Utf8Value str_arg(args[1]->ToString());
     std::string path(*str_arg);
     async::start(js_callback, [path] {
-            // TODO: load gal and store in a member
-        });
+        // TODO: load gal and store in a member
+    });
+}
+
+void backend::launch_analysis(const callback_info & args) {
+    assert(args.Length() == 1);
+    auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
+    async::start(js_callback, [] {
+        // TODO: run analysis on the loaded cv::Mat, store results in member
+    });
 }
