@@ -7,8 +7,8 @@ function ready(fn) {
 }
 
 function updateFrame(elemId, dropResponse) {
-    window.ondragover = function(e) { e.preventDefault(); return false };
-    window.ondrop = function(e) { e.preventDefault(); return false };
+    window.ondragover = function(e) { e.preventDefault(); return false; };
+    window.ondrop = function(e) { e.preventDefault(); return false; };
     var holder = document.getElementById(elemId);
     holder.ondragover = function() { this.className = 'hover'; return false; };
     holder.ondragleave = function() { this.className = ''; return false; };
