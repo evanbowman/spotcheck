@@ -1,16 +1,22 @@
 {
-  "targets": [
+  'targets': [
     {
-      "target_name": "backendlib",
-      "sources": [
-        "src/addon.cpp",
-	"src/backend.cpp"
+      'target_name': 'backendlib',
+      'conditions': [
+        ['OS=="mac"', {
+          'link_settings': {
+            'libraries': ['-L/usr/local/lib', '-lopencv_highgui', '-lopencv_imgproc']
+          }
+        }],
+	['OS=="win"', {
+          'link_settings': {
+	    'libraries': []
+	  }
+        }]
       ],
-      "include_dirs": [
-        "C:\\opencv\\build\\include"
-      ],
-      "libraries": [
-        "C:\\opencv\\build\\x64\\vc14\\lib\\opencv_world310"
+      'sources': [
+        'src/addon.cpp',
+	'src/backend.cpp'
       ]
     }
   ]

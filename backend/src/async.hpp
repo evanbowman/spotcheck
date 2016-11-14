@@ -53,7 +53,7 @@ struct async {
         std::tuple<Args...> m_work_args;
     };
     template <typename F, typename... Args>
-    static void start(js_cb & callback, F && work_routine, Args && ...args) {
+    static void start(const js_cb & callback, F && work_routine, Args && ...args) {
         auto isolate = v8::Isolate::GetCurrent();
         auto task =
             new work<F, Args...>(std::forward<F>(work_routine), args...);
