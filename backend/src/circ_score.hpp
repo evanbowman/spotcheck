@@ -10,4 +10,5 @@
 #include <string>
 #include <vector>
 
-std::vector<double> circ_score(const cv::Mat & source_img);
+std::vector<double> circ_score(const cv::Mat & source_img,
+                               const uint8_t thresh);

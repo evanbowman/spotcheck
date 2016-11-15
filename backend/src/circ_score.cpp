@@ -5,10 +5,7 @@
 static int rad_pad = 10;
 static int kernel_size = 3;
 
-// TODO: this will be user adjustable
-static const int thresh = 170;
-
-std::vector<double> circ_score(const cv::Mat & src) {
+std::vector<double> circ_score(const cv::Mat & src, const uint8_t thresh) {
     cv::Mat src_gray, edges;
     cv::cvtColor(src, src_gray, CV_BGR2GRAY);
     cv::normalize(cv::InputArray(src_gray), cv::OutputArray(src_gray), 0, 255,

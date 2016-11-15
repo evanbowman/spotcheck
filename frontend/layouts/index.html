@@ -12,7 +12,13 @@
   <body>
     <div id="tiff-frame"></div>
     <div id="gal-frame"></div>
-    <script src="../scripts/on_analyze_pressed.js"></script>
-    <button onclick="onAnalyzePressed()">Analyze</button>
+    <script type="text/javascript">
+      function onNextPressed() {
+          global.backend.set_threshold(() => {
+                window.location.href = "frontend/layouts/threshold.html";
+          }, 127, global.threshRenderCircles);
+      }
+    </script>
+    <button onclick="onNextPressed()">Next</button>
   </body>
 </html>
