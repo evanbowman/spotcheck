@@ -9,12 +9,15 @@ template <typename T> class option {
 
 public:
     option() : m_initialized(false) {}
-    option(const T && val) { *reinterpret_cast<T *>(m_bytes.data()) = val; }
+    option(T && val) {
+        m_initialized = true;
+        *reinterpret_cast<T *>(m_bytes.data()) = val;
+    }
     template <typename... Args> explicit option(Args &&... args) {
         *reinterpret_cast<T *>(m_bytes.data()) = T(args...);
         m_initialized = true;
     }
-    explicit option(const option<T> & other) {
+    option(const option<T> & other) {
         if (other.m_initialized) {
             m_bytes = other.m_bytes;
             m_initialized = true;
@@ -22,7 +25,7 @@ public:
             m_initialized = false;
         }
     }
-    explicit option(option<T> && other) {
+    option(option<T> && other) {
         if (other.m_initialized) {
             m_bytes = std::move(other.m_bytes);
             m_initialized = true;
@@ -50,8 +53,5 @@ public:
     }
     ~option() { release(); }
     operator bool() { return m_initialized; }
-    // const T & unwrap() const {
-    //     if (!m_initialized) throw null_opt_err();
-    //     return *(T *)m_bytes.data();
-    // }
+    const T & unwrap() const { return *(T *)m_bytes.data(); }
 };

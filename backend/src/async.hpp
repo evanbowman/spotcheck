@@ -59,6 +59,7 @@ struct async {
             },
             [](uv_work_t * req, int status) {
                 v8::Isolate * isolate = v8::Isolate::GetCurrent();
+                v8::HandleScope handle_scope(isolate);
                 static const unsigned argc = 0;
                 v8::Handle<v8::Value> * argv = nullptr;
                 auto task = static_cast<work<F, Args...> *>(req->data);

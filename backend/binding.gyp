@@ -16,7 +16,9 @@
       ],
       'sources': [
         'src/addon.cpp',
-	'src/backend.cpp'
+        'src/backend.cpp',
+        'src/circ_score.cpp',
+	'src/parse_gal.cpp',
       ]
     }
   ]

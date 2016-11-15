@@ -1,6 +1,8 @@
 #pragma once
 
 #include "async.hpp"
+#include "circ_score.hpp"
+#include "parse_gal.hpp"
 
 #include <array>
 #include <cassert>
@@ -25,4 +27,5 @@ private:
     static void import_source_gal(const callback_info & args);
     static void launch_analysis(const callback_info & args);
     static cv::Mat m_source_image;
+    static gal_data m_source_gal;
 };
