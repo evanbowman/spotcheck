@@ -4,8 +4,6 @@ v8::Persistent<v8::Function> backend::constructor;
 
 cv::Mat backend::m_source_image;
 
-gal_data backend::m_source_gal;
-
 uint8_t backend::m_threshold;
 
 std::string module_path;
@@ -63,7 +61,7 @@ void backend::import_source_image(const callback_info & args) {
     v8::String::Utf8Value str_arg(args[1]->ToString());
     std::string path(*str_arg);
     async::start(js_callback, [path] {
-        m_source_image = cv::imread(path, CV_LOAD_IMAGE_COLOR);
+		m_source_image = cv::imread(path, CV_LOAD_IMAGE_COLOR); 
     });
 }
 
@@ -73,11 +71,11 @@ void backend::import_source_gal(const callback_info & args) {
     v8::String::Utf8Value str_arg(args[1]->ToString());
     std::string path(*str_arg);
     async::start(js_callback, [path] {
-        std::fstream file(path);
-        auto ret = parse_gal(file);
-        if (ret) {
-            m_source_gal = std::move(ret.unwrap());
-        }
+        // std::fstream file(path);
+        // auto ret = parse_gal(file);
+        // if (ret) {
+        //     m_source_gal = std::move(ret.unwrap());
+        // }
     });
 }
 

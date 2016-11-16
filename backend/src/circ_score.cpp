@@ -8,7 +8,7 @@ static int kernel_size = 3;
 std::vector<double> circ_score(const cv::Mat & src, const uint8_t thresh) {
     cv::Mat src_gray, edges;
     cv::cvtColor(src, src_gray, CV_BGR2GRAY);
-    cv::normalize(cv::InputArray(src_gray), cv::OutputArray(src_gray), 0, 255,
+    cv::normalize(cv::InputArray(src_gray), cv::InputOutputArray(src_gray), 0, 255,
                   cv::NORM_MINMAX, CV_8UC1);
     cv::threshold(src_gray, src_gray, thresh, 255, 3);
     cv::GaussianBlur(src_gray, src_gray, cv::Size(9, 9), 4, 4);

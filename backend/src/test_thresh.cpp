@@ -2,9 +2,9 @@
 
 extern std::string module_path;
 
-#include <iostream>
-
 #define SCALE 2
+
+#include <iostream>
 
 static int kernel_size = 3;
 
@@ -12,7 +12,7 @@ void test_thresh(const cv::Mat & src, const uint8_t thresh,
                  const bool draw_circles) {
     cv::Mat src_gray, edges;
     cv::cvtColor(src, src_gray, CV_BGR2GRAY);
-    cv::normalize(cv::InputArray(src_gray), cv::OutputArray(src_gray), 0, 255,
+    normalize(cv::InputArray(src_gray), cv::InputOutputArray(src_gray), 0, 255,
                   cv::NORM_MINMAX, CV_8UC1);
     cv::threshold(src_gray, src_gray, thresh, 255, 3);
     cv::Mat blurred;

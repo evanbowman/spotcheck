@@ -30,6 +30,5 @@ private:
     static void launch_analysis(const callback_info & args);
     static void set_threshold(const callback_info & args);
     static cv::Mat m_source_image;
-    static gal_data m_source_gal;
     static uint8_t m_threshold;
 };

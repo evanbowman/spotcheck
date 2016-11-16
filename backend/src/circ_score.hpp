@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 std::vector<double> circ_score(const cv::Mat & source_img,
                                const uint8_t thresh);

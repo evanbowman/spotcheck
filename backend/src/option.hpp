@@ -2,6 +2,7 @@
 
 #include <array>
 #include <string>
+#include <cstdint>
 
 template <typename T> class option {
     std::array<uint8_t, sizeof(T)> m_bytes;
@@ -9,9 +10,9 @@ template <typename T> class option {
 
 public:
     option() : m_initialized(false) {}
-    option(T && val) {
+    explicit option(T && val) {
         m_initialized = true;
-        *reinterpret_cast<T *>(m_bytes.data()) = val;
+        *reinterpret_cast<T *>(m_bytes.data()) = std::forward<T>(val);
     }
     template <typename... Args> explicit option(Args &&... args) {
         *reinterpret_cast<T *>(m_bytes.data()) = T(args...);
