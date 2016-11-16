@@ -10,7 +10,7 @@
         }],
 	['OS=="win"', {
           'link_settings': {
-	    'libraries': []
+	    'libraries': ['-L/opencv/build/x64/vc14/bin/', '-lopencv_world310d.dll']
 	  }
         }]
       ],
