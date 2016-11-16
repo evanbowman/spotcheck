@@ -24,16 +24,26 @@ function updateFrame(elemId, dropResponse) {
 
 ready(() => {
     updateFrame('tiff-frame', (path) => {
-	global.backend.import_source_image(() => {
-	    window.alert('Import complete...');
-	}, path);
+	var ext = path.split('.').pop();
+	if (ext != 'tiff') {
+	    window.alert('Error: expected tiff file');
+	} else {
+	    global.backend.import_source_image(() => {
+		window.alert('Import complete...');
+	    }, path);
+	}
     });
 });
 
 ready(() => {
     updateFrame('gal-frame', (path) => {
-	global.backend.import_source_gal(() => {
-	    window.alert('Import complete...');
-	}, path);
+	var ext = path.split('.').pop();
+	if (ext != 'gal') {
+	    window.alert('Error: expected gal file');
+	} else {
+	    global.backend.import_source_gal(() => {
+		window.alert('Import complete...');
+	    }, path);
+	}
     });
 });

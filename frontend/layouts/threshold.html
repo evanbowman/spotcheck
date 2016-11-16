@@ -4,13 +4,18 @@
     <link href="../styles/threshold.css" type="text/css" rel="stylesheet">
   </head>
   <body>
-    <input type="range" id="thresh-slider" class="thresh-slider" value="127" min="1" max="255" step="1"></input>
-    <button onclick="onToggleOverlayPressed()">Toggle Overlay</Button>
-    <div>
-      <img src="../temp/tmp.png" id="thresh-preview" class="thresh-preview">
-    </div>
-    <script type="text/javascript" src="../scripts/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="../scripts/threshold.js"></script>
-    <button onclick="onAnalyzePressed()">Analyze</button>
+    <header>
+      <input type="range" id="thresh-slider" value="127" min="1" max="255" step="1"></input>
+      <input type="text" id="thresh-textbox" maxlength="3" size="3" value="127"></input>
+      <button onclick="onToggleOverlayPressed()">Toggle Overlay</Button>
+    </header>
+    <main>
+      <img src="../temp/tmp.png" id="thresh-preview" class="center">
+    </main>
+    <footer>
+      <script type="text/javascript" src="../scripts/jquery-3.1.1.min.js"></script>
+      <script type="text/javascript" src="../scripts/threshold.js"></script>
+      <button onclick="onAnalyzePressed()">Analyze</button>
+    </footer>
   </body>
 </html>
