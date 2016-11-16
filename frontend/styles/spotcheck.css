@@ -6,11 +6,22 @@
 input[type=text] {
     background-color: rgb(255, 255, 255);
     border: 1px solid;
-    border-color: rgb(224, 229, 230);
     padding: 4px 20px;
     margin: 4px;
+    border-color: rgb(224, 229, 230);
     color: rgb(99, 152, 156);
     font-family: "museo-slab";
+    font-size: 14px;
+}
+
+input[type=button] {
+    border: 3px solid #7fb4b8;
+    border-radius: 2px;
+    padding: 4px 20px;
+    margin: 4px;
+    background: #63989c;
+    font-family: "museo-slab";
+    color: rgb(255, 255, 255);
     font-size: 14px;
 }
 
@@ -39,26 +50,28 @@ input[type=range]::-webkit-slider-runnable-track {
     height: 4px;
     cursor: pointer;
     animate: 0.2s;
-    box-shadow: 0px 0px 0px #000000;
     background: #63989C;
     border-radius: 5px;
     border: 1px solid #63989C;
 }
 
 input[type=range]::-webkit-slider-thumb {
-    box-shadow: 0px 0px 0px #000000;
     border: 3px solid #8EBDC0;
-    height: 21px;
-    width: 21px;
-    border-radius: 21px;
+    height: 18px;
+    width: 18px;
+    border-radius: 18px;
     background: #63989C;
     cursor: pointer;
     -webkit-appearance: none;
-    margin-top: -10.5px;
+    transition: all 0.2s ease-in-out;
+    margin-top: -9px;
 }
 
-input[type=range]:focus::-webkit-slider-runnable-track {
-    background: #578d90;
+input[type=range]::-webkit-slider-thumb:active {
+    height: 21px;
+    width: 21px;
+    border-radius: 21px;
+    margin-top: -10.5px;
 }
 
 header {

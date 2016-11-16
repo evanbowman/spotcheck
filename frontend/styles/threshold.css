@@ -4,6 +4,7 @@
 
 #thresh-slider {
     margin-left: 15px;
+    margin-right: 6px;
     margin-top: -2px;
 }
 
@@ -41,9 +42,17 @@ header, footer {
     flex: none;
 }
 
+footer {
+    text-align: center;
+}
+
 main {
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     flex: auto;
     padding: 15px;
+}
+
+#analyze {
+    margin-top: 9px;
 }
