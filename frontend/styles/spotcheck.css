@@ -1,0 +1,78 @@
+@font-face {
+    font-family: "museo-slab";
+    src: url("../fonts/MuseoSlab-500.otf");
+}
+
+input[type=text] {
+    background-color: rgb(255, 255, 255);
+    border: 1px solid;
+    border-color: rgb(224, 229, 230);
+    padding: 4px 20px;
+    margin: 4px;
+    color: rgb(99, 152, 156);
+    font-family: "museo-slab";
+    font-size: 14px;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 100%;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 100%;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    animate: 0.2s;
+    box-shadow: 0px 0px 0px #000000;
+    background: #63989C;
+    border-radius: 5px;
+    border: 1px solid #63989C;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    box-shadow: 0px 0px 0px #000000;
+    border: 3px solid #8EBDC0;
+    height: 21px;
+    width: 21px;
+    border-radius: 21px;
+    background: #63989C;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -10.5px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #578d90;
+}
+
+header {
+    background-color: rgb(246, 248, 248);
+    width: 100%;
+    height: 50px;
+    border-bottom: 1px solid;
+    border-bottom-color: rgb(224, 229, 230);
+}
+
+footer {
+    background-color: rgb(246, 248, 248);
+    height: 50px;
+    width: 100%;
+    border-top: 1px solid;
+    border-top-color: rgb(224, 229, 230);
+}

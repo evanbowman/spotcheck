@@ -1,3 +1,25 @@
+#thresh-textbox {
+    margin-top: 12px;
+}
+
+#thresh-slider {
+    margin-left: 15px;
+    margin-top: -2px;
+}
+
+#thresh-preview {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: calc(100% - 30px);
+    max-height: calc(100% - 30px);
+}	 
+
+#thresh-slider {
+    width: 200px;
+}
+
 html, body {
     height: 100%;
     background: rgb(255, 255, 255);
@@ -9,18 +31,6 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
-}
-
-.center {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#thresh-preview {
-    max-width: calc(100% - 30px);
-    max-height: calc(100% - 30px);
 }
 
 header, footer, main {
@@ -36,24 +46,4 @@ main {
     -webkit-overflow-scrolling: touch;
     flex: auto;
     padding: 15px;
-}
-
-header {
-    background-color: rgb(246, 248, 248);
-    width: 100%;
-    height: 50px;
-    border-bottom: 1px solid;
-    border-bottom-color: rgb(224, 229, 230);
-}
-
-footer {
-    background-color: rgb(246, 248, 248);
-    height: 50px;
-    width: 100%;
-    border-top: 1px solid;
-    border-top-color: rgb(224, 229, 230);
-}
-
-.thresh-slider {
-    width: 200px;
 }
