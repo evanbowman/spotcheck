@@ -15,6 +15,7 @@ input[type=text] {
 }
 
 input[type=button] {
+    cursor: pointer;
     border: 3px solid #7fb4b8;
     border-radius: 2px;
     padding: 4px 20px;
@@ -23,6 +24,17 @@ input[type=button] {
     font-family: "museo-slab";
     color: rgb(255, 255, 255);
     font-size: 14px;
+    transition: all 0.1s linear;
+}
+
+input[type=button]:active {
+    // border-color: #6c989d;
+    // background: #548185;
+    transform: scale(0.95);
+}
+
+input[type=button]:focus {
+    outline: 0;
 }
 
 input[type=range] {
