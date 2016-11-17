@@ -26,13 +26,7 @@
     <body>
 	<div id="tiff-frame"></div>
 	<div id="gal-frame"></div>
-	<p id="path"></p>
-	<button onclick="onPathPressed()">click meh!</button>
 	<script type="text/javascript">
-	 function onPathPressed() {
-	     var p = document.getElementById("path");
-	     p.innerHTML = global.backend.get_mod_path();
-	 }
 	 function onNextPressed() {
              global.backend.set_threshold(() => {
 		 window.location.href = "frontend/layouts/threshold.html";
