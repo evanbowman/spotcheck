@@ -28,14 +28,15 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 4> mappings = {
+    static const std::array<std::pair<const char *, membr_type>, 5> mappings = {
         {{"import_source_image", import_source_image},
          {"import_source_gal", import_source_gal},
          {"launch_analysis", launch_analysis},
-         {"set_threshold", set_threshold}}};
+         {"set_threshold", set_threshold},
+	 {"get_mod_path", get_mod_path}}};
     static const char * js_class_name = "backend";
     v8::Isolate * isolate = exports->GetIsolate();
-    ::module_path = get_mod_path(isolate, module);
+    ::module_path = ::get_mod_path(isolate, module);
     v8::Local<v8::FunctionTemplate> tpl =
         v8::FunctionTemplate::New(isolate, alloc);
     tpl->SetClassName(v8::String::NewFromUtf8(isolate, js_class_name));
@@ -46,6 +47,11 @@ void backend::init(v8::Local<v8::Object> exports,
     constructor.Reset(isolate, tpl->GetFunction());
     exports->Set(v8::String::NewFromUtf8(isolate, js_class_name),
                  tpl->GetFunction());
+}
+
+void backend::get_mod_path(const callback_info & args) {
+    v8::Isolate * isolate = args.GetIsolate();
+    args.GetReturnValue().Set(v8::String::NewFromOneByte(isolate, reinterpret_cast<const uint8_t *>(::module_path.c_str())));
 }
 
 void backend::alloc(const callback_info & args) {

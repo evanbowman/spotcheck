@@ -29,6 +29,7 @@ private:
     static void import_source_gal(const callback_info & args);
     static void launch_analysis(const callback_info & args);
     static void set_threshold(const callback_info & args);
+    static void get_mod_path(const callback_info & args);
     static cv::Mat m_source_image;
     static uint8_t m_threshold;
 };
