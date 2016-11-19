@@ -5,15 +5,18 @@
 static int rad_pad = 10;
 static int kernel_size = 3;
 
-std::vector<double> circ_score(const cv::Mat & src, const uint8_t thresh) {
+std::vector<double> circ_score(const cv::Mat & src, const uint8_t thresh,
+                               const std::array<int, 4> & backend_roi) {
+    auto cv_roi = make_cv_roi(backend_roi, src);
+    cv::Mat src_roi = src(cv_roi);
     cv::Mat src_gray, edges;
-    cv::cvtColor(src, src_gray, CV_BGR2GRAY);
-    cv::normalize(cv::InputArray(src_gray), cv::InputOutputArray(src_gray), 0, 255,
-                  cv::NORM_MINMAX, CV_8UC1);
+    cv::cvtColor(src_roi, src_gray, CV_BGR2GRAY);
+    cv::normalize(cv::InputArray(src_gray), cv::InputOutputArray(src_gray), 0,
+                  255, cv::NORM_MINMAX, CV_8UC1);
     cv::threshold(src_gray, src_gray, thresh, 255, 3);
     cv::GaussianBlur(src_gray, src_gray, cv::Size(9, 9), 4, 4);
     cv::pyrDown(src_gray, src_gray,
-                cv::Size(src.cols / SCALE, src.rows / SCALE));
+                cv::Size(src_roi.cols / SCALE, src_roi.rows / SCALE));
     cv::Canny(src_gray, edges, 100, 300, kernel_size);
     // put a threshold on the canny results to improve the search later
     cv::threshold(edges, edges, 6, 255, 0);

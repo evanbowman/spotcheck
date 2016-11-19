@@ -132,3 +132,11 @@ footer {
     font-size: 12.5px;
     font-family: "open-sans-bold";
 }
+
+.non-selectable {
+    user-select: none;
+}
+
+.non-selectable:hover {
+    cursor: default;
+}

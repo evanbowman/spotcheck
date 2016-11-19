@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <iostream>
 #include <math.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -9,7 +10,8 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <cstdint>
 
-std::vector<double> circ_score(const cv::Mat & source_img,
-                               const uint8_t thresh);
+#include "make_cv_roi.hpp"
+
+std::vector<double> circ_score(const cv::Mat & source_img, const uint8_t thresh,
+                               const std::array<int, 4> & backend_roi);

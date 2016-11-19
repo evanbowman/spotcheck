@@ -1,8 +1,8 @@
 #pragma once
 
 #include <array>
-#include <string>
 #include <cstdint>
+#include <string>
 
 template <typename T> class option {
     std::array<uint8_t, sizeof(T)> m_bytes;

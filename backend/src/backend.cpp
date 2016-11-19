@@ -4,6 +4,8 @@ v8::Persistent<v8::Function> backend::constructor;
 
 cv::Mat backend::m_source_image;
 
+std::array<int, 4> backend::m_roi{{0, 0, 100, 100}};
+
 uint8_t backend::m_threshold;
 
 std::string module_path;
@@ -28,11 +30,12 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 4> mappings = {
+    static const std::array<std::pair<const char *, membr_type>, 5> mappings = {
         {{"import_source_image", import_source_image},
          {"import_source_gal", import_source_gal},
          {"launch_analysis", launch_analysis},
-         {"set_threshold", set_threshold}}};
+         {"set_threshold", set_threshold},
+         {"set_roi", set_roi}}};
     static const char * js_class_name = "backend";
     v8::Isolate * isolate = exports->GetIsolate();
     ::module_path = ::get_mod_path(isolate, module);
@@ -61,7 +64,7 @@ void backend::import_source_image(const callback_info & args) {
     v8::String::Utf8Value str_arg(args[1]->ToString());
     std::string path(*str_arg);
     async::start(js_callback, [path] {
-		m_source_image = cv::imread(path, CV_LOAD_IMAGE_COLOR); 
+        m_source_image = cv::imread(path, CV_LOAD_IMAGE_COLOR);
     });
 }
 
@@ -82,7 +85,8 @@ void backend::import_source_gal(const callback_info & args) {
 void backend::launch_analysis(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
-    async::start(js_callback, [] { circ_score(m_source_image, m_threshold); });
+    async::start(js_callback,
+                 [] { circ_score(m_source_image, m_threshold, m_roi); });
 }
 
 void backend::set_threshold(const callback_info & args) {
@@ -91,6 +95,24 @@ void backend::set_threshold(const callback_info & args) {
     m_threshold = args[1]->IntegerValue();
     bool draw_circles = args[2]->BooleanValue();
     async::start(js_callback, [draw_circles] {
-        test_thresh(m_source_image, m_threshold, draw_circles);
+        test_thresh(m_source_image, m_threshold, draw_circles, m_roi);
+    });
+}
+
+void backend::set_roi(const callback_info & args) {
+    assert(args.Length() == 3);
+    auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
+    auto js_array = v8::Local<v8::Array>::Cast(args[1]);
+    m_roi = {{static_cast<int>(
+                  v8::Local<v8::Value>(js_array->Get(0))->IntegerValue()),
+              static_cast<int>(
+                  v8::Local<v8::Value>(js_array->Get(1))->IntegerValue()),
+              static_cast<int>(
+                  v8::Local<v8::Value>(js_array->Get(2))->IntegerValue()),
+              static_cast<int>(
+                  v8::Local<v8::Value>(js_array->Get(3))->IntegerValue())}};
+    bool draw_circles = args[2]->BooleanValue();
+    async::start(js_callback, [draw_circles] {
+        test_thresh(m_source_image, m_threshold, draw_circles, m_roi);
     });
 }

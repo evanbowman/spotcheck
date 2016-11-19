@@ -4,22 +4,24 @@ extern std::string module_path;
 
 #define SCALE 2
 
-#include <iostream>
-
 static int kernel_size = 3;
 
 void test_thresh(const cv::Mat & src, const uint8_t thresh,
-                 const bool draw_circles) {
+                 const bool draw_circles,
+                 const std::array<int, 4> & backend_roi) {
+    auto cv_roi = make_cv_roi(backend_roi, src);
+    cv::Mat src_roi = src(cv_roi);
     cv::Mat src_gray, edges;
-    cv::cvtColor(src, src_gray, CV_BGR2GRAY);
+    cv::cvtColor(src_roi, src_gray, CV_BGR2GRAY);
     normalize(cv::InputArray(src_gray), cv::InputOutputArray(src_gray), 0, 255,
-                  cv::NORM_MINMAX, CV_8UC1);
+              cv::NORM_MINMAX, CV_8UC1);
     cv::threshold(src_gray, src_gray, thresh, 255, 3);
     cv::Mat blurred;
     cv::GaussianBlur(src_gray, blurred, cv::Size(9, 9), 4, 4);
-    cv::pyrDown(blurred, blurred, cv::Size(src.cols / SCALE, src.rows / SCALE));
+    cv::pyrDown(blurred, blurred,
+                cv::Size(src_roi.cols / SCALE, src_roi.rows / SCALE));
     cv::pyrDown(src_gray, src_gray,
-                cv::Size(src.cols / SCALE, src.rows / SCALE));
+                cv::Size(src_roi.cols / SCALE, src_roi.rows / SCALE));
     cv::Canny(blurred, edges, 100, 300, ::kernel_size);
     // put a threshold on the canny results to improve the search later
     cv::threshold(edges, edges, 6, 255, 0);
