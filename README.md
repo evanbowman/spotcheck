@@ -23,5 +23,5 @@ Build Steps:
  nw-gyp build --target=0.18.3
  ```
  2. Go to project root and zip everything
- 3. Rename to archive to SpotCheck.nw
+ 3. Rename the archive to SpotCheck.nw
  4. Now the app can be run with the nw command (assuming you installed nwjs globally with npm)
