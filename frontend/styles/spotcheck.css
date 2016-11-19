@@ -1,0 +1,142 @@
+@font-face {
+    font-family: "open-sans-reg";
+    src: url("../fonts/OpenSans-Regular.ttf");
+}
+
+@font-face {
+    font-family: "open-sans-bold";
+    src: url("../fonts/OpenSans-Bold.ttf");
+}
+
+h1 {
+    color: #bfc4c9;
+    font-family: "open-sans-reg";
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+input[type=text] {
+    background-color: rgb(255, 255, 255);
+    border: 1px solid;
+    padding: 4px 20px;
+    margin: 4px;
+    border-color: rgb(224, 229, 230);
+    color: rgb(99, 152, 156);
+    font-family: "open-sans-bold";
+    font-size: 12.5px;
+}
+
+input[type=button] {
+    cursor: pointer;
+    border: 3px solid #7fb4b8;
+    border-radius: 2px;
+    padding: 4px 20px;
+    margin: 4px;
+    background: #63989c;
+    font-family: "open-sans-reg";
+    color: rgb(255, 255, 255);
+    font-size: 12.5px;
+    transition: all 0.1s linear;
+}
+
+input[type=button]:active {
+    transform: scale(0.95);
+}
+
+input[type=button]:focus {
+    outline: 0;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 100%;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 100%;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: #63989C;
+    border-radius: 5px;
+    border: 1px solid #63989C;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    border: 3px solid #8EBDC0;
+    height: 13px;
+    width: 13px;
+    border-radius: 13px;
+    background: #63989C;
+    cursor: pointer;
+    -webkit-appearance: none;
+    transition: all 0.2s ease-in-out;
+    margin-top: -6px;
+}
+
+input[type=range]::-webkit-slider-thumb:active {
+    height: 16px;
+    width: 16px;
+    border-radius: 16px;
+    margin-top: -8px;
+}
+
+header {
+    background-color: rgb(246, 248, 248);
+    width: 100%;
+    height: 50px;
+    border-bottom: 1px solid;
+    border-bottom-color: rgb(224, 229, 230);
+}
+
+footer {
+    background-color: rgb(246, 248, 248);
+    height: 50px;
+    width: 100%;
+    border-top: 1px solid;
+    border-top-color: rgb(224, 229, 230);
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: row;
+}
+
+.toolbar-divider {
+    border-left: 1px solid rgb(224, 229, 230);
+    height: 35px;
+    margin-top: 7.5px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.toolbar-frame {
+    display: inline;
+    flex-grow: 1;
+    color: #8e9296;
+    font-size: 12.5px;
+    font-family: "open-sans-bold";
+}
+
+.non-selectable {
+    user-select: none;
+}
+
+.non-selectable:hover {
+    cursor: default;
+}

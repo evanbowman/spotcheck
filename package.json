@@ -1,0 +1,17 @@
+{
+    "name": "spotcheck",
+    "version": "0.0.1",
+    "main": "frontend/layouts/startup.html",
+    "scripts": {
+	"test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "MIT",
+    "window": {
+        "toolbar": false,
+        "width": 900,
+        "height": 700,
+        "min_width": 900,
+        "min_height": 700
+    }
+}

@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'ADAM';
+    src: url('../fonts/ADAM.otf');
+}
+
+.main_heading {
+    text-align: center;
+    color: rgb(0, 19, 62);
+    font-family: 'ADAM';
+    font-size: 45px;
+}
