@@ -50,6 +50,8 @@ $("#thresh-textbox").on("change", function() {
     });
 });
 
+$("#thresh-preview").on("dragstart", function(event) { event.preventDefault(); });
+
 function onToggleOverlayPressed() {
     ready(() => {
 	global.threshRenderCircles = !global.threshRenderCircles;

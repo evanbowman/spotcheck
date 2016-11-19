@@ -6,9 +6,18 @@
     </head>
     <body>
 	<header>
-	    <input type="range" id="thresh-slider" value="127" min="1" max="255" step="1"></input>
-	    <input type="text" id="thresh-textbox" maxlength="3" size="3" value="127"></input>
-	    <input type="button" id="toggle-overlay" value="Toggle Overlay" onclick="onToggleOverlayPressed()"></input>
+	    <div class="toolbar">
+		<div class="toolbar-frame" id="toolbar-lhs">
+		    Threshold:
+		    <input type="range" id="thresh-slider" value="127" min="1" max="255" step="1"></input>
+		    <input type="text" id="thresh-textbox" maxlength="3" size="3" value="127"></input>
+		    Region of Interest:
+		    <input type="text" id="roi-textbox" maxlength="15" size="15" value="0,0,100,100"></input>
+		</div>
+		<div class="toolbar-frame" id="toolbar-rhs">
+		    <input type="button" id="toggle-overlay" value="Toggle Overlay" onclick="onToggleOverlayPressed()"></input>
+		</div>
+	    </div>
 	</header>
 	<main>
 	    <img src="../temp/tmp.png" id="thresh-preview">

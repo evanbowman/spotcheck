@@ -1,6 +1,18 @@
 @font-face {
-    font-family: "museo-slab";
-    src: url("../fonts/MuseoSlab-500.otf");
+    font-family: "open-sans-reg";
+    src: url("../fonts/OpenSans-Regular.ttf");
+}
+
+@font-face {
+    font-family: "open-sans-bold";
+    src: url("../fonts/OpenSans-Bold.ttf");
+}
+
+h1 {
+    color: #bfc4c9;
+    font-family: "open-sans-reg";
+    font-size: 12.5px;
+    white-space: nowrap;
 }
 
 input[type=text] {
@@ -10,8 +22,8 @@ input[type=text] {
     margin: 4px;
     border-color: rgb(224, 229, 230);
     color: rgb(99, 152, 156);
-    font-family: "museo-slab";
-    font-size: 14px;
+    font-family: "open-sans-bold";
+    font-size: 12.5px;
 }
 
 input[type=button] {
@@ -21,15 +33,13 @@ input[type=button] {
     padding: 4px 20px;
     margin: 4px;
     background: #63989c;
-    font-family: "museo-slab";
+    font-family: "open-sans-reg";
     color: rgb(255, 255, 255);
-    font-size: 14px;
+    font-size: 12.5px;
     transition: all 0.1s linear;
 }
 
 input[type=button]:active {
-    // border-color: #6c989d;
-    // background: #548185;
     transform: scale(0.95);
 }
 
@@ -69,21 +79,21 @@ input[type=range]::-webkit-slider-runnable-track {
 
 input[type=range]::-webkit-slider-thumb {
     border: 3px solid #8EBDC0;
-    height: 18px;
-    width: 18px;
-    border-radius: 18px;
+    height: 13px;
+    width: 13px;
+    border-radius: 13px;
     background: #63989C;
     cursor: pointer;
     -webkit-appearance: none;
     transition: all 0.2s ease-in-out;
-    margin-top: -9px;
+    margin-top: -6px;
 }
 
 input[type=range]::-webkit-slider-thumb:active {
-    height: 21px;
-    width: 21px;
-    border-radius: 21px;
-    margin-top: -10.5px;
+    height: 16px;
+    width: 16px;
+    border-radius: 16px;
+    margin-top: -8px;
 }
 
 header {
@@ -100,4 +110,25 @@ footer {
     width: 100%;
     border-top: 1px solid;
     border-top-color: rgb(224, 229, 230);
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: row;
+}
+
+.toolbar-divider {
+    border-left: 1px solid rgb(224, 229, 230);
+    height: 35px;
+    margin-top: 7.5px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.toolbar-frame {
+    display: inline;
+    flex-grow: 1;
+    color: #8e9296;
+    font-size: 12.5px;
+    font-family: "open-sans-bold";
 }

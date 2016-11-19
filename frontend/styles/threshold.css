@@ -1,11 +1,13 @@
 #thresh-textbox {
     margin-top: 12px;
+    margin-right: 15px;
 }
 
 #thresh-slider {
-    margin-left: 15px;
+    margin-left: 8px;
     margin-right: 6px;
     margin-top: -2px;
+    width: 160px;
 }
 
 #thresh-preview {
@@ -15,10 +17,15 @@
     transform: translate(-50%, -50%);
     max-width: calc(100% - 30px);
     max-height: calc(100% - 30px);
-}	 
+}
 
-#thresh-slider {
-    width: 200px;
+#toolbar-lhs {
+    text-align: left;
+    padding-left: 15px;
+}
+
+#toolbar-rhs {
+    text-align: right;
 }
 
 html, body {
@@ -51,6 +58,11 @@ main {
     -webkit-overflow-scrolling: touch;
     flex: auto;
     padding: 15px;
+}
+
+#toggle-overlay {
+    margin-top: 9px;
+    margin-right: 15px;
 }
 
 #analyze {

@@ -9,9 +9,9 @@
     "license": "MIT",
     "window": {
         "toolbar": false,
-        "width": 800,
-        "height": 600,
-        "min_width": 800,
-        "min_height": 600
+        "width": 900,
+        "height": 700,
+        "min_width": 900,
+        "min_height": 700
     }
 }
