@@ -3,6 +3,7 @@
 #include "async.hpp"
 #include "circ_score.hpp"
 #include "parse_gal.hpp"
+#include "spot.hpp"
 #include "test_thresh.hpp"
 
 #include <array>
