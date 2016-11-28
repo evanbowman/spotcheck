@@ -27,8 +27,9 @@
 	    'sources': [
 		'src/addon.cpp',
 		'src/backend.cpp',
-		'src/circ_score.cpp',
+		'src/analyze.cpp',
 		'src/test_thresh.cpp',
+		'src/spot.cpp',
 	    ]
 	}
     ]

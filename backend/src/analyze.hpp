@@ -12,6 +12,9 @@
 #include <vector>
 
 #include "make_cv_roi.hpp"
+#include "spot.hpp"
 
-std::vector<double> circ_score(const cv::Mat & source_img, const uint8_t thresh,
-                               const std::array<int, 4> & backend_roi);
+std::vector<spot> find_spots(const cv::Mat & src, const uint8_t thresh,
+                             std::array<int, 4> & backend_roi);
+
+void circ_score(std::vector<spot> & spots);
