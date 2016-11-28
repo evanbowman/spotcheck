@@ -4,7 +4,7 @@
 #include <utility>
 
 class spot {
-public:	
+public:
     explicit spot(const std::pair<int, int> &);
     void info();
     std::pair<int, int> get_coord() const;
@@ -16,10 +16,12 @@ public:
     double get_std_height() const;
     double get_volume() const;
     void set_bar(const std::pair<double, double> &);
+    void set_avg_r(const double);
     void set_circ_score(const double);
     void set_avg_height(const double);
     void set_std_height(const double);
     void set_volume(const double);
+
 private:
     std::pair<int, int> m_coord;
     std::pair<double, double> m_bar;

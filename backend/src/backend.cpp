@@ -85,8 +85,13 @@ void backend::import_source_gal(const callback_info & args) {
 void backend::launch_analysis(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
-    async::start(js_callback,
-                 [] { circ_score(m_source_image, m_threshold, m_roi); });
+    async::start(js_callback, [] {
+        auto spots = find_spots(m_source_image, m_threshold, m_roi);
+        circ_score(spots);
+        for (auto & spot : spots) {
+            std::cout << spot.get_circ_score() << std::endl;
+        }
+    });
 }
 
 void backend::set_threshold(const callback_info & args) {
