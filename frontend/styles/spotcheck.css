@@ -39,6 +39,12 @@ input[type=button] {
     transition: all 0.1s linear;
 }
 
+input[type=button]:disabled {
+    border: 3px solid #9f9f9f;
+    background: #838383;
+    cursor: default;
+}
+
 input[type=button]:active {
     transform: scale(0.95);
 }

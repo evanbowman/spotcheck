@@ -1,0 +1,56 @@
+#tiff-frame {
+    border: 6px dashed #ccc;
+    margin: 20px;
+    width: 300px;
+    height: 300px;
+}
+
+#tiff-frame.hover {
+    border: 6px dashed #333;
+}
+
+#gal-frame {
+    border: 6px dashed #ccc;
+    margin: 20px;
+    width: 300px;
+    height: 300px;
+}
+
+#gal-frame.hover {
+    border: 6px dashed #333;
+}
+
+#index-next {
+    margin-top: 9px;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    flex: auto;
+    padding: 15px;
+}
+
+header, footer, main {
+    position: relative;
+}
+
+header, footer {
+    flex: none;
+}
+
+footer {
+    text-align: center;
+}

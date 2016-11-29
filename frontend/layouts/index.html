@@ -1,38 +1,23 @@
 <!DOCTYPE html>
 <html>
     <head>
-	<style>
-	 #tiff-frame {
-	     border: 10px dashed #ccc;
-	     width: 300px;
-	     height: 300px;
-	     margin: 20px auto;
-	 }
-	 #tiff-frame.hover {
-	     border: 10px dashed #333;
-	 }
-	 #gal-frame {
-	     border: 10px dashed #ccc;
-	     width: 300px;
-	     height: 300px;
-	     margin: 20px auto;
-	 }
-	 #gal-frame.hover {
-	     border: 10px dashed #333;
-	 }
-	</style>
-	<script src="../scripts/drag_n_drop.js"></script>
+	<link href="../styles/spotcheck.css" type="text/css" rel="stylesheet">
+	<link href="../styles/index.css" type="text/css" rel="stylesheet">
     </head>
     <body>
-	<div id="tiff-frame"></div>
-	<div id="gal-frame"></div>
-	<script type="text/javascript">
-	 function onNextPressed() {
-             global.backend.set_threshold(() => {
-		 window.location.href = "frontend/layouts/threshold.html";
-             }, 127, global.threshRenderCircles);
-	 }
-	</script>
-	<button onclick="onNextPressed()">Next</button>
+	<main>
+	    <div class="toolbar">
+		<div class="toolbar-frame non-selectable">
+		    <div id="gal-frame">import gal</div>
+		</div>
+		<div class="toolbar-frame non-selectable">
+		    <div id="tiff-frame">import tiff</div>
+		</div>
+	    </div>
+	</main>
+	<footer>
+	    <input type="button" id="index-next" onclick="onNextPressed()" value="next"></input>
+	    <script src="../scripts/index.js"></script>
+	</footer>
     </body>
 </html>
