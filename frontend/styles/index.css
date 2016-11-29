@@ -1,23 +1,61 @@
 #tiff-frame {
-    border: 6px dashed #ccc;
+    outline: 2px dashed #74a3a7;
+    outline-offset: -10px;
+    background: #badadc;
     margin: 20px;
-    width: 300px;
+    width: calc(100% - 45px);
     height: 300px;
-}
-
-#tiff-frame.hover {
-    border: 6px dashed #333;
+    text-align: center;
+    color: #48888e;
+    font-size: 15px;
+    transition: all 0.2s linear;
 }
 
 #gal-frame {
-    border: 6px dashed #ccc;
+    outline: 2px dashed #74a3a7;
+    outline-offset: -10px;
+    background: #badadc;
     margin: 20px;
-    width: 300px;
+    width: calc(100% - 45px);
     height: 300px;
+    text-align: center;
+    color: #48888e;
+    font-size: 15px;
+    transition: all 0.2s linear;
+}
+
+#tiff-frame.hover {
+    outline: 2px dashed #b3b3b5;
+    outline-offset: -15px;
+    background: #e6ebeb;
+    color: #90909b;
 }
 
 #gal-frame.hover {
-    border: 6px dashed #333;
+    outline: 2px dashed #b3b3b5;
+    outline-offset: -15px;
+    background: #e6ebeb;
+    color: #90909b;
+}
+
+.frame-span {
+    line-height: 300px;
+}
+
+.frame-content {
+    font-family: "open-sans-reg";
+    vertical-align: middle;
+    display: inline-block;
+}
+
+#choose-tiff {
+    cursor: pointer;
+    font-family: "open-sans-bold"
+}
+
+#choose-gal {
+    cursor: pointer;
+    font-family: "open-sans-bold"    
 }
 
 #index-next {

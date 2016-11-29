@@ -8,15 +8,32 @@
 	<main>
 	    <div class="toolbar">
 		<div class="toolbar-frame non-selectable">
-		    <div id="gal-frame">import gal</div>
+		    <div id="tiff-frame" class="drop-box">
+			<span class="frame-span"></span>
+			<div class="frame-content">
+			    <span id="choose-tiff">
+				Choose heightmap file
+			    </span>
+			    or drop it here
+			</div>
+		    </div>
 		</div>
 		<div class="toolbar-frame non-selectable">
-		    <div id="tiff-frame">import tiff</div>
+		    <div id="gal-frame" class="drop-box">
+			<span class="frame-span"></span>
+			<div class="frame-content">
+			    <span id="choose-gal">
+				Choose gal file
+			    </span>
+			    or drop it here
+			</div>
+		    </div>
 		</div>
 	    </div>
 	</main>
 	<footer>
 	    <input type="button" id="index-next" onclick="onNextPressed()" value="next"></input>
+	    <script type="text/javascript" src="../scripts/jquery-3.1.1.min.js"></script>
 	    <script src="../scripts/index.js"></script>
 	</footer>
     </body>

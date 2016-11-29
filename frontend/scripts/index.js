@@ -32,7 +32,6 @@ ready(() => {
             window.alert("Error: expected tiff file");
         } else {
             global.backend.import_source_image(() => {
-                window.alert("Import complete...");
 		g_hasHeightMap = true;
 		if (g_hasMetaData) {
 		    ready(enableNextButton);
@@ -49,7 +48,6 @@ ready(() => {
             window.alert("Error: expected gal file");
         } else {
             global.backend.import_source_gal(() => {
-                window.alert("Import complete...");
 		g_hasMetaData = true;
 		if (g_hasHeightMap) {
 		    ready(enableNextButton);
@@ -76,3 +74,11 @@ function disableNextButton() {
 }
 
 ready(disableNextButton());
+
+$(document).on("click", "#choose-tiff", function() {
+    window.alert("choose-tiff pressed");
+});
+
+$(document).on("click", "#choose-gal", function() {
+    window.alert("choose-gal pressed");
+});
