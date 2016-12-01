@@ -15,6 +15,10 @@
 #include "spot.hpp"
 
 std::vector<spot> find_spots(const cv::Mat & src, const uint8_t thresh,
-                             std::array<int, 4> & backend_roi);
+                             const std::array<int, 4> & backend_roi);
 
 void circ_score(std::vector<spot> & spots);
+
+void analyze_height(std::vector<spot> & spots, const cv::Mat & src,
+                    const uint8_t thresh,
+                    const std::array<int, 4> & backend_roi);

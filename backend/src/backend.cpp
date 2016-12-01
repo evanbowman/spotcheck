@@ -82,15 +82,30 @@ void backend::import_source_gal(const callback_info & args) {
     });
 }
 
+inline static void format_results_json(const std::vector<spot> & spots,
+                                       std::ostream & ostr) {
+    ostr << "[";
+    const size_t index_max = spots.size() - 1;
+    size_t index = 0;
+    for (const auto & spot : spots) {
+        spot.serialize(ostr);
+        if (index != index_max) {
+            ostr << ",";
+        }
+        index += 1;
+    }
+    ostr << "]" << std::endl;
+}
+
 void backend::launch_analysis(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     async::start(js_callback, [] {
         auto spots = find_spots(m_source_image, m_threshold, m_roi);
         circ_score(spots);
-        for (auto & spot : spots) {
-            std::cout << spot.get_circ_score() << std::endl;
-        }
+        analyze_height(spots, m_source_image, m_threshold, m_roi);
+        // TODO: replace std::cout parameter with an std::ofstream
+        format_results_json(spots, std::cout);
     });
 }
 

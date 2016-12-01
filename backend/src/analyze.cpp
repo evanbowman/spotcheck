@@ -5,7 +5,7 @@ static const int rad_pad = 10;
 static const int kernel_size = 3;
 
 std::vector<spot> find_spots(const cv::Mat & src, const uint8_t thresh,
-                             std::array<int, 4> & backend_roi) {
+                             const std::array<int, 4> & backend_roi) {
     auto cv_roi = make_cv_roi(backend_roi, src);
     cv::Mat src_cropped = src(cv_roi);
     cv::Mat src_gray, edges;
@@ -84,5 +84,48 @@ void circ_score(std::vector<spot> & spots) {
             e /= dbar;
         }
         spots[i].set_circ_score(e);
+    }
+}
+
+void analyze_height(std::vector<spot> & spots, const cv::Mat & src,
+                    const uint8_t thresh,
+                    const std::array<int, 4> & backend_roi) {
+    auto cv_roi = make_cv_roi(backend_roi, src);
+    cv::Mat src_cropped = src(cv_roi);
+    static const double max_height = 100.0;
+    cv::Mat src_gray, src_downsampled, src_thresh;
+    cv::pyrDown(src_cropped, src_downsampled,
+                cv::Size(src_cropped.cols / SCALE, src_cropped.rows / SCALE));
+    cv::cvtColor(src_downsampled, src_gray, CV_BGR2GRAY);
+    cv::threshold(src_gray, src_thresh, 41, 255, 0);
+    const size_t num_circ = spots.size();
+    int x, y, r, count;
+    double avg_h, vol, std_h, height;
+    for (size_t i = 0; i < num_circ; i += 1) {
+        avg_h = 0.0;
+        vol = 0.0;
+        std_h = 0.0;
+        height = 0.0;
+        count = 0;
+        x = spots[i].get_coord().first;
+        y = spots[i].get_coord().second;
+        r = spots[i].get_avg_r();
+        for (int row = y - r; row < (y + r); row += 1) {
+            for (int col = x - r; col < (x + r); col += 1) {
+                cv::Scalar i = src_thresh.at<uint8_t>(row, col);
+                if (i.val[0] == 255) {
+                    cv::Scalar j = src_gray.at<unsigned char>(row, col);
+                    count += 1;
+                    height = max_height * j.val[0] / 255.0;
+                    avg_h += height;
+                    std_h += pow(height, 2);
+                }
+            }
+        }
+        spots[i].set_volume(avg_h);
+        avg_h /= count;
+        std_h = (std_h / count) - (pow(avg_h, 2));
+        spots[i].set_avg_height(avg_h);
+        spots[i].set_std_height(std_h);
     }
 }

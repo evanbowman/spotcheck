@@ -1,12 +1,13 @@
 #pragma once
 
 #include "opencv2/imgproc/imgproc.hpp"
+
+#include <ostream>
 #include <utility>
 
 class spot {
 public:
     explicit spot(const std::pair<int, int> &);
-    void info();
     std::pair<int, int> get_coord() const;
     const std::pair<double, double> & get_bar() const;
     double get_avg_r() const;
@@ -21,6 +22,7 @@ public:
     void set_avg_height(const double);
     void set_std_height(const double);
     void set_volume(const double);
+    void serialize(std::ostream & ostr) const;
 
 private:
     std::pair<int, int> m_coord;
