@@ -82,7 +82,7 @@ void backend::import_source_gal(const callback_info & args) {
     });
 }
 
-inline static void format_results_json(const std::vector<spot> & spots,
+inline static void populate_results_json(const std::vector<spot> & spots,
                                        std::ostream & ostr) {
     ostr << "[";
     const size_t index_max = spots.size() - 1;
@@ -104,8 +104,9 @@ void backend::launch_analysis(const callback_info & args) {
         auto spots = find_spots(m_source_image, m_threshold, m_roi);
         circ_score(spots);
         analyze_height(spots, m_source_image, m_threshold, m_roi);
-        // TODO: replace std::cout parameter with an std::ofstream
-        format_results_json(spots, std::cout);
+        std::fstream results_json(::module_path + "/../../../frontend/temp/results.json", std::fstream::out);
+        std::cout << ::module_path << std::endl;
+        populate_results_json(spots, results_json);
     });
 }
 
