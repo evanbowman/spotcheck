@@ -25,41 +25,71 @@ function updateFrame(elemId, dropResponse) {
     };
 }
 
+function verifyExtension(path, regexp) {
+    var ext = path.split(".").pop();
+    if (!ext.match(regexp)) {
+	return false;
+    }
+    return true;
+}
+
 ready(() => {
     updateFrame("tiff-frame", (path) => {
-        var ext = path.split(".").pop();
-        if (ext != "tiff") {
-            window.alert("Error: expected tiff file");
-        } else {
-            global.backend.import_source_image(() => {
+	if (verifyExtension(path, "tif|tiff|TIF|TIFF")) {
+	    global.backend.import_source_image(() => {
 		g_hasHeightMap = true;
 		if (g_hasMetaData) {
 		    ready(enableNextButton);
 		}
             }, path);
-        }
+	} else {
+	    window.alert("File extension invalid. Expected: tif or tiff or TIF or TIFF.");
+	}
     });
 });
 
 ready(() => {
     updateFrame("gal-frame", (path) => {
-        var ext = path.split(".").pop();
-        if (ext != "gal") {
-            window.alert("Error: expected gal file");
-        } else {
-            global.backend.import_source_gal(() => {
+	if (verifyExtension(path, "gal")) {
+	    global.backend.import_source_gal(() => {
 		g_hasMetaData = true;
 		if (g_hasHeightMap) {
 		    ready(enableNextButton);
 		}
             }, path);
-        }
+	} else {
+	    window.alert("File extension invalid. Expected: gal");
+	}
     });
 });
 
+
+$("#choose-tiff").on("change", function() {
+    if (verifyExtension(this.value, "tif|tiff|TIF|TIFF")) {
+	global.backend.import_source_image(() => {
+	    g_hasHeightMap = true;
+	    if (g_hasMetaData) {
+		ready(enableNextButton);
+	    }
+        }, this.value);
+    }
+});
+
+$("#choose-gal").on("change", function() {
+    if (verifyExtension(this.value, "gal")) {
+	global.backend.import_source_gal(() => {
+	    g_hasMetaData = true;
+	    if (g_hasHeightMap) {
+		ready(enableNextButton);
+	    }
+        }, this.value);
+    }
+});
+
+
 function onNextPressed() {
     global.backend.set_threshold(() => {
-        window.location.href = "frontend/layouts/threshold.html";
+	window.location.href = "frontend/layouts/threshold.html";
     }, 127, global.threshRenderCircles);
 }
 
@@ -74,11 +104,3 @@ function disableNextButton() {
 }
 
 ready(disableNextButton());
-
-$(document).on("click", "#choose-tiff", function() {
-    window.alert("choose-tiff pressed");
-});
-
-$(document).on("click", "#choose-gal", function() {
-    window.alert("choose-gal pressed");
-});

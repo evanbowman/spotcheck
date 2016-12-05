@@ -48,14 +48,20 @@
     display: inline-block;
 }
 
-#choose-tiff {
-    cursor: pointer;
-    font-family: "open-sans-bold"
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
 }
 
-#choose-gal {
+.inputfile + label {
+    font-family: "open-sans-bold";
+    font-size: 14;
     cursor: pointer;
-    font-family: "open-sans-bold"    
+    display: inline-block;
 }
 
 #index-next {
