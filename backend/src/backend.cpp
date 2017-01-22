@@ -27,6 +27,7 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
     return *utf8_mod_dirname;
 }
 
+
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
