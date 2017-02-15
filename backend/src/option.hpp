@@ -10,13 +10,9 @@ template <typename T> class option {
 
 public:
     option() : m_initialized(false) {}
-    explicit option(T && val) {
+    option(T && val) {
         m_initialized = true;
         *reinterpret_cast<T *>(m_bytes.data()) = std::forward<T>(val);
-    }
-    template <typename... Args> explicit option(Args &&... args) {
-        *reinterpret_cast<T *>(m_bytes.data()) = T(args...);
-        m_initialized = true;
     }
     option(const option<T> & other) {
         if (other.m_initialized) {

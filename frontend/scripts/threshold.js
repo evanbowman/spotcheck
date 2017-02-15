@@ -33,6 +33,47 @@ $("#thresh-slider").on("input", function() {
     });
 });
 
+var marqueeTopLeft;
+var marqueeBottomRight;
+var dragging = false;
+
+function getImgOffsetAsRatio(e, callerThis) {
+    var offset = $(callerThis).offset();
+    return Object.freeze({
+	x: (e.pageX - offset.left) / $(callerThis).width(),
+	y: (e.pageY - offset.top) / $(callerThis).height()
+    });
+}
+
+$("main").on("mousedown", "#thresh-preview", function(e) {
+    marqueeTopLeft = getImgOffsetAsRatio(e, this);
+    dragging = true;
+});
+
+$("main").on("mousemove", "#thresh-preview", function(e) {
+    if (dragging) {
+	marqueeBottomRight = getImgOffsetAsRatio(e, this);
+    }
+});
+
+$("main").on("mouseleave", "#thresh-preview", function(e) {
+    if (dragging) {
+	marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	window.alert("Start: " + marqueeTopLeft.x + ", " + marqueeTopLeft.y +
+		     "\nStop: " + marqueeBottomRight.x + ", " + marqueeBottomRight.y);
+	dragging = false;
+    }
+});
+
+$("main").on("mouseup", "#thresh-preview", function(e) {
+    if (dragging) {
+	marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	window.alert("Start: " + marqueeTopLeft.x + ", " + marqueeTopLeft.y +
+		     "\nStop: " + marqueeBottomRight.x + ", " + marqueeBottomRight.y);
+	dragging = false;
+    }
+})
+
 $("#thresh-textbox").on("change", function() {
     if (isNaN(this.value)) {
 	window.alert("Input must be a number");
