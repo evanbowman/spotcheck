@@ -6,17 +6,6 @@ function ready(fn) {
     }
 }
 
-function updateThresholdImg() {
-    var img = document.getElementById("thresh-preview");
-    var src = img.src;
-    var pos = src.indexOf('?');
-    if (pos >= 0) {
-	src = src.substr(0, pos);
-    }
-    var date = new Date();
-    img.src = src + '?v=' + date.getTime();
-}
-
 $("#thresh-slider").on("change", function() {
     ready(() => {
 	var tb = document.getElementById("thresh-textbox");
@@ -117,6 +106,42 @@ function onToggleOverlayPressed() {
     });
 }
 
+function showBackendImgOutput(canvas, ctx) {
+    var img = document.getElementById("thresh-img");
+    ctx.drawImage(img, 0, 0);
+}
+
+function repaintPreview() {
+    var canvas = document.getElementById("thresh-canvas");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    showBackendImgOutput(canvas, ctx);
+}
+
+function updateThresholdImg() {
+    var img = document.getElementById("thresh-img");
+    var src = img.src;
+    var pos = src.indexOf('?');
+    if (pos >= 0) {
+	src = src.substr(0, pos);
+    }
+    var date = new Date();
+    img.src = src + '?v=' + date.getTime();
+}
+
+document.getElementById("thresh-img").onload = function() {
+    repaintPreview();
+}
+
+function onWindowUpdate() {
+    ready(function() {
+	var canvas = document.getElementById("thresh-canvas");
+	canvas.width = $("#thresh-preview").parent().width();
+	canvas.height = $("#thresh-preview").parent().height();
+	repaintPreview();
+    });
+}
+
 function onAnalyzePressed() {
     ready(() => {
 	global.backend.launch_analysis(() => {
@@ -124,3 +149,7 @@ function onAnalyzePressed() {
 	});
     });
 }
+
+window.onload = onWindowUpdate;
+
+window.onresize = onWindowUpdate;

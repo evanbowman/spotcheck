@@ -68,23 +68,3 @@ main {
 #analyze {
     margin-top: 9px;
 }
-
-.sub-container {
-    //position: relative;
-}
-
-#marquee-topleft {
-    position: absolute;
-    top: 0%;
-    left: 0%; 
-    transform: translateX(-0%) translateY(-0%);
-    margin: 0;
-}
-
-#marquee-topright {
-    position: absolute;
-    bottom: 0%;
-    right: 0%;
-    transform: translateX(-0%) translateY(-0%);
-    margin: 0;
-}
