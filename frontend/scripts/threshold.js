@@ -108,7 +108,19 @@ function onToggleOverlayPressed() {
 
 function showBackendImgOutput(canvas, ctx) {
     var img = document.getElementById("thresh-img");
-    ctx.drawImage(img, 0, 0);
+    var wScale = 1.0, hScale = 1.0;
+    if (img.width > canvas.width) {
+	wScale = canvas.width / img.width;
+    }
+    if (img.height > canvas.height) {
+	hScale = canvas.height / img.height;
+    }
+    var scale = Math.min(hScale, wScale);
+    var drawWidth = img.width * scale;
+    var drawHeight = img.height * scale;
+    var drawStartX = (canvas.width - drawWidth) / 2;
+    var drawStartY = (canvas.height - drawHeight) / 2;
+    ctx.drawImage(img, drawStartX, drawStartY, drawWidth, drawHeight);
 }
 
 function repaintPreview() {
