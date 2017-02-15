@@ -22,8 +22,8 @@ $("#thresh-slider").on("input", function() {
     });
 });
 
-var marqueeTopLeft;
-var marqueeBottomRight;
+var g_marqueeTopLeft = Object.freeze({x: 0, y: 0});
+var g_marqueeBottomRight = Object.freeze({x: 100, y: 100});
 var dragging = false;
 
 function getImgOffsetAsRatio(e, callerThis) {
@@ -35,30 +35,31 @@ function getImgOffsetAsRatio(e, callerThis) {
 }
 
 $("main").on("mousedown", "#thresh-preview", function(e) {
-    marqueeTopLeft = getImgOffsetAsRatio(e, this);
+    g_marqueeTopLeft = getImgOffsetAsRatio(e, this);
     dragging = true;
 });
 
 $("main").on("mousemove", "#thresh-preview", function(e) {
     if (dragging) {
-	marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	repaintPreview();
     }
 });
 
 $("main").on("mouseleave", "#thresh-preview", function(e) {
     if (dragging) {
-	marqueeBottomRight = getImgOffsetAsRatio(e, this);
-	window.alert("Start: " + marqueeTopLeft.x + ", " + marqueeTopLeft.y +
-		     "\nStop: " + marqueeBottomRight.x + ", " + marqueeBottomRight.y);
+	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	window.alert("Start: " + g_marqueeTopLeft.x + ", " + g_marqueeTopLeft.y +
+		     "\nStop: " + g_marqueeBottomRight.x + ", " + g_marqueeBottomRight.y);
 	dragging = false;
     }
 });
 
 $("main").on("mouseup", "#thresh-preview", function(e) {
     if (dragging) {
-	marqueeBottomRight = getImgOffsetAsRatio(e, this);
-	window.alert("Start: " + marqueeTopLeft.x + ", " + marqueeTopLeft.y +
-		     "\nStop: " + marqueeBottomRight.x + ", " + marqueeBottomRight.y);
+	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	window.alert("Start: " + g_marqueeTopLeft.x + ", " + g_marqueeTopLeft.y +
+		     "\nStop: " + g_marqueeBottomRight.x + ", " + g_marqueeBottomRight.y);
 	dragging = false;
     }
 })
@@ -106,7 +107,7 @@ function onToggleOverlayPressed() {
     });
 }
 
-function showBackendImgOutput(canvas, ctx) {
+function renderBackendImgOutput(canvas, ctx) {
     var img = document.getElementById("thresh-img");
     var wScale = 1.0, hScale = 1.0;
     if (img.width > canvas.width) {
@@ -123,11 +124,24 @@ function showBackendImgOutput(canvas, ctx) {
     ctx.drawImage(img, drawStartX, drawStartY, drawWidth, drawHeight);
 }
 
+function renderSelectionGrid(canvas, ctx) {
+    var rectStartX = canvas.width * g_marqueeTopLeft.x;
+    var rectEndX = canvas.width * g_marqueeBottomRight.x;
+    var rectStartY = canvas.height * g_marqueeTopLeft.y;
+    var rectEndY = canvas.height * g_marqueeBottomRight.y;
+    ctx.beginPath();
+    ctx.lineWidth = "6";
+    ctx.rect(rectStartX, rectStartY, rectEndX, rectEndY);
+    ctx.stroke();
+    ctx.closePath();
+}
+
 function repaintPreview() {
     var canvas = document.getElementById("thresh-canvas");
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    showBackendImgOutput(canvas, ctx);
+    renderBackendImgOutput(canvas, ctx);
+    renderSelectionGrid(canvas, ctx);
 }
 
 function updateThresholdImg() {
