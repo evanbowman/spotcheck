@@ -22,6 +22,8 @@ $("#thresh-slider").on("input", function() {
     });
 });
 
+var g_marqueeRows = 1;
+var g_marqueeCols = 1;
 var g_marqueeTopLeft = Object.freeze({x: 0, y: 0});
 var g_marqueeBottomRight = Object.freeze({x: 100, y: 100});
 var g_dragging = false;
@@ -77,20 +79,20 @@ $("#thresh-textbox").on("change", function() {
     });
 });
 
-$("#roi-textbox").on("change", function() {
-    var values = this.value.split(",");
-    if (values.length != 4) {
-	window.alert("Invalid input");
-	return;
-    }
-    values.forEach((val) => {
-	if (val < 0 || val > 100) {
-	    window.alert("Invalid input");
-	    return;
-	}
-    });
-    global.backend.set_roi(updateThresholdImg, values, global.threshRenderCircles);
-});
+//$("#roi-textbox").on("change", function() {
+//    var values = this.value.split(",");
+//    if (values.length != 4) {
+//	window.alert("Invalid input");
+//	return;
+//    }
+//    values.forEach((val) => {
+//	if (val < 0 || val > 100) {
+//	    window.alert("Invalid input");
+//	    return;
+//	}
+//    });
+//    global.backend.set_roi(updateThresholdImg, values, global.threshRenderCircles);
+//});
 
 $("#thresh-preview").on("dragstart", function(event) { event.preventDefault(); });
 
@@ -136,6 +138,12 @@ function renderSelectionGrid(canvas, ctx) {
     ctx.rect(rectStartX, rectStartY, rectEndX - rectStartX, rectEndY - rectStartY);
     ctx.stroke();
     ctx.closePath();
+    if (g_marqueeRows > 0) {
+	// ...
+    }
+    if (g_marqueeCols > 0) {
+	// ...
+    }
 }
 
 function repaintPreview() {
