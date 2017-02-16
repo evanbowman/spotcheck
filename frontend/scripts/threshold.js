@@ -133,6 +133,20 @@ function renderBackendImgOutput(canvas, ctx) {
 		  g_imgDrawInfo.width, g_imgDrawInfo.height);
 }
 
+function maskNonSelected(canvas, ctx, selX, selY, selWidth, selHeight) {
+    var maskCanvas = document.getElementById("thresh-canvas-mask");
+    maskCanvas.width = canvas.width;
+    maskCanvas.height = canvas.height;
+    var maskCtx = maskCanvas.getContext("2d");
+    maskCtx.clearRect(0, 0, canvas.width, canvas.height);
+    maskCtx.fillStyle = "rgba(0, 0, 0, 0.25)";
+    maskCtx.fillRect(g_imgDrawInfo.xstart, g_imgDrawInfo.ystart,
+		     g_imgDrawInfo.width, g_imgDrawInfo.height);
+    maskCtx.fill();
+    maskCtx.clearRect(selX, selY, selWidth, selHeight);
+    ctx.drawImage(maskCanvas, 0, 0);
+}
+
 function renderSelectionGrid(canvas, ctx) {
     var rectStartX = g_imgDrawInfo.xstart + g_imgDrawInfo.width * g_marqueeTopLeft.x;
     var rectEndX = g_imgDrawInfo.xstart + g_imgDrawInfo.width * g_marqueeBottomRight.x;
@@ -143,6 +157,7 @@ function renderSelectionGrid(canvas, ctx) {
     ctx.strokeStyle = "#EEEEEE";
     var rectWidth = rectEndX - rectStartX;
     var rectHeight = rectEndY - rectStartY;
+    maskNonSelected(canvas, ctx, rectStartX, rectStartY, rectWidth, rectHeight);
     ctx.rect(rectStartX, rectStartY, rectWidth, rectHeight);
     ctx.stroke();
     ctx.closePath();
