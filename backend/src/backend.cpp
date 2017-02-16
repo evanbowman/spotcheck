@@ -4,9 +4,7 @@ v8::Persistent<v8::Function> backend::constructor;
 
 cv::Mat backend::m_source_image;
 
-std::array<int, 4> backend::m_roi{{0, 0, 100, 100}};
-
-uint8_t backend::m_threshold;
+std::vector<backend::Target> backend::m_targets;
 
 std::string module_path;
 
@@ -27,6 +25,9 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
     return *utf8_mod_dirname;
 }
 
+uv_mutex_t task_count_mtx;
+static size_t task_count;
+
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
@@ -34,8 +35,8 @@ void backend::init(v8::Local<v8::Object> exports,
         {{"import_source_image", import_source_image},
          {"import_source_gal", import_source_gal},
          {"launch_analysis", launch_analysis},
-         {"set_threshold", set_threshold},
-         {"set_roi", set_roi},
+	 {"add_target", add_target},
+	 {"is_busy", is_busy},
 	 {"provide_norm_preview", provide_norm_preview}}};
     static const char * js_class_name = "backend";
     v8::Isolate * isolate = exports->GetIsolate();
@@ -50,6 +51,7 @@ void backend::init(v8::Local<v8::Object> exports,
     constructor.Reset(isolate, tpl->GetFunction());
     exports->Set(v8::String::NewFromUtf8(isolate, js_class_name),
                  tpl->GetFunction());
+    assert(uv_mutex_init(&::task_count_mtx) == 0);
 }
 
 void backend::alloc(const callback_info & args) {
@@ -97,42 +99,37 @@ inline static void populate_results_json(const std::vector<spot> & spots,
 void backend::launch_analysis(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
-    async::start(js_callback, [] {
-        auto spots = find_spots(m_source_image, m_threshold, m_roi);
-        circ_score(spots);
-        analyze_height(spots, m_source_image, m_threshold, m_roi);
-        std::fstream results_json(::module_path + "/../../../frontend/temp/results.json", std::fstream::out);
-        std::cout << ::module_path << std::endl;
-        populate_results_json(spots, results_json);
-    });
+    for (auto & target : m_targets) {
+	uv_mutex_lock(&::task_count_mtx);
+	++::task_count;
+	uv_mutex_unlock(&::task_count_mtx);
+	async::start(js_callback, [target] {
+	        auto roi = make_cv_roi({
+			target.fractStartx, target.fractStarty,
+			target.fractEndx, target.fractEndy
+		    }, m_source_img);
+		uv_mutex_lock(&::task_count_mtx);
+		--::task_count;
+		uv_mutex_unlock(&::task_count_mtx);
+	    });
+    }
 }
 
-void backend::set_threshold(const callback_info & args) {
-    assert(args.Length() == 3);
-    auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
-    m_threshold = args[1]->IntegerValue();
-    bool draw_circles = args[2]->BooleanValue();
-    async::start(js_callback, [draw_circles] {
-        test_thresh(m_source_image, m_threshold, draw_circles, m_roi);
-    });
+void backend::is_busy(const callback_info & args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
 }
 
-void backend::set_roi(const callback_info & args) {
-    assert(args.Length() == 3);
-    auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
-    auto js_array = v8::Local<v8::Array>::Cast(args[1]);
-    m_roi = {{static_cast<int>(
-                  v8::Local<v8::Value>(js_array->Get(0))->IntegerValue()),
-              static_cast<int>(
-                  v8::Local<v8::Value>(js_array->Get(1))->IntegerValue()),
-              static_cast<int>(
-                  v8::Local<v8::Value>(js_array->Get(2))->IntegerValue()),
-              static_cast<int>(
-                  v8::Local<v8::Value>(js_array->Get(3))->IntegerValue())}};
-    bool draw_circles = args[2]->BooleanValue();
-    async::start(js_callback, [draw_circles] {
-        test_thresh(m_source_image, m_threshold, draw_circles, m_roi);
-    });
+void backend::add_target(const callback_info & args) {
+    assert(args.Length() == 6);
+    m_targets.push_back({
+	    v8::Local<v8::Integer>::Cast(args[0])->Value(),
+	    v8::Local<v8::Integer>::Cast(args[1])->Value(),
+	    std::min(1.0, v8::Local<v8::Number>::Cast(args[2])->Value()),
+	    std::min(1.0, v8::Local<v8::Number>::Cast(args[3])->Value()),
+	    std::min(1.0, v8::Local<v8::Number>::Cast(args[4])->Value()),
+	    std::min(1.0, v8::Local<v8::Number>::Cast(args[5])->Value())
+	});
 }
 
 void backend::provide_norm_preview(const callback_info & args) {

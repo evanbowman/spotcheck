@@ -1,6 +1,7 @@
 #pragma once
 
 #include "analyze.hpp"
+#include "make_cv_roi.hpp"
 #include "async.hpp"
 #include "parse_gal.hpp"
 #include "spot.hpp"
@@ -10,6 +11,7 @@
 #include <array>
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 #include <node.h>
 #include <node_object_wrap.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -29,11 +31,15 @@ private:
     static void alloc(const callback_info & args);
     static void import_source_image(const callback_info & args);
     static void import_source_gal(const callback_info & args);
-    [[deprecated]] static void launch_analysis(const callback_info & args);
-    [[deprecated]] static void set_threshold(const callback_info & args);
-    [[deprecated]] static void set_roi(const callback_info & args);
+    static void launch_analysis(const callback_info & args);
+    static void add_target(const callback_info & args);
     static void provide_norm_preview(const callback_info & args);
+    static void is_busy(const callback_info & args);
     static cv::Mat m_source_image;
-    static uint8_t m_threshold;
-    static std::array<int, 4> m_roi;
+    struct Target {
+	int64_t rowId, colId;
+	double fractStartx, fractStarty;
+        double fractEndx, fractEndy;
+    };
+    static std::vector<Target> m_targets;
 };
