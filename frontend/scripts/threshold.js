@@ -21,6 +21,25 @@ function getImgOffsetAsRatio(e, callerCtx) {
     });
 }
 
+function uploadTargets() {
+    var startx = g_marqueeTopLeft.x;
+    var starty = g_marqueeTopLeft.y;
+    var dispx = (g_marqueeBottomRight.x - g_marqueeTopLeft.x) / g_marqueeCols;
+    var dispy = (g_marqueeBottomRight.y - g_marqueeTopLeft.y) / g_marqueeRows;
+    var gridSectors = [];
+    var sliderValue = document.getElementById("thresh-slider").value;
+    for (var i = 0; i < g_marqueeRows; ++i) {
+	for (var j = 0; j < g_marqueeCols; ++j) {
+	    global.backend.add_target(i, j,
+				      startx + dispx * j,
+				      starty + dispy * i,
+				      startx + dispx * (j + 1),
+				      starty + dispy * (i + 1),
+				      sliderValue);
+	}
+    }
+}
+
 $("main").on("mousedown", "#thresh-preview", function(e) {
     g_marqueeTopLeft = getImgOffsetAsRatio(e, this);
     g_dragging = true;
@@ -196,7 +215,8 @@ function onAnalyzePressed() {
 				      startx + dispx * j,
 				      starty + dispy * i,
 				      startx + dispx * (j + 1),
-				      starty + dispy * (i + 1));
+				      starty + dispy * (i + 1),
+				      0.0 /* TODO... */);
 	}
     }
     global.backend.launch_analysis(() => {

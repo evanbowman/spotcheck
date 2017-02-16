@@ -33,6 +33,7 @@ private:
     static void import_source_image(const callback_info & args);
     static void import_source_gal(const callback_info & args);
     static void launch_analysis(const callback_info & args);
+    [[deprecated]] static void test_thresh(const callback_info & args);
     static void add_target(const callback_info & args);
     static void provide_norm_preview(const callback_info & args);
     static void is_busy(const callback_info & args);
@@ -41,6 +42,7 @@ private:
 	int64_t rowId, colId;
 	double fractStartx, fractStarty;
         double fractEndx, fractEndy;
+        int64_t threshold;
     };
     static std::vector<Target> m_targets;
 };

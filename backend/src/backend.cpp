@@ -31,11 +31,12 @@ static size_t task_count;
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 6> mappings = {
+    static const std::array<std::pair<const char *, membr_type>, 7> mappings = {
         {{"import_source_image", import_source_image},
          {"import_source_gal", import_source_gal},
          {"launch_analysis", launch_analysis},
 	 {"add_target", add_target},
+	 {"test_thresh", test_thresh},
 	 {"is_busy", is_busy},
 	 {"provide_norm_preview", provide_norm_preview}}};
     static const char * js_class_name = "backend";
@@ -96,6 +97,34 @@ inline static void populate_results_json(const std::vector<spot> & spots,
     ostr << "]" << std::endl;
 }
 
+void backend::test_thresh(const callback_info & args) {
+ //    assert(args.Length() == 1);
+//     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
+//     async::start(js_callback, [] {
+// 	    auto outputTarget = m_source_image.clone();
+// 	    cv::normalize(cv::InputArray(outputTarget),
+// 			  cv::InputOutputArray(outputTarget),
+// 			  0, 255, cv::NORM_MINMAX, CV_8UC1);
+// 	    for (auto & target : m_targets) {
+// 	        auto roi = make_cv_roi({{
+// 			    target.fractStartx, target.fractStarty,
+// 			    target.fractEndx, target.fractEndy
+// 			}}, m_source_image);
+// 		cv::Mat working_set = m_source_image(roi);
+// 		// cv::normalize(cv::InputArray(working_set),
+// 		// 	      cv::InputOutputArray(working_set),
+// 		// 	      0, 255, cv::NORM_MINMAX, CV_8UC1);
+// 		cv::threshold(working_set, working_set, target.threshold, 255, 3);
+// 		working_set.copyTo(outputTarget(roi));
+// 		const std::string output_dir = ::module_path +
+// 		    "/../../../frontend/temp/tmp.png";
+// 		std::cout << output_dir << std::endl;
+// 		cv::imwrite(output_dir, outputTarget);
+// 	    }
+// 	    m_targets.clear();
+// 	});
+}
+
 void backend::launch_analysis(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
@@ -109,16 +138,20 @@ void backend::launch_analysis(const callback_info & args) {
 			    target.fractStartx, target.fractStarty,
 			    target.fractEndx, target.fractEndy
 			}}, m_source_image);
-		cv::Mat cropped = m_source_image(roi);
-		cv::normalize(cv::InputArray(cropped),
-			      cv::InputOutputArray(cropped),
+		cv::Mat working_set = m_source_image(roi);
+		cv::cvtColor(working_set, working_set, CV_BGR2GRAY);
+		cv::normalize(cv::InputArray(working_set),
+			      cv::InputOutputArray(working_set),
 			      0, 255, cv::NORM_MINMAX, CV_8UC1);
+		cv::Scalar avg_intensity = cv::mean(working_set);
+		cv::threshold(working_set, working_set, avg_intensity[0], 255, 3);
 		cv::Mat edges;
-		cv::Canny(cropped, edges, 100, 200, 3);
+		cv::Canny(working_set, edges, 100, 200, 3);
 		uv_mutex_lock(&::task_count_mtx);
 		std::string fname = ::module_path + "/../../../frontend/temp/" +
 		    std::to_string(target.rowId) +
 		    std::to_string(target.colId) + ".png";
+		std::cout << ::module_path << std::endl;
 		cv::imwrite(fname, edges);
 		--::task_count;
 		uv_mutex_unlock(&::task_count_mtx);
@@ -132,14 +165,15 @@ void backend::is_busy(const callback_info & args) {
 }
 
 void backend::add_target(const callback_info & args) {
-    assert(args.Length() == 6);
+    assert(args.Length() == 7);
     m_targets.push_back({
 	    v8::Local<v8::Integer>::Cast(args[0])->Value(),
 	    v8::Local<v8::Integer>::Cast(args[1])->Value(),
 	    std::min(1.0, v8::Local<v8::Number>::Cast(args[2])->Value()),
 	    std::min(1.0, v8::Local<v8::Number>::Cast(args[3])->Value()),
 	    std::min(1.0, v8::Local<v8::Number>::Cast(args[4])->Value()),
-	    std::min(1.0, v8::Local<v8::Number>::Cast(args[5])->Value())
+	    std::min(1.0, v8::Local<v8::Number>::Cast(args[5])->Value()),
+	    args[6]->IntegerValue()
 	});
 }
 
