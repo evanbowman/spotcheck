@@ -7,6 +7,6 @@
 
 #include "make_cv_roi.hpp"
 
-void test_thresh(const cv::Mat & src, const uint8_t thresh,
-                 const bool draw_circles,
-                 const std::array<int, 4> & backend_roi);
+[[deprecated]] void test_thresh(const cv::Mat & src, const uint8_t thresh,
+				const bool draw_circles,
+				const std::array<int, 4> & backend_roi);

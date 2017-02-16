@@ -29,6 +29,7 @@
 		'src/backend.cpp',
 		'src/analyze.cpp',
 		'src/test_thresh.cpp',
+		'src/preview_normalized.cpp',
 		'src/spot.cpp',
 	    ]
 	}

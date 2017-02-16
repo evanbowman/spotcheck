@@ -5,6 +5,7 @@
 #include "parse_gal.hpp"
 #include "spot.hpp"
 #include "test_thresh.hpp"
+#include "preview_normalized.hpp"
 
 #include <array>
 #include <cassert>
@@ -28,9 +29,10 @@ private:
     static void alloc(const callback_info & args);
     static void import_source_image(const callback_info & args);
     static void import_source_gal(const callback_info & args);
-    static void launch_analysis(const callback_info & args);
-    static void set_threshold(const callback_info & args);
-    static void set_roi(const callback_info & args);
+    [[deprecated]] static void launch_analysis(const callback_info & args);
+    [[deprecated]] static void set_threshold(const callback_info & args);
+    [[deprecated]] static void set_roi(const callback_info & args);
+    static void provide_norm_preview(const callback_info & args);
     static cv::Mat m_source_image;
     static uint8_t m_threshold;
     static std::array<int, 4> m_roi;
