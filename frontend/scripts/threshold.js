@@ -92,10 +92,12 @@ function getTbValueAsInt(callerCtx) {
 
 $("#roi-rows-tb").on("input", function() {
     g_marqueeRows = getTbValueAsInt(this);
+    repaintPreview();
 });
 
 $("#roi-cols-tb").on("input", function() {
     g_marqueeCols = getTbValueAsInt(this);
+    repaintPreview();
 });
 
 //$("#roi-textbox").on("change", function() {
