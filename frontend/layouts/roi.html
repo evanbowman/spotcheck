@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<link href="../styles/spotcheck.css" type="text/css" rel="stylesheet">
+	<link href="../styles/roi.css" type="text/css" rel="stylesheet">
+    </head>
+    <body>
+	<header>
+	    <div class="toolbar">
+		<div class="toolbar-frame non-selectable" id="toolbar-lhs">
+		    ROI rows:
+		    <input type="text" id="roi-rows-tb" maxlength="3" size="3" value="1">
+		    ROI columns:
+		    <input type="text" id="roi-cols-tb" maxlength="3" size="3" value="1"
+		</div>
+		<div class="toolbar-frame" id="toolbar-rhs">
+		</div>
+	    </div>
+	</header>
+	<main>
+	    <div id="roi-preview">
+		<canvas id="roi-canvas"></canvas>
+	    </div>
+	    <canvas id="roi-canvas-mask" style="display:none"></canvas>
+	    <img src="../temp/tmp.png" style="display:none" id="roi-img">
+	</main>
+	<footer>
+	    <div>
+		<script type="text/javascript" src="../scripts/jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="../scripts/roi.js"></script>
+		<input type="button" id="back" value="Back" onclick="onBackPressed()">
+		<input type="button" id="next" value="Next" onclick="onNextPressed()">
+	    </div>
+	</footer>
+    </body>
+</html>

@@ -32,7 +32,8 @@ private:
     static void alloc(const callback_info & args);
     static void import_source_image(const callback_info & args);
     static void import_source_gal(const callback_info & args);
-    static void launch_analysis(const callback_info & args);
+    static void split_sectors(const callback_info & args);
+    static void clear_targets(const callback_info & args);
     [[deprecated]] static void test_thresh(const callback_info & args);
     static void add_target(const callback_info & args);
     static void provide_norm_preview(const callback_info & args);

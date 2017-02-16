@@ -89,7 +89,7 @@ $("#choose-gal").on("change", function() {
 
 function onNextPressed() {
     global.backend.provide_norm_preview(() => {
-	window.location.href = "frontend/layouts/threshold.html";
+	window.location.href = "frontend/layouts/roi.html";
     });
 }
 
