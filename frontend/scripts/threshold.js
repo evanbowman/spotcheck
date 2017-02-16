@@ -24,45 +24,41 @@ $("#thresh-slider").on("input", function() {
 
 var g_marqueeTopLeft = Object.freeze({x: 0, y: 0});
 var g_marqueeBottomRight = Object.freeze({x: 100, y: 100});
-var dragging = false;
+var g_dragging = false;
 
 function getImgOffsetAsRatio(e, callerThis) {
     var offset = $(callerThis).offset();
     return Object.freeze({
-	x: (e.pageX - offset.left) / $(callerThis).width(),
-	y: (e.pageY - offset.top) / $(callerThis).height()
+	x: (e.pageX - (offset.left + g_imgDrawInfo.xstart)) / (g_imgDrawInfo.width),
+	y: (e.pageY - (offset.top + g_imgDrawInfo.ystart)) / (g_imgDrawInfo.height)
     });
 }
 
 $("main").on("mousedown", "#thresh-preview", function(e) {
     g_marqueeTopLeft = getImgOffsetAsRatio(e, this);
-    dragging = true;
+    g_dragging = true;
 });
 
 $("main").on("mousemove", "#thresh-preview", function(e) {
-    if (dragging) {
+    if (g_dragging) {
 	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
 	repaintPreview();
     }
 });
 
 $("main").on("mouseleave", "#thresh-preview", function(e) {
-    if (dragging) {
+    if (g_dragging) {
 	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
-	window.alert("Start: " + g_marqueeTopLeft.x + ", " + g_marqueeTopLeft.y +
-		     "\nStop: " + g_marqueeBottomRight.x + ", " + g_marqueeBottomRight.y);
-	dragging = false;
+	g_dragging = false;
     }
 });
 
 $("main").on("mouseup", "#thresh-preview", function(e) {
-    if (dragging) {
+    if (g_dragging) {
 	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
-	window.alert("Start: " + g_marqueeTopLeft.x + ", " + g_marqueeTopLeft.y +
-		     "\nStop: " + g_marqueeBottomRight.x + ", " + g_marqueeBottomRight.y);
-	dragging = false;
+	g_dragging = false;
     }
-})
+});
 
 $("#thresh-textbox").on("change", function() {
     if (isNaN(this.value)) {
@@ -107,6 +103,10 @@ function onToggleOverlayPressed() {
     });
 }
 
+var g_imgDrawInfo = {
+    xstart: 0, ystart: 0, width: 0, height: 0
+}
+
 function renderBackendImgOutput(canvas, ctx) {
     var img = document.getElementById("thresh-img");
     var wScale = 1.0, hScale = 1.0;
@@ -117,21 +117,23 @@ function renderBackendImgOutput(canvas, ctx) {
 	hScale = canvas.height / img.height;
     }
     var scale = Math.min(hScale, wScale);
-    var drawWidth = img.width * scale;
-    var drawHeight = img.height * scale;
-    var drawStartX = (canvas.width - drawWidth) / 2;
-    var drawStartY = (canvas.height - drawHeight) / 2;
-    ctx.drawImage(img, drawStartX, drawStartY, drawWidth, drawHeight);
+    g_imgDrawInfo.width = img.width * scale;
+    g_imgDrawInfo.height = img.height * scale;
+    g_imgDrawInfo.xstart = (canvas.width - g_imgDrawInfo.width) / 2;
+    g_imgDrawInfo.ystart = (canvas.height - g_imgDrawInfo.height) / 2;
+    ctx.drawImage(img, g_imgDrawInfo.xstart, g_imgDrawInfo.ystart,
+		  g_imgDrawInfo.width, g_imgDrawInfo.height);
 }
 
 function renderSelectionGrid(canvas, ctx) {
-    var rectStartX = canvas.width * g_marqueeTopLeft.x;
-    var rectEndX = canvas.width * g_marqueeBottomRight.x;
-    var rectStartY = canvas.height * g_marqueeTopLeft.y;
-    var rectEndY = canvas.height * g_marqueeBottomRight.y;
+    var rectStartX = g_imgDrawInfo.xstart + g_imgDrawInfo.width * g_marqueeTopLeft.x;
+    var rectEndX = g_imgDrawInfo.xstart + g_imgDrawInfo.width * g_marqueeBottomRight.x;
+    var rectStartY = g_imgDrawInfo.ystart + g_imgDrawInfo.height * g_marqueeTopLeft.y;
+    var rectEndY = g_imgDrawInfo.ystart + g_imgDrawInfo.height * g_marqueeBottomRight.y;
     ctx.beginPath();
     ctx.lineWidth = "6";
-    ctx.rect(rectStartX, rectStartY, rectEndX, rectEndY);
+    ctx.strokeStyle = "#EEEEEE";
+    ctx.rect(rectStartX, rectStartY, rectEndX - rectStartX, rectEndY - rectStartY);
     ctx.stroke();
     ctx.closePath();
 }
