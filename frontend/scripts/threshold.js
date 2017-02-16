@@ -167,7 +167,7 @@ function renderSelectionGrid(canvas, ctx) {
     var colRawSize = rectWidth / g_marqueeCols;
     ctx.save();
     ctx.lineWidth = "3";
-    ctx.setLineDash([5, 10]);
+    ctx.setLineDash([4, 10]);
     if (rowDivisions > 0) {
 	for (var i = 0; i < rowDivisions; ++i) {
 	    ctx.beginPath();
