@@ -100,21 +100,6 @@ $("#roi-cols-tb").on("input", function() {
     repaintPreview();
 });
 
-//$("#roi-textbox").on("change", function() {
-//    var values = this.value.split(",");
-//    if (values.length != 4) {
-//	window.alert("Invalid input");
-//	return;
-//    }
-//    values.forEach((val) => {
-//	if (val < 0 || val > 100) {
-//	    window.alert("Invalid input");
-//	    return;
-//	}
-//    });
-//    global.backend.set_roi(updateThresholdImg, values, global.threshRenderCircles);
-//});
-
 $("#thresh-preview").on("dragstart", function(event) { event.preventDefault(); });
 
 function onToggleOverlayPressed() {
@@ -222,11 +207,13 @@ function onWindowUpdate() {
 }
 
 function onAnalyzePressed() {
-    ready(() => {
-	global.backend.launch_analysis(() => {
-	    window.location.href = "frontend/layouts/results.html";
-	});
+    global.backend.launch_analysis(() => {
+	window.location.href = "frontend/layouts/results.html";
     });
+}
+
+function onBackPressed() {
+    window.location.href = "index.html";
 }
 
 window.onload = onWindowUpdate;
