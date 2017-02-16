@@ -88,9 +88,9 @@ $("#choose-gal").on("change", function() {
 
 
 function onNextPressed() {
-    global.backend.set_threshold(() => {
+    global.backend.provide_norm_preview(() => {
 	window.location.href = "frontend/layouts/threshold.html";
-    }, 127, global.threshRenderCircles);
+    });
 }
 
 function enableNextButton() {
@@ -103,4 +103,4 @@ function disableNextButton() {
     nextButton.disabled = true;
 }
 
-ready(disableNextButton());
+ready(disableNextButton);

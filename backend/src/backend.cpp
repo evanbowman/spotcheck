@@ -103,12 +103,19 @@ void backend::launch_analysis(const callback_info & args) {
 	uv_mutex_lock(&::task_count_mtx);
 	++::task_count;
 	uv_mutex_unlock(&::task_count_mtx);
+	std::cout << ::module_path << std::endl;
 	async::start(js_callback, [target] {
-	        auto roi = make_cv_roi({
-			target.fractStartx, target.fractStarty,
-			target.fractEndx, target.fractEndy
-		    }, m_source_img);
+	        auto roi = make_cv_roi({{
+			    target.fractStartx, target.fractStarty,
+			    target.fractEndx, target.fractEndy
+			}}, m_source_image);
+		cv::Mat cropped = m_source_image(roi);
+		cv::normalize(cropped, cropped, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 		uv_mutex_lock(&::task_count_mtx);
+		std::string fname = ::module_path + "/../../../frontend/temp/" +
+		    std::to_string(target.rowId) +
+		    std::to_string(target.colId) + ".png";
+		cv::imwrite(fname, cropped);
 		--::task_count;
 		uv_mutex_unlock(&::task_count_mtx);
 	    });

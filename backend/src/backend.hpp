@@ -9,6 +9,7 @@
 #include "preview_normalized.hpp"
 
 #include <array>
+#include <random>
 #include <cassert>
 #include <cmath>
 #include <algorithm>

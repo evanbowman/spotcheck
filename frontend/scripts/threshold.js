@@ -6,26 +6,11 @@ function ready(fn) {
     }
 }
 
-$("#thresh-slider").on("change", function() {
-    ready(() => {
-	var tb = document.getElementById("thresh-textbox");
-	tb.value = this.value;
-	global.backend.set_threshold(updateThresholdImg,
-				     this.value, global.threshRenderCircles);
-    });
-});
-
-$("#thresh-slider").on("input", function() {
-    ready(() => {
-	var tb = document.getElementById("thresh-textbox");
-	tb.value = this.value;
-    });
-});
-
+var g_selectionActive = false;
 var g_marqueeRows = 1;
 var g_marqueeCols = 1;
 var g_marqueeTopLeft = Object.freeze({x: 0, y: 0});
-var g_marqueeBottomRight = Object.freeze({x: 100, y: 100});
+var g_marqueeBottomRight = Object.freeze({x: 1, y: 1});
 var g_dragging = false;
 
 function getImgOffsetAsRatio(e, callerCtx) {
@@ -39,6 +24,7 @@ function getImgOffsetAsRatio(e, callerCtx) {
 $("main").on("mousedown", "#thresh-preview", function(e) {
     g_marqueeTopLeft = getImgOffsetAsRatio(e, this);
     g_dragging = true;
+    g_selectionActive = true;
 });
 
 $("main").on("mousemove", "#thresh-preview", function(e) {
@@ -59,24 +45,8 @@ $("main").on("mouseup", "#thresh-preview", function(e) {
     if (g_dragging) {
 	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
 	g_dragging = false;
+	enableAnalyzeButton();
     }
-});
-
-$("#thresh-textbox").on("change", function() {
-    if (isNaN(this.value)) {
-	window.alert("Input must be a number");
-	return;
-    }
-    if (this.value < 1 || this.value > 255) {
-	window.alert("Threshold values must within range: [1 , 255]");
-	return;
-    }
-    ready(() => {
-	var slider = document.getElementById("thresh-slider");
-	slider.value = this.value;
-	global.backend.set_threshold(updateThresholdImg,
-				     this.value, global.threshRenderCircles);
-    });
 });
 
 function getTbValueAsInt(callerCtx) {
@@ -102,17 +72,8 @@ $("#roi-cols-tb").on("input", function() {
 
 $("#thresh-preview").on("dragstart", function(event) { event.preventDefault(); });
 
-function onToggleOverlayPressed() {
-    ready(() => {
-	global.threshRenderCircles = !global.threshRenderCircles;
-	var slider = document.getElementById("thresh-slider");
-	global.backend.set_threshold(updateThresholdImg, slider.value,
-				     global.threshRenderCircles);
-    });
-}
-
 var g_imgDrawInfo = {
-    xstart: 0, ystart: 0, width: 0, height: 0
+    xstart: 0, ystart: 0, width: 0, height: 0, scale: 1
 }
 
 function renderBackendImgOutput(canvas, ctx) {
@@ -129,6 +90,7 @@ function renderBackendImgOutput(canvas, ctx) {
     g_imgDrawInfo.height = img.height * scale;
     g_imgDrawInfo.xstart = (canvas.width - g_imgDrawInfo.width) / 2;
     g_imgDrawInfo.ystart = (canvas.height - g_imgDrawInfo.height) / 2;
+    g_imgDrawInfo.scale = scale;
     ctx.drawImage(img, g_imgDrawInfo.xstart, g_imgDrawInfo.ystart,
 		  g_imgDrawInfo.width, g_imgDrawInfo.height);
 }
@@ -193,7 +155,9 @@ function repaintPreview() {
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     renderBackendImgOutput(canvas, ctx);
-    renderSelectionGrid(canvas, ctx);
+    if (g_selectionActive) {
+	renderSelectionGrid(canvas, ctx);
+    }
 }
 
 function updateThresholdImg() {
@@ -221,8 +185,24 @@ function onWindowUpdate() {
 }
 
 function onAnalyzePressed() {
+    var startx = g_marqueeTopLeft.x;
+    var starty = g_marqueeTopLeft.y;
+    var dispx = (g_marqueeBottomRight.x - g_marqueeTopLeft.x) / g_marqueeCols;
+    var dispy = (g_marqueeBottomRight.y - g_marqueeTopLeft.y) / g_marqueeRows;
+    var gridSectors = [];
+    for (var i = 0; i < g_marqueeRows; ++i) {
+	for (var j = 0; j < g_marqueeCols; ++j) {
+	    global.backend.add_target(i, j,
+				      startx + dispx * j,
+				      starty + dispy * i,
+				      startx + dispx * (j + 1),
+				      starty + dispy * (i + 1));
+	}
+    }
     global.backend.launch_analysis(() => {
-	window.location.href = "frontend/layouts/results.html";
+	if (!global.backend.is_busy()) {
+	    window.location.href = "frontend/layouts/results.html";
+	}
     });
 }
 
@@ -233,3 +213,15 @@ function onBackPressed() {
 window.onload = onWindowUpdate;
 
 window.onresize = onWindowUpdate;
+
+function disableAnalyzeButton() {
+    var analyzeButton = document.getElementById("analyze");
+    analyzeButton.disabled = true;
+}
+
+function enableAnalyzeButton() {
+    var analyzeButton = document.getElementById("analyze");
+    analyzeButton.disabled = false;
+}
+
+ready(disableAnalyzeButton);
