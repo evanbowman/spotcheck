@@ -28,8 +28,8 @@ var g_marqueeTopLeft = Object.freeze({x: 0, y: 0});
 var g_marqueeBottomRight = Object.freeze({x: 100, y: 100});
 var g_dragging = false;
 
-function getImgOffsetAsRatio(e, callerThis) {
-    var offset = $(callerThis).offset();
+function getImgOffsetAsRatio(e, callerCtx) {
+    var offset = $(callerCtx).offset();
     return Object.freeze({
 	x: (e.pageX - (offset.left + g_imgDrawInfo.xstart)) / (g_imgDrawInfo.width),
 	y: (e.pageY - (offset.top + g_imgDrawInfo.ystart)) / (g_imgDrawInfo.height)
@@ -77,6 +77,25 @@ $("#thresh-textbox").on("change", function() {
 	global.backend.set_threshold(updateThresholdImg,
 				     this.value, global.threshRenderCircles);
     });
+});
+
+function getTbValueAsInt(callerCtx) {
+    if (callerCtx.value.length == 0) {
+	return 0;
+    }
+    var value = parseInt(callerCtx.value);
+    if (value <= 0) {
+	return 1;
+    }
+    return value;
+}
+
+$("#roi-rows-tb").on("input", function() {
+    g_marqueeRows = getTbValueAsInt(this);
+});
+
+$("#roi-cols-tb").on("input", function() {
+    g_marqueeCols = getTbValueAsInt(this);
 });
 
 //$("#roi-textbox").on("change", function() {
@@ -135,15 +154,37 @@ function renderSelectionGrid(canvas, ctx) {
     ctx.beginPath();
     ctx.lineWidth = "6";
     ctx.strokeStyle = "#EEEEEE";
-    ctx.rect(rectStartX, rectStartY, rectEndX - rectStartX, rectEndY - rectStartY);
+    var rectWidth = rectEndX - rectStartX;
+    var rectHeight = rectEndY - rectStartY;
+    ctx.rect(rectStartX, rectStartY, rectWidth, rectHeight);
     ctx.stroke();
     ctx.closePath();
-    if (g_marqueeRows > 0) {
-	// ...
+    var rowDivisions = g_marqueeRows - 1;
+    var colDivisions = g_marqueeCols - 1;
+    var rowRawSize = rectHeight / g_marqueeRows;
+    var colRawSize = rectWidth / g_marqueeCols;
+    ctx.save();
+    ctx.lineWidth = "3";
+    ctx.setLineDash([5, 10]);
+    if (rowDivisions > 0) {
+	for (var i = 0; i < rowDivisions; ++i) {
+	    ctx.beginPath();
+	    ctx.moveTo(rectStartX, rectStartY + (i + 1) * rowRawSize);
+	    ctx.lineTo(rectEndX, rectStartY + (i + 1) * rowRawSize);
+	    ctx.stroke();
+	    ctx.closePath();
+	}
     }
-    if (g_marqueeCols > 0) {
-	// ...
+    if (colDivisions > 0) {
+	for (var i = 0; i < colDivisions; ++i) {
+	    ctx.beginPath();
+	    ctx.moveTo(rectStartX + (i + 1) * colRawSize, rectStartY);
+	    ctx.lineTo(rectStartX + (i + 1) * colRawSize, rectEndY);
+	    ctx.stroke();
+	    ctx.closePath();
+	}
     }
+    ctx.restore();
 }
 
 function repaintPreview() {
