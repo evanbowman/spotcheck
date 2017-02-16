@@ -19,9 +19,7 @@ function enableNextButton() {
 ready(disableNextButton);
 
 function onNextPressed() {
-    // global.backend.run_analysis(function() {
     window.location.href = "frontend/layouts/analysis.html"
-    //})
 }
 
 function onBackPressed() {
@@ -39,7 +37,18 @@ function init() {
 	    row.push(img);
 	    var img = document.createElement("img");
 	    img.src = pathPrefix + i + j + ".png";
-	    $("main").append(img);
+	    var div = document.createElement("div");
+	    var span = document.createElement("span");
+	    var slider = document.createElement("input");
+	    slider.setAttribute("type", "range");
+	    span.appendChild(img);
+	    span.appendChild(slider);
+	    div.appendChild(span);
+	    slider.setAttribute("onchange", function() {
+		window.alert(i + " " + j);
+	    });
+	    img.style.cssText = "width: 100px; float: left; image-rendering: crisp-edges;";
+	    $("main").append(div);
 	}
     }
 }

@@ -146,7 +146,7 @@ void backend::split_sectors(const callback_info & args) {
 			      0, 255, cv::NORM_MINMAX, CV_8UC1);
 		cv::Scalar avg_intensity = cv::mean(working_set);
 		cv::threshold(working_set, working_set, avg_intensity[0], 255, 3);
-		target.threshold = avg_intensity[0];
+	        target.threshold = avg_intensity[0];
 		uv_mutex_lock(&::task_count_mtx);
 		const std::string origin_fname = ::module_path
 		    + "/../../../frontend/temp/original" +
