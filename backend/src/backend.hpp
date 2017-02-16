@@ -25,7 +25,12 @@ class backend : public node::ObjectWrap {
 public:
     static void init(v8::Local<v8::Object> exports,
                      v8::Local<v8::Object> module);
-
+    struct Target {
+	int64_t rowId, colId;
+	double fractStartx, fractStarty;
+        double fractEndx, fractEndy;
+        int64_t threshold;
+    };
 private:
     using callback_info = v8::FunctionCallbackInfo<v8::Value>;
     static v8::Persistent<v8::Function> constructor;
@@ -36,14 +41,10 @@ private:
     static void clear_targets(const callback_info & args);
     [[deprecated]] static void test_thresh(const callback_info & args);
     static void add_target(const callback_info & args);
+    static void get_target_thresh(const callback_info & args);
+    static void update_target(const callback_info & args);
     static void provide_norm_preview(const callback_info & args);
     static void is_busy(const callback_info & args);
     static cv::Mat m_source_image;
-    struct Target {
-	int64_t rowId, colId;
-	double fractStartx, fractStarty;
-        double fractEndx, fractEndy;
-        int64_t threshold;
-    };
     static std::vector<Target> m_targets;
 };

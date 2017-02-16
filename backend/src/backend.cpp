@@ -31,14 +31,16 @@ static size_t task_count;
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 8> mappings = {
+    static const std::array<std::pair<const char *, membr_type>, 10> mappings = {
         {{"import_source_image", import_source_image},
          {"import_source_gal", import_source_gal},
          {"split_sectors", split_sectors},
 	 {"add_target", add_target},
 	 {"test_thresh", test_thresh},
 	 {"clear_targets", clear_targets},
+	 {"update_target", update_target},
 	 {"is_busy", is_busy},
+	 {"get_target_thresh", get_target_thresh},
 	 {"provide_norm_preview", provide_norm_preview}}};
     static const char * js_class_name = "backend";
     v8::Isolate * isolate = exports->GetIsolate();
@@ -126,6 +128,33 @@ void backend::test_thresh(const callback_info & args) {
 // 	});
 }
 
+static void process_sector(const backend::Target & target, const cv::Mat & src) {
+    auto roi = make_cv_roi({{
+		target.fractStartx, target.fractStarty,
+		target.fractEndx, target.fractEndy
+	    }}, src);
+    cv::Mat working_set = src(roi);
+    cv::Mat out = working_set.clone();
+    cv::cvtColor(working_set, working_set, CV_BGR2GRAY);
+    cv::normalize(cv::InputArray(working_set),
+		  cv::InputOutputArray(working_set),
+		  0, 255, cv::NORM_MINMAX, CV_8UC1);
+    cv::threshold(working_set, working_set, target.threshold, 255, 3);
+    uv_mutex_lock(&::task_count_mtx);
+    const std::string origin_fname = ::module_path
+	+ "/../../../frontend/temp/original" +
+	std::to_string(target.rowId) +
+	std::to_string(target.colId) + ".png";
+    cv::imwrite(origin_fname, out);
+    const std::string edit_fname = ::module_path
+	+ "/../../../frontend/temp/edit" +
+	std::to_string(target.rowId) +
+	std::to_string(target.colId) + ".png";
+    cv::imwrite(edit_fname, working_set);
+    --::task_count;
+    uv_mutex_unlock(&::task_count_mtx);
+}
+
 void backend::split_sectors(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
@@ -134,12 +163,11 @@ void backend::split_sectors(const callback_info & args) {
 	++::task_count;
 	uv_mutex_unlock(&::task_count_mtx);
 	async::start(js_callback, [&target] {
-	        auto roi = make_cv_roi({{
+		auto roi = make_cv_roi({{
 			    target.fractStartx, target.fractStarty,
 			    target.fractEndx, target.fractEndy
 			}}, m_source_image);
-		cv::Mat working_set = m_source_image(roi);
-		cv::Mat out = working_set.clone();
+	        cv::Mat working_set = m_source_image(roi);
 		cv::cvtColor(working_set, working_set, CV_BGR2GRAY);
 		cv::normalize(cv::InputArray(working_set),
 			      cv::InputOutputArray(working_set),
@@ -147,19 +175,7 @@ void backend::split_sectors(const callback_info & args) {
 		cv::Scalar avg_intensity = cv::mean(working_set);
 		cv::threshold(working_set, working_set, avg_intensity[0], 255, 3);
 	        target.threshold = avg_intensity[0];
-		uv_mutex_lock(&::task_count_mtx);
-		const std::string origin_fname = ::module_path
-		    + "/../../../frontend/temp/original" +
-		    std::to_string(target.rowId) +
-		    std::to_string(target.colId) + ".png";
-		cv::imwrite(origin_fname, out);
-		const std::string edit_fname = ::module_path
-		    + "/../../../frontend/temp/edit" +
-		    std::to_string(target.rowId) +
-		    std::to_string(target.colId) + ".png";
-		cv::imwrite(edit_fname, working_set);
-		--::task_count;
-		uv_mutex_unlock(&::task_count_mtx);
+		process_sector(target, m_source_image);
 	    });
     }
 }
@@ -167,6 +183,26 @@ void backend::split_sectors(const callback_info & args) {
 void backend::is_busy(const callback_info & args) {
     auto isolate = v8::Isolate::GetCurrent();
     args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
+}
+
+void backend::update_target(const callback_info & args) {
+    assert(args.Length() == 8);
+    const int64_t targetRow = args[1]->IntegerValue();
+    const int64_t targetCol = args[2]->IntegerValue();
+    auto target = std::find_if(m_targets.begin(), m_targets.end(),
+			       [targetRow, targetCol](const Target & target) {
+				   return target.rowId == targetRow && target.colId == targetCol;
+			       });
+    assert(target != m_targets.end());
+    target->fractStartx = std::min(1.0, v8::Local<v8::Number>::Cast(args[3])->Value());
+    target->fractStarty = std::min(1.0, v8::Local<v8::Number>::Cast(args[4])->Value());
+    target->fractEndx = std::min(1.0, v8::Local<v8::Number>::Cast(args[5])->Value());
+    target->fractEndy = std::min(1.0, v8::Local<v8::Number>::Cast(args[6])->Value());
+    target->threshold = args[7]->IntegerValue();
+    auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
+    async::start(js_callback, [target] {
+	    process_sector(*target, m_source_image);
+	});
 }
 
 void backend::add_target(const callback_info & args) {
@@ -193,4 +229,8 @@ void backend::provide_norm_preview(const callback_info & args) {
     async::start(js_callback, [&] {
 	    preview_normalized(m_source_image);
 	});
+}
+
+void backend::get_target_thresh(const callback_info & args) {
+    // ...
 }

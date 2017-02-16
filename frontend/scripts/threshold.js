@@ -29,14 +29,14 @@ function onBackPressed() {
 var thumbs = [];
 
 function init() {
-    var pathPrefix = "../temp/edit";
-    for (var i = 0; i < global.roiRows; ++i) {
+    for (var rowNum = 0; rowNum < global.roiRows; ++rowNum) {
 	row = [];
 	thumbs.push(row);
-	for (var j = 0; j < global.roiCols; ++j) {
-	    row.push(img);
+	var pathPrefix = "../temp/edit";
+	for (var colNum = 0; colNum < global.roiCols; ++colNum) {
 	    var img = document.createElement("img");
-	    img.src = pathPrefix + i + j + ".png";
+	    row.push(img);
+	    img.src = pathPrefix + rowNum + colNum + ".png";
 	    var div = document.createElement("div");
 	    var span = document.createElement("span");
 	    var slider = document.createElement("input");
@@ -44,9 +44,11 @@ function init() {
 	    span.appendChild(img);
 	    span.appendChild(slider);
 	    div.appendChild(span);
-	    slider.setAttribute("onchange", function() {
-		window.alert(i + " " + j);
-	    });
+	    slider.onchange = (function(tmpRow, tmpCol) {
+		return function() {
+		    window.alert(tmpRow + " " + tmpCol);
+		}
+	    })(rowNum, colNum);
 	    img.style.cssText = "width: 100px; float: left; image-rendering: crisp-edges;";
 	    $("main").append(div);
 	}
