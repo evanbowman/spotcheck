@@ -41,6 +41,8 @@ private:
     static void import_source_gal(const callback_info & args);
     static void split_sectors(const callback_info & args);
     static void clear_targets(const callback_info & args);
+    static void launch_analysis(const callback_info & args);
+    static void analyze_target(Target & target, cv::Mat src, cv::Mat mask);
     [[deprecated]] static void test_thresh(const callback_info & args);
     static void add_target(const callback_info & args);
     static void get_target_thresh(const callback_info & args);

@@ -25,19 +25,20 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
     return *utf8_mod_dirname;
 }
 
-uv_mutex_t task_count_mtx;
+uv_mutex_t task_mtx;
 static size_t task_count;
 
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 10> mappings = {
+    static const std::array<std::pair<const char *, membr_type>, 11> mappings = {
         {{"import_source_image", import_source_image},
          {"import_source_gal", import_source_gal},
          {"split_sectors", split_sectors},
 	 {"add_target", add_target},
 	 {"test_thresh", test_thresh},
 	 {"clear_targets", clear_targets},
+	 {"launch_analysis", launch_analysis},
 	 {"update_target_thresh", update_target_thresh},
 	 {"is_busy", is_busy},
 	 {"get_target_thresh", get_target_thresh},
@@ -55,7 +56,7 @@ void backend::init(v8::Local<v8::Object> exports,
     constructor.Reset(isolate, tpl->GetFunction());
     exports->Set(v8::String::NewFromUtf8(isolate, js_class_name),
                  tpl->GetFunction());
-    assert(uv_mutex_init(&::task_count_mtx) == 0);
+    assert(uv_mutex_init(&::task_mtx) == 0);
 }
 
 void backend::alloc(const callback_info & args) {
@@ -121,6 +122,7 @@ static int consume_connected(cv::Mat & src, int x, int y) {
 				}
 			    }
 			};
+    action(stack.top(), 0, 0);
     while (!stack.empty()) {
         coord coord = stack.top();
         stack.pop();
@@ -156,6 +158,7 @@ static void mask_largest_connected(cv::Mat & src) {
 	    consume_connected(src, std::get<1>(region), std::get<2>(region));
 	}
     }
+    cv::threshold(src, src, 127, 255, cv::THRESH_BINARY);
 }
 
 static void process_sector(const backend::Target & target, const cv::Mat & src) {
@@ -171,33 +174,29 @@ static void process_sector(const backend::Target & target, const cv::Mat & src) 
 		  0, 255, cv::NORM_MINMAX, CV_8UC1);
     cv::threshold(norm, thresh, target.threshold, 255, 3);
     mask_largest_connected(thresh);
-    uv_mutex_lock(&::task_count_mtx);
+    uv_mutex_lock(&::task_mtx);
     auto suffix = std::to_string(target.rowId) + std::to_string(target.colId);
     static const auto extension = ".png";
     const std::string origin_fname = ::module_path
 	+ "/../../../frontend/temp/original" + suffix + extension;
     cv::imwrite(origin_fname, working_set);
-    const std::string thresh_fname = ::module_path
-	+ "/../../../frontend/temp/thresh" + suffix + extension;
-    cv::imwrite(thresh_fname, thresh);
-    const std::string contour_fname = ::module_path
-	+ "/../../../frontend/temp/contour" + suffix + extension;
-    cv::imwrite(contour_fname, thresh);
+    const std::string segment_fname = ::module_path
+	+ "/../../../frontend/temp/mask" + suffix + extension;
+    cv::imwrite(segment_fname, thresh);
     const std::string norm_fname = ::module_path
 	+ "/../../../frontend/temp/norm" + suffix + extension;
         std::cout << norm_fname << std::endl;
     cv::imwrite(norm_fname, norm);
-    --::task_count;
-    uv_mutex_unlock(&::task_count_mtx);
+    uv_mutex_unlock(&::task_mtx);
 }
 
 void backend::split_sectors(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     for (auto & target : m_targets) {
-	uv_mutex_lock(&::task_count_mtx);
+	uv_mutex_lock(&::task_mtx);
 	++::task_count;
-	uv_mutex_unlock(&::task_count_mtx);
+	uv_mutex_unlock(&::task_mtx);
 	async::start(js_callback, [&target] {
 		auto roi = make_cv_roi({{
 			    target.fractStartx, target.fractStarty,
@@ -212,6 +211,9 @@ void backend::split_sectors(const callback_info & args) {
 		cv::threshold(working_set, working_set, avg_intensity[0], 255, 3);
 	        target.threshold = avg_intensity[0];
 		process_sector(target, m_source_image);
+		uv_mutex_lock(&::task_mtx);
+		--::task_count;
+		uv_mutex_unlock(&::task_mtx);
 	    });
     }
 }
@@ -219,6 +221,40 @@ void backend::split_sectors(const callback_info & args) {
 void backend::is_busy(const callback_info & args) {
     auto isolate = v8::Isolate::GetCurrent();
     args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
+}
+
+void backend::analyze_target(Target & target, cv::Mat src, cv::Mat mask) {
+    // ...
+}
+
+void backend::launch_analysis(const callback_info & args) {
+    assert(args.Length() == 1);
+    auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
+    for (auto & target : m_targets) {
+	uv_mutex_lock(&::task_mtx);
+	++::task_count;
+	uv_mutex_unlock(&::task_mtx);
+	async::start(js_callback, [&target] {
+		cv::Mat src, mask;
+		static const auto extension = ".png";
+		const std::string original_loc = "/../../../frontend/temp/original";
+		const std::string mask_loc = "/../../../frontend/temp/mask";
+		const auto suffix = std::to_string(target.rowId) +
+		    std::to_string(target.colId);
+		uv_mutex_lock(&::task_mtx);
+		src = cv::imread(::module_path + original_loc + suffix + extension,
+				 CV_LOAD_IMAGE_GRAYSCALE);
+		mask = cv::imread(::module_path + mask_loc + suffix + extension,
+				  CV_LOAD_IMAGE_GRAYSCALE);
+		assert(!src.empty());
+		assert(!mask.empty());
+		uv_mutex_unlock(&::task_mtx);
+		analyze_target(target, src, mask);
+		uv_mutex_lock(&::task_mtx);
+		--::task_count;
+		uv_mutex_unlock(&::task_mtx);
+	    });
+    }
 }
 
 void backend::update_target_thresh(const callback_info & args) {

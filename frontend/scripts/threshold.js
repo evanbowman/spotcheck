@@ -6,20 +6,12 @@ function ready(fn) {
     }
 }
 
-function disableNextButton() {
-    var nextButton = document.getElementById("next");
-    nextButton.disabled = true;
-}
-
-function enableNextButton() {
-    var nextButton = document.getElementById("next");
-    nextButton.disabled = false;
-}
-
-ready(disableNextButton);
-
 function onNextPressed() {
-    window.location.href = "frontend/layouts/analysis.html"
+    global.backend.launch_analysis(function() {
+	if (!global.backend.is_busy()) {
+	    window.location.href = "frontend/layouts/analysis.html";
+	}
+    });
 }
 
 function onBackPressed() {
@@ -66,7 +58,7 @@ function init() {
 	row = [];
 	thumbs.push(row);
 	var normPathPrefix = "../temp/norm";
-	var contourPathPrefix = "../temp/contour";
+	var contourPathPrefix = "../temp/mask";
 	for (var colNum = 0; colNum < global.roiCols; ++colNum) {
 	    var norm = document.createElement("img");
 	    var contour = document.createElement("img");
@@ -80,7 +72,7 @@ function init() {
 		return function() {
 		    unselAll();
 		    this.className = "gallery-box-sel";
-		    document.getElementById("thresh-slider").onchange = function() {
+		    document.getElementById("thresh-slider").oninput = function() {
 			global.backend.update_target_thresh(function() {
 			    refreshGalleryThumb(tmpRow, tmpCol);
 			}, tmpRow, tmpCol, this.value);
