@@ -15,6 +15,12 @@ h1 {
     white-space: nowrap;
 }
 
+h2 {
+    color: #8e9296;
+    font-size: 12.5px;
+    font-family: "open-sans-bold";
+}
+
 input[type=text] {
     background-color: rgb(255, 255, 255);
     border: 1px solid;

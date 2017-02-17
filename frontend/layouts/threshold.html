@@ -2,14 +2,22 @@
 <html>
     <head>
 	<link href="../styles/spotcheck.css" type="text/css" rel="stylesheet">
-	<link href="../styles/roi.css" type="text/css" rel="stylesheet">
+	<link href="../styles/threshold.css" type="text/css" rel="stylesheet">
     </head>
     <body>
 	<header>
-	    
+	    <div class="toolbar">
+		<div class="toolbar-frame non-selectable" id="toolbar-lhs">
+		    Threshold:
+		    <input type="range" id="thresh-slider" value="127" min="1" max="255" step="1"></input>
+		    <input type="text" id="thresh-textbox" maxlength="3" size="3" value="127"></input>
+		</div>
+	    </div>
 	</header>
 	<main>
-	    
+	    <div id="gallery">
+		
+	    </div>
 	</main>
 	<footer>
 	    <div>

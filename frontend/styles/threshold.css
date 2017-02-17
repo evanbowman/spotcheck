@@ -27,5 +27,46 @@ main {
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     flex: auto;
+    text-align: center;
     padding: 15px;
+}
+
+#gallery {
+    display: inline;
+}
+
+#thresh-textbox {
+    margin-top: 12px;
+    margin-right: 15px;
+}
+
+.gallery-box-unsel {
+    outline: none;
+}
+
+.gallery-box-unsel, .gallery-box-sel {
+    width: 100px;
+    float: left;
+    margin: 8px;
+    image-rendering: crisp-edges;
+}
+
+.gallery-box-sel {
+    outline: 5px solid #7fb4b8;
+}
+
+#thresh-slider {
+    margin-left: 8px;
+    margin-right: 6px;
+    margin-top: -2px;
+    width: 160px;
+}
+
+#toolbar-lhs {
+    text-align: left;
+    padding-left: 15px;
+}
+
+#toolbar-rhs {
+    text-align: right;
 }
