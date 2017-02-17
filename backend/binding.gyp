@@ -5,7 +5,7 @@
 	    'conditions': [
 		['OS=="mac"', {
 		    'link_settings': {
-			'libraries': ['-L/usr/local/lib', '-lopencv_highgui', '-lopencv_imgproc']
+			'libraries': ['-L/usr/local/lib', '-lopencv_highgui', '-lopencv_imgproc', '-lopencv_features2d']
 		    }
 		}],
 		['OS=="win"', {

@@ -101,31 +101,61 @@ inline static void populate_results_json(const std::vector<spot> & spots,
 }
 
 void backend::test_thresh(const callback_info & args) {
- //    assert(args.Length() == 1);
-//     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
-//     async::start(js_callback, [] {
-// 	    auto outputTarget = m_source_image.clone();
-// 	    cv::normalize(cv::InputArray(outputTarget),
-// 			  cv::InputOutputArray(outputTarget),
-// 			  0, 255, cv::NORM_MINMAX, CV_8UC1);
-// 	    for (auto & target : m_targets) {
-// 	        auto roi = make_cv_roi({{
-// 			    target.fractStartx, target.fractStarty,
-// 			    target.fractEndx, target.fractEndy
-// 			}}, m_source_image);
-// 		cv::Mat working_set = m_source_image(roi);
-// 		// cv::normalize(cv::InputArray(working_set),
-// 		// 	      cv::InputOutputArray(working_set),
-// 		// 	      0, 255, cv::NORM_MINMAX, CV_8UC1);
-// 		cv::threshold(working_set, working_set, target.threshold, 255, 3);
-// 		working_set.copyTo(outputTarget(roi));
-// 		const std::string output_dir = ::module_path +
-// 		    "/../../../frontend/temp/tmp.png";
-// 		std::cout << output_dir << std::endl;
-// 		cv::imwrite(output_dir, outputTarget);
-// 	    }
-// 	    m_targets.clear();
-// 	});
+    // ...
+}
+
+static int consume_connected(cv::Mat & src, int x, int y) {
+    int count = 0;
+    using coord = std::pair<int, int>;
+    std::stack<coord> stack;
+    stack.push({x, y});
+    const auto action = [&src, &stack, &count](coord & c, int xOff,
+					       int yOff) {
+			    const int i = c.first + xOff;
+			    const int j = c.second + yOff;
+			    if (i > 0 && i < src.rows - 1 && j > 0 && j < src.cols - 1) {
+				if (src.at<unsigned char>(i, j) != 0) {
+				    src.at<unsigned char>(i, j) = 0;
+				    ++count;
+				    stack.push({i, j});
+				}
+			    }
+			};
+    while (!stack.empty()) {
+        coord coord = stack.top();
+        stack.pop();
+        action(coord, -1, 0);
+        action(coord, 0, 1);
+        action(coord, 0, -1);
+        action(coord, 1, 0);
+    }
+    return count;
+}
+
+static void mask_largest_connected(cv::Mat & src) {
+    assert(src.depth() != sizeof(uchar));
+    assert(src.channels() == 1);
+    using region_info = std::tuple<int, int, int>;
+    std::vector<region_info> regions;
+    auto src_cpy = src.clone();
+    for (int i = 0; i < src_cpy.rows; ++i) {
+	for (int j = 0; j < src_cpy.cols; ++j) {
+	    auto pixel = src_cpy.at<unsigned char>(i, j);
+	    if (pixel != 0) {
+		regions.emplace_back(consume_connected(src_cpy, i, j), i, j);
+	    }
+	}
+    }
+    if (!regions.empty()) {
+	auto max = std::max_element(regions.begin(), regions.end(),
+				    [](const region_info & lhs, const region_info & rhs) {
+					return std::get<0>(lhs) < std::get<0>(rhs);
+				    });
+	regions.erase(max);
+	for (auto & region : regions) {
+	    consume_connected(src, std::get<1>(region), std::get<2>(region));
+	}
+    }
 }
 
 static void process_sector(const backend::Target & target, const cv::Mat & src) {
@@ -134,23 +164,29 @@ static void process_sector(const backend::Target & target, const cv::Mat & src) 
 		target.fractEndx, target.fractEndy
 	    }}, src);
     cv::Mat working_set = src(roi);
-    cv::Mat out = working_set.clone();
     cv::cvtColor(working_set, working_set, CV_BGR2GRAY);
+    cv::Mat norm, thresh;
     cv::normalize(cv::InputArray(working_set),
-		  cv::InputOutputArray(working_set),
+		  cv::InputOutputArray(norm),
 		  0, 255, cv::NORM_MINMAX, CV_8UC1);
-    cv::threshold(working_set, working_set, target.threshold, 255, 3);
+    cv::threshold(norm, thresh, target.threshold, 255, 3);
+    mask_largest_connected(thresh);
     uv_mutex_lock(&::task_count_mtx);
+    auto suffix = std::to_string(target.rowId) + std::to_string(target.colId);
+    static const auto extension = ".png";
     const std::string origin_fname = ::module_path
-	+ "/../../../frontend/temp/original" +
-	std::to_string(target.rowId) +
-	std::to_string(target.colId) + ".png";
-    cv::imwrite(origin_fname, out);
-    const std::string edit_fname = ::module_path
-	+ "/../../../frontend/temp/edit" +
-	std::to_string(target.rowId) +
-	std::to_string(target.colId) + ".png";
-    cv::imwrite(edit_fname, working_set);
+	+ "/../../../frontend/temp/original" + suffix + extension;
+    cv::imwrite(origin_fname, working_set);
+    const std::string thresh_fname = ::module_path
+	+ "/../../../frontend/temp/thresh" + suffix + extension;
+    cv::imwrite(thresh_fname, thresh);
+    const std::string contour_fname = ::module_path
+	+ "/../../../frontend/temp/contour" + suffix + extension;
+    cv::imwrite(contour_fname, thresh);
+    const std::string norm_fname = ::module_path
+	+ "/../../../frontend/temp/norm" + suffix + extension;
+        std::cout << norm_fname << std::endl;
+    cv::imwrite(norm_fname, norm);
     --::task_count;
     uv_mutex_unlock(&::task_count_mtx);
 }

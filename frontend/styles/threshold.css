@@ -45,7 +45,6 @@ main {
 }
 
 .gallery-box-unsel, .gallery-box-sel {
-    width: 100px;
     float: left;
     margin: 8px;
     image-rendering: crisp-edges;

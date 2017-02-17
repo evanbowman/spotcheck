@@ -16,6 +16,8 @@
 #include <node.h>
 #include <node_object_wrap.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <stack>
+#include <tuple>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <string>
 #include <utility>

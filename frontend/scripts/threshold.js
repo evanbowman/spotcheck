@@ -36,20 +36,27 @@ $("#thresh-slider").on("input", function() {
 var thumbs = [];
 
 function refreshGalleryThumb(row, col) {
-    var img = thumbs[row][col];
-    var src = img.src;
-    var pos = src.indexOf("?");
-    if (pos >= 0) {
-	src = src.substr(0, pos);
+    var norm = thumbs[row][col].norm;
+    var contour = thumbs[row][col].contour;
+    var src1 = norm.src;
+    var src2 = contour.src;
+    var pos1 = src1.indexOf("?");
+    var pos2 = src2.indexOf("?");
+    if (pos1 >= 0) {
+	src1 = src1.substr(0, pos1);
+    }
+    if (pos2 >= 0) {
+	src2 = src2.substr(0, pos2);
     }
     var data = new Date();
-    img.src = src + "?v=" + data.getTime();
+    norm.src = src1 + "?v=" + data.getTime();
+    contour.src = src2 + "?v=" + data.getTime();
 }
 
 function unselAll() {
     for (var i = 0; i < thumbs.length; ++i) {
 	for (var j = 0; j < thumbs[i].length; ++j) {
-	    thumbs[i][j].className = "gallery-box-unsel";
+	    thumbs[i][j].div.className = "gallery-box-unsel";
 	}
     }
 }
@@ -58,17 +65,18 @@ function init() {
     for (var rowNum = 0; rowNum < global.roiRows; ++rowNum) {
 	row = [];
 	thumbs.push(row);
-	var pathPrefix = "../temp/edit";
+	var normPathPrefix = "../temp/norm";
+	var contourPathPrefix = "../temp/contour";
 	for (var colNum = 0; colNum < global.roiCols; ++colNum) {
-	    var img = document.createElement("img");
-	    row.push(img);
-	    img.src = pathPrefix + rowNum + colNum + ".png";
-	    img.tabIndex = 0;
+	    var norm = document.createElement("img");
+	    var contour = document.createElement("img");
+	    norm.src = normPathPrefix + rowNum + colNum + ".png";
+	    contour.src = contourPathPrefix + rowNum + colNum + ".png";
 	    var div = document.createElement("div");
-	    var span = document.createElement("span");
-	    span.appendChild(img);
-	    div.appendChild(span);
-	    img.onclick = (function(tmpRow, tmpCol) {
+	    div.appendChild(norm);
+	    div.appendChild(contour);
+	    row.push({div: div, norm: norm, contour: contour});
+	    div.onclick = (function(tmpRow, tmpCol) {
 		return function() {
 		    unselAll();
 		    this.className = "gallery-box-sel";
@@ -88,7 +96,7 @@ function init() {
 		    document.getElementById("thresh-textbox").value = currentThresh;
 		}
 	    })(rowNum, colNum);
-	    img.className = "gallery-box-unsel";
+	    div.className = "gallery-box-unsel";
 	    $("#gallery").append(div);
 	}
 	var currentThresh = global.backend.get_target_thresh(0, 0);
@@ -96,7 +104,7 @@ function init() {
 	var threshTextbox = document.getElementById("thresh-textbox");
 	threshSlider.value = currentThresh;
 	threshTextbox.value = currentThresh;
-	thumbs[0][0].click();
+	thumbs[0][0].div.click();
     }
 }
 
