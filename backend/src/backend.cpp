@@ -232,5 +232,14 @@ void backend::provide_norm_preview(const callback_info & args) {
 }
 
 void backend::get_target_thresh(const callback_info & args) {
-    // ...
+    assert(args.Length() == 2);
+    const int64_t targetRow = args[0]->IntegerValue();
+    const int64_t targetCol = args[1]->IntegerValue();
+    auto target = std::find_if(m_targets.begin(), m_targets.end(),
+			       [targetRow, targetCol](const Target & target) {
+				   return target.rowId == targetRow && target.colId == targetCol;
+			       });
+    assert(target != m_targets.end());
+    auto isolate = v8::Isolate::GetCurrent();
+    args.GetReturnValue().Set(v8::Integer::New(isolate, target->threshold));
 }

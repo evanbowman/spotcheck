@@ -40,6 +40,8 @@ function init() {
 	    var div = document.createElement("div");
 	    var span = document.createElement("span");
 	    var slider = document.createElement("input");
+	    const rgbaMax = 255;
+	    slider.value = 100 * (global.backend.get_target_thresh(rowNum, colNum) / rgbaMax);
 	    slider.setAttribute("type", "range");
 	    span.appendChild(img);
 	    span.appendChild(slider);
