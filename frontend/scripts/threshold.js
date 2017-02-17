@@ -48,7 +48,16 @@ function init() {
 	    div.appendChild(span);
 	    slider.onchange = (function(tmpRow, tmpCol) {
 		return function() {
-		    window.alert(tmpRow + " " + tmpCol);
+		    global.backend.update_target_thresh(function() {
+			var img = thumbs[tmpRow][tmpCol];
+			var src = img.src;
+			var pos = src.indexOf("?");
+			if (pos >= 0) {
+			    src = src.substr(0, pos);
+			}
+			var date = new Date();
+			img.src = src + "?v=" + date.getTime();
+		    }, tmpRow, tmpCol, (this.value / 100) * rgbaMax);
 		}
 	    })(rowNum, colNum);
 	    img.style.cssText = "width: 100px; float: left; image-rendering: crisp-edges;";

@@ -38,7 +38,7 @@ void backend::init(v8::Local<v8::Object> exports,
 	 {"add_target", add_target},
 	 {"test_thresh", test_thresh},
 	 {"clear_targets", clear_targets},
-	 {"update_target", update_target},
+	 {"update_target_thresh", update_target_thresh},
 	 {"is_busy", is_busy},
 	 {"get_target_thresh", get_target_thresh},
 	 {"provide_norm_preview", provide_norm_preview}}};
@@ -185,8 +185,8 @@ void backend::is_busy(const callback_info & args) {
     args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
 }
 
-void backend::update_target(const callback_info & args) {
-    assert(args.Length() == 8);
+void backend::update_target_thresh(const callback_info & args) {
+    assert(args.Length() == 4);
     const int64_t targetRow = args[1]->IntegerValue();
     const int64_t targetCol = args[2]->IntegerValue();
     auto target = std::find_if(m_targets.begin(), m_targets.end(),
@@ -194,11 +194,7 @@ void backend::update_target(const callback_info & args) {
 				   return target.rowId == targetRow && target.colId == targetCol;
 			       });
     assert(target != m_targets.end());
-    target->fractStartx = std::min(1.0, v8::Local<v8::Number>::Cast(args[3])->Value());
-    target->fractStarty = std::min(1.0, v8::Local<v8::Number>::Cast(args[4])->Value());
-    target->fractEndx = std::min(1.0, v8::Local<v8::Number>::Cast(args[5])->Value());
-    target->fractEndy = std::min(1.0, v8::Local<v8::Number>::Cast(args[6])->Value());
-    target->threshold = args[7]->IntegerValue();
+    target->threshold = args[3]->IntegerValue();
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     async::start(js_callback, [target] {
 	    process_sector(*target, m_source_image);

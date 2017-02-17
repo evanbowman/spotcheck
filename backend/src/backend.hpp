@@ -42,7 +42,7 @@ private:
     [[deprecated]] static void test_thresh(const callback_info & args);
     static void add_target(const callback_info & args);
     static void get_target_thresh(const callback_info & args);
-    static void update_target(const callback_info & args);
+    static void update_target_thresh(const callback_info & args);
     static void provide_norm_preview(const callback_info & args);
     static void is_busy(const callback_info & args);
     static cv::Mat m_source_image;
