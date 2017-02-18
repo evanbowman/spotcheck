@@ -64,10 +64,6 @@
     display: inline-block;
 }
 
-#index-next {
-    margin-top: 9px;
-}
-
 html, body {
     margin: 0;
     height: 100%;
@@ -96,5 +92,6 @@ header, footer {
 }
 
 footer {
+    padding-top: 9px;
     text-align: center;
 }
