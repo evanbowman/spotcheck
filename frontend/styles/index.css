@@ -1,3 +1,5 @@
+@import url("appwindow.css");
+
 #tiff-frame {
     outline: 2px dashed #74a3a7;
     outline-offset: -10px;
@@ -64,31 +66,8 @@
     display: inline-block;
 }
 
-html, body {
-    margin: 0;
-    height: 100%;
-    min-height: 100%;
-    overflow: hidden;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-}
-
 main {
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-    flex: auto;
     padding: 15px;
-}
-
-header, footer, main {
-    position: relative;
-}
-
-header, footer {
-    flex: none;
 }
 
 footer {
