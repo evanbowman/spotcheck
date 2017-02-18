@@ -68,9 +68,9 @@ function parseGal(fileData) {
 	    break;
 	}
     }
-    var galdata = new Array(lines.length - n);
-    var rowMax = 0;
-    var colMax = 0;
+    var galdata = [];
+    var rowMax = 1;
+    var colMax = 1;
     for (var k = n; k < lines.length; k++) {
 	//SPLIT LINE DATA
 	var temp = lines[k].split("	");
@@ -96,10 +96,23 @@ function parseGal(fileData) {
 	empty_container.Name = temp[4];
 
 	//PUT CONTAINER INTO ARRAY
-	galdata[k] = empty_container;
+	galdata.push(empty_container);
     }
     global.roiRows = rowMax;
     global.roiCols = colMax;
+    global.galData = new Array(rowMax);
+    for (var i = 0; i < rowMax; ++i) {
+	global.galData[i] = new Array(colMax);
+    }
+    for (var i = 0; i < galdata.length; ++i) {
+	var row = galdata[i].row - 1;
+	var col = galdata[i].column - 1;
+	var infoElement = Object.freeze({
+	    id: galdata[i].id,
+	    name: galdata[i].name
+	});
+	global.galData[row][col] = infoElement;
+    }
 }
 
 ready(() => {
