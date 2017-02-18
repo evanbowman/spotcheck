@@ -219,14 +219,16 @@ void backend::is_busy(const callback_info & args) {
 
 int find_background(cv::Mat & src, cv::Mat & mask) {
   long sum = 0;
+  int  quant = 0;
   for(int i=0; i < mask.rows ; ++i){
     for( int j = 0; j < mask.cols; ++j){
       if(mask.at<unsigned char>(i,j)==0){
           sum += src.at<unsigned char>(i,j);
+          quant++;
       }
     }
   }
-  return sum / (mask.rows * mask.cols);
+  return sum / quant;
 }
 
 
