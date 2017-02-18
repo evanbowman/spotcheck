@@ -10,21 +10,18 @@ function ready(fn) {
 
 function populateTable(resultsJSON) {
     var table = document.getElementById("results-table");
-    for (var i = 0; i < resultsJSON.length; ++i) {
-	var obj = resultsJSON[i];
-	var row = table.insertRow(i);
-	var cellno = 0;
-	for (var key in obj) {
-	    if (obj.hasOwnProperty(key)) {
-		var cell = row.insertCell(cellno);
-		cell.innerHTML = obj[key];
-		++cellno;
-	    }
+    var galData = global.galData;
+    var numRows = 0;
+    for (var i = 0; i < galData.length; ++i) {
+	for (var j = 0; j < galData[i].length; ++j) {
+	    var row = table.insertRow(numRows++);
+	    var cell = row.insertCell(0);
+	    cell.innerHTML = galData[i][j].id;
 	}
     }
 }
 
-function onStart() {
+function init() {
     fs.readFile("./frontend/temp/results.json", (err, data) => {
 	if (err) {
 	    window.alert(err);
@@ -43,4 +40,4 @@ function onExportPressed() {
     // TODO
 }
 
-ready(onStart());
+ready(init());

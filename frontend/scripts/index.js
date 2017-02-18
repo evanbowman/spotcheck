@@ -92,8 +92,8 @@ function parseGal(fileData) {
 	empty_container.block = temp[0];
 	empty_container.row = temp[1];
 	empty_container.column = temp[2];
-	empty_container.ID = temp[3];
-	empty_container.Name = temp[4];
+	empty_container.id = temp[3];
+	empty_container.name = temp[4];
 
 	//PUT CONTAINER INTO ARRAY
 	galdata.push(empty_container);
