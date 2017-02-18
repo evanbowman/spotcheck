@@ -2,6 +2,8 @@
 
 v8::Persistent<v8::Function> backend::constructor;
 
+std::vector<result> backend::m_results;
+
 cv::Mat backend::m_source_image;
 
 std::vector<backend::Target> backend::m_targets;
@@ -31,7 +33,7 @@ static size_t task_count;
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 10> mappings = {
+    static const std::array<std::pair<const char *, membr_type>, 11> mappings = {
         {{"import_source_image", import_source_image},
          {"import_source_gal", import_source_gal},
          {"split_sectors", split_sectors},
@@ -40,6 +42,7 @@ void backend::init(v8::Local<v8::Object> exports,
 	 {"launch_analysis", launch_analysis},
 	 {"update_target_thresh", update_target_thresh},
 	 {"is_busy", is_busy},
+	 {"write_results_JSON", write_results_JSON},
 	 {"get_target_thresh", get_target_thresh},
 	 {"provide_norm_preview", provide_norm_preview}}};
     static const char * js_class_name = "backend";
@@ -172,10 +175,10 @@ static void process_sector(const backend::Target & target, const cv::Mat & src) 
 void backend::split_sectors(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
+    uv_mutex_lock(&::task_mtx);
+    ::task_count = m_targets.size();
+    uv_mutex_unlock(&::task_mtx);
     for (auto & target : m_targets) {
-	uv_mutex_lock(&::task_mtx);
-	++::task_count;
-	uv_mutex_unlock(&::task_mtx);
 	async::start(js_callback, [&target] {
 		auto roi = make_cv_roi({{
 			    target.fractStartx, target.fractStarty,
@@ -203,123 +206,133 @@ void backend::is_busy(const callback_info & args) {
 }
 
 int find_background(cv::Mat & src, cv::Mat & mask) {
-  long sum = 0;
-  int  quant = 0;
-  for(int i=0; i < mask.rows ; ++i){
-    for( int j = 0; j < mask.cols; ++j){
-      if(mask.at<unsigned char>(i,j)==0){
-          sum += src.at<unsigned char>(i,j);
-          quant++;
-      }
+    long sum = 0;
+    int  quant = 0;
+    for (int i = 0; i < mask.rows; ++i) {
+	for (int j = 0; j < mask.cols; ++j) {
+	    if (mask.at<unsigned char>(i, j) == 0) {
+		sum += src.at<unsigned char>(i, j);
+		quant++;
+	    }
+	}
     }
-  }
-  return sum / quant;
+    return sum / quant;
 }
 
 int find_area(cv::Mat & src, cv::Mat & mask) {
-  int  quant = 0;
-  for(int i=0; i < mask.rows ; ++i){
-    for( int j = 0; j < mask.cols; ++j){
-      if(mask.at<unsigned char>(i,j)>0){
-          quant++;
-      }
+    int  quant = 0;
+    for (int i = 0; i < mask.rows; ++i) {
+	for (int j = 0; j < mask.cols; ++j) {
+	    if (mask.at<unsigned char>(i, j) > 0) {
+		quant++;
+	    }
+	}
     }
-  }
-  return quant;
+    return quant;
 }
 
 unsigned char find_max_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
-  unsigned char max = 0;
-  for(int i=0; i < mask.rows ; ++i){
-    for( int j = 0; j < mask.cols; ++j){
-      if(mask.at<unsigned char>(i,j)>0){
-          if(max < src.at<unsigned char>(i,j)-bgHeight){
-            max = src.at<unsigned char>(i,j)-bgHeight;
-          }
-      }
+    unsigned char max = 0;
+    for (int i=0; i < mask.rows; ++i) {
+	for (int j = 0; j < mask.cols; ++j) {
+	    if (mask.at<unsigned char>(i, j) > 0) {
+		if (max < src.at<unsigned char>(i,j) - bgHeight) {
+		    max = src.at<unsigned char>(i, j) - bgHeight;
+		}
+	    }
+	}
     }
-  }
-  return max;
+    return max;
 }
 
 unsigned char find_min_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
-  unsigned char min = 255;
-  for(int i=0; i < mask.rows ; ++i){
-    for( int j = 0; j < mask.cols; ++j){
-      if(mask.at<unsigned char>(i,j)>0){
-          if(min > src.at<unsigned char>(i,j)-bgHeight){
-            min = src.at<unsigned char>(i,j)-bgHeight;
-          }
-      }
+    unsigned char min = 255;
+    for (int i = 0; i < mask.rows; ++i) {
+	for (int j = 0; j < mask.cols; ++j) {
+	    if (mask.at<unsigned char>(i, j) > 0) {
+		if (min > src.at<unsigned char>(i, j) - bgHeight) {
+		    min = src.at<unsigned char>(i, j) - bgHeight;
+		}
+	    }
+	}
     }
-  }
-  return min;
+    return min;
 }
 
 
 long find_volume(cv::Mat & src, cv::Mat & mask, int bgHeight){
-  long volume = 0;
-
-  for(int i=0; i < mask.rows ; ++i){
-    for(int j = 0; j < mask.cols; ++j){
-      if(mask.at<unsigned char>(i,j)>0){
-          volume += src.at<unsigned char>(i,j) - bgHeight;
-      }
+    long volume = 0;
+    for (int i = 0; i < mask.rows; ++i){
+	for (int j = 0; j < mask.cols; ++j) {
+	    if (mask.at<unsigned char>(i, j) > 0) {
+		volume += src.at<unsigned char>(i, j) - bgHeight;
+	    }
+	}
     }
-  }
-
-  return volume;
+    return volume;
 }
 
 long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight){
-  long volume = 0;
-  long quant  = 0;
-
-  for(int i=0; i < mask.rows ; ++i){
-    for(int j = 0; j < mask.cols; ++j){
-      if(mask.at<unsigned char>(i,j)>0){
-          volume += src.at<unsigned char>(i,j) - bgHeight;
-          quant++;
-      }
+    long volume = 0;
+    long quant  = 0;
+    for (int i=0; i < mask.rows ; ++i) {
+	for (int j = 0; j < mask.cols; ++j) {
+	    if (mask.at<unsigned char>(i, j) > 0) {
+		volume += src.at<unsigned char>(i,j) - bgHeight;
+		quant++;
+	    }
+	}
     }
-  }
-
-  return volume/quant;
+    return volume / quant;
 }
 
+static inline void populate_results_JSON(const std::vector<result> & results,
+					 std::ostream & ostr) {
+    ostr << "[";
+    const size_t max_index = results.size() - 1;
+    size_t index = 0;
+    for (auto & res : results) {
+	res.serialize(ostr);
+	if (index != max_index) {
+	    ostr << ",";
+	}
+	++index;
+    }
+    ostr << "]" << std::endl;
+}
 
-
-
-
+void backend::write_results_JSON(const callback_info & args) {
+    assert(args.Length() == 1);
+    auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
+    async::start(js_callback, [] {
+	    std::fstream file(::module_path + "/../../../frontend/temp/results.json", std::fstream::out);
+	    populate_results_JSON(m_results, file);
+	});
+}
 
 void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
-    // ...
     // Find Background
     int background_avg_height = find_background(src, mask);
-
     // Background Subtraction
     long volume = find_volume(src,mask, background_avg_height);
-
     int area = find_area(src, mask);
-
-    auto min_height = find_min_height(src,mask,background_avg_height);
-    auto max_height = find_max_height(src,mask,background_avg_height);
-
+    auto min_height = find_min_height(src, mask, background_avg_height);
+    auto max_height = find_max_height(src, mask, background_avg_height);
+    long avg_height = find_average_height(src, mask, background_avg_height);
     uv_mutex_lock(&task_mtx);
-    std::cout <<"background_avg_height "<< background_avg_height
-    << "\n volume " << volume << "\n area " << area << "\n min " << (int) min_height<<
-    "\n max " << (int) max_height << std::endl;
+    m_results.emplace_back(target.rowId, target.colId, background_avg_height, area,
+			   min_height, max_height, volume, avg_height);
     uv_mutex_unlock(&task_mtx);
-
 }
 
 void backend::launch_analysis(const callback_info & args) {
     assert(args.Length() == 1);
+    m_results.clear();
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
+    uv_mutex_lock(&::task_mtx);
+    ::task_count = m_targets.size();
+    uv_mutex_unlock(&::task_mtx);
     for (auto & target : m_targets) {
-	uv_mutex_lock(&::task_mtx);
-	++::task_count;
-	uv_mutex_unlock(&::task_mtx);
 	async::start(js_callback, [&target] {
 		cv::Mat src, mask;
 		static const auto extension = ".png";
@@ -341,6 +354,7 @@ void backend::launch_analysis(const callback_info & args) {
 		uv_mutex_unlock(&::task_mtx);
 	    });
     }
+    std::cout << ::module_path << std::endl;
 }
 
 void backend::update_target_thresh(const callback_info & args) {

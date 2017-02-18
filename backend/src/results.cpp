@@ -6,7 +6,13 @@ result::result(int rowId, int colId, int bgHeight, int area,
    m_max_height(max_height), m_volume(volume), m_average_height(average_height)
    {}
 
-
-void result::serialize(std::ostream& target){
-
+void result::serialize(std::ostream & ostr) const {
+    ostr << "{"
+	 << "\"row\":" << "\"" << m_rowId << "\","
+	 << "\"col\":" << "\"" << m_colId << "\","
+	 << "\"area\":" << "\"" << m_area << "\","
+	 << "\"min height\":" << "\"" << static_cast<int>(m_min_height) << "\","
+	<< "\"max height\":" << "\"" << static_cast<int>(m_max_height) << "\","
+	 << "\"avg height\":" << "\"" << m_average_height << "\","
+	 << "\"volume\":" << "\"" << m_volume << "\"}";
 }

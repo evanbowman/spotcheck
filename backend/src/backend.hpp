@@ -9,6 +9,7 @@
 #include <array>
 #include <random>
 #include <cassert>
+#include <fstream>
 #include <cmath>
 #include <algorithm>
 #include <node.h>
@@ -43,9 +44,11 @@ private:
     static void analyze_target(Target & target, cv::Mat & src, cv::Mat & mask);
     static void add_target(const callback_info & args);
     static void get_target_thresh(const callback_info & args);
+    static void write_results_JSON(const callback_info & args);
     static void update_target_thresh(const callback_info & args);
     static void provide_norm_preview(const callback_info & args);
     static void is_busy(const callback_info & args);
+    static std::vector<result> m_results;
     static cv::Mat m_source_image;
     static std::vector<Target> m_targets;
 };
