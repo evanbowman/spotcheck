@@ -85,21 +85,6 @@ void backend::import_source_gal(const callback_info & args) {
 	});
 }
 
-// inline static void populate_results_json(const std::vector<spot> & spots,
-//                                        std::ostream & ostr) {
-//     ostr << "[";
-//     const size_t index_max = spots.size() - 1;
-//     size_t index = 0;
-//     for (const auto & spot : spots) {
-//         spot.serialize(ostr);
-//         if (index != index_max) {
-//             ostr << ",";
-//         }
-//         index += 1;
-//     }
-//     ostr << "]" << std::endl;
-// }
-
 static int consume_connected(cv::Mat & src, int x, int y) {
     int count = 0;
     using coord = std::pair<int, int>;
