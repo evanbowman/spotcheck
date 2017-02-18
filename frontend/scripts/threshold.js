@@ -9,7 +9,7 @@ function ready(fn) {
 function onNextPressed() {
     global.backend.launch_analysis(function() {
 	if (!global.backend.is_busy()) {
-	    window.location.href = "frontend/layouts/analysis.html";
+	    window.location.href = "frontend/layouts/results.html";
 	}
     });
 }

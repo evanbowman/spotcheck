@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-	<link href="../styles/analyze.css" type="text/css" rel="stylesheet">
+	<link href="../styles/spotcheck.css" type="text/css" rel="stylesheet">
+	<link href="../styles/results.css" type="text/css" rel="stylesheet">
 	<title>SpotCheck</title>
     </head>
-    <header id ="header">
-	
-    </header>
     <body>
-	<table id="results-table"></table>
-    </body>
-    <script src="../scripts/results.js"></script>
+	<header id ="header">
+	    
+	</header>
+	<main>
+	    <table id="results-table"></table>
+	</main>
+	<footer>
+	    <script src="../scripts/results.js"></script>
+	    <input type="button" id="back" value="Back" onclick="onBackPressed()">
+	    <input type="button" id="export" value="Export" onclick="onExportPressed()">
+	</footer>
 </html>
