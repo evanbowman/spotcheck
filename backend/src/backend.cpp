@@ -217,9 +217,45 @@ void backend::is_busy(const callback_info & args) {
     args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
 }
 
-void backend::analyze_target(Target & target, cv::Mat src, cv::Mat mask) {
-    // ...
+int find_background(cv::Mat & src, cv::Mat & mask) {
+  long sum = 0;
+  for(int i=0; i < mask.rows ; ++i){
+    for( int j = 0; j < mask.cols; ++j){
+      if(mask.at<unsigned char>(i,j)==0){
+          sum += src.at<unsigned char>(i,j);
+      }
+    }
+  }
+  return sum / (mask.rows * mask.cols);
 }
+
+
+long find_volume(cv::Mat & src, cv::Mat & mask, int bgHeight){
+  long volume = 0;
+
+  for(int i=0; i < mask.rows ; ++i){
+    for(int j = 0; j < mask.cols; ++j){
+      if(mask.at<unsigned char>(i,j)>0){
+          volume += src.at<unsigned char>(i,j) - bgHeight;
+      }
+    }
+  }
+
+  return volume;
+}
+
+void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
+    // ...
+    // Find Background
+    int background_avg_height = find_background(src, mask);
+
+    // Background Subtraction
+    long volume = find_volume(src,mask, background_avg_height);
+
+    std::cout << background_avg_height << " " << volume << std::endl;
+
+}
+
 
 void backend::launch_analysis(const callback_info & args) {
     assert(args.Length() == 1);
