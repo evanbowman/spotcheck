@@ -1,3 +1,5 @@
+var fs = require("fs");
+
 var g_hasHeightMap = false;
 var g_hasMetaData = false;
 
@@ -48,15 +50,71 @@ ready(() => {
     });
 });
 
+function create_info_container() {
+    this.block = 0;
+    this.row = 0;
+    this.column = 0;
+    this.id = null;
+    this.name = null;
+}
+
+function parseGal(fileData) {
+    var lines = fileData.split("\n");
+    var datahead = '\"Block\"	\"Row\"	\"Column\"	\"ID\"	\"Name\"';
+    var n;
+    for (n = 0; n < lines.length; ++n) {
+	if (lines[n].trim() == datahead) {
+	    ++n;
+	    break;
+	}
+    }
+    var galdata = new Array(lines.length - n);
+    var rowMax = 0;
+    var colMax = 0;
+    for (var k = n; k < lines.length; k++) {
+	//SPLIT LINE DATA
+	var temp = lines[k].split("	");
+	if (temp.length != 5) {
+	    continue;
+	}
+
+	//CREATE CONTAINER
+	empty_container = new create_info_container();
+	
+	//CONVERT STRINGS TO INTS
+	temp[0] = parseInt(temp[0]);
+	temp[1] = parseInt(temp[1]);
+	temp[2] = parseInt(temp[2]);
+	rowMax = Math.max(temp[1], rowMax);
+	colMax = Math.max(temp[2], colMax);
+	
+	//PUT DATA INTO CONTAINER
+	empty_container.block = temp[0];
+	empty_container.row = temp[1];
+	empty_container.column = temp[2];
+	empty_container.ID = temp[3];
+	empty_container.Name = temp[4];
+
+	//PUT CONTAINER INTO ARRAY
+	galdata[k] = empty_container;
+    }
+    global.roiRows = rowMax;
+    global.roiCols = colMax;
+}
+
 ready(() => {
     updateFrame("gal-frame", (path) => {
 	if (verifyExtension(path, "gal")) {
-	    global.backend.import_source_gal(() => {
+	    fs.readFile(path, (err, data) => {
+		if (err) {
+		    window.alert("Failed to load file: " + err);
+		}
+		parseGal("" + data);
 		g_hasMetaData = true;
 		if (g_hasHeightMap) {
 		    ready(enableNextButton);
 		}
-            }, path);
+	    });
 	} else {
 	    window.alert("File extension invalid. Expected: gal");
 	}

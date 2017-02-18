@@ -7,8 +7,6 @@ function ready(fn) {
 }
 
 var g_selectionActive = false;
-global.roiRows = 1;
-global.roiCols = 1;
 var g_marqueeTopLeft = Object.freeze({x: 0, y: 0});
 var g_marqueeBottomRight = Object.freeze({x: 1, y: 1});
 var g_dragging = false;
@@ -227,3 +225,8 @@ function enableNextButton() {
 }
 
 ready(disableNextButton);
+
+ready(() => {
+    document.getElementById("roi-rows-tb").value = global.roiRows;
+    document.getElementById("roi-cols-tb").value = global.roiCols;
+});
