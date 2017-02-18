@@ -217,8 +217,115 @@ void backend::is_busy(const callback_info & args) {
     args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
 }
 
-void backend::analyze_target(Target & target, cv::Mat src, cv::Mat mask) {
+int find_background(cv::Mat & src, cv::Mat & mask) {
+  long sum = 0;
+  int  quant = 0;
+  for(int i=0; i < mask.rows ; ++i){
+    for( int j = 0; j < mask.cols; ++j){
+      if(mask.at<unsigned char>(i,j)==0){
+          sum += src.at<unsigned char>(i,j);
+          quant++;
+      }
+    }
+  }
+  return sum / quant;
+}
+
+int find_area(cv::Mat & src, cv::Mat & mask) {
+  int  quant = 0;
+  for(int i=0; i < mask.rows ; ++i){
+    for( int j = 0; j < mask.cols; ++j){
+      if(mask.at<unsigned char>(i,j)>0){
+          quant++;
+      }
+    }
+  }
+  return quant;
+}
+
+unsigned char find_max_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
+  unsigned char max = 0;
+  for(int i=0; i < mask.rows ; ++i){
+    for( int j = 0; j < mask.cols; ++j){
+      if(mask.at<unsigned char>(i,j)>0){
+          if(max < src.at<unsigned char>(i,j)-bgHeight){
+            max = src.at<unsigned char>(i,j)-bgHeight;
+          }
+      }
+    }
+  }
+  return max;
+}
+
+unsigned char find_min_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
+  unsigned char min = 255;
+  for(int i=0; i < mask.rows ; ++i){
+    for( int j = 0; j < mask.cols; ++j){
+      if(mask.at<unsigned char>(i,j)>0){
+          if(min > src.at<unsigned char>(i,j)-bgHeight){
+            min = src.at<unsigned char>(i,j)-bgHeight;
+          }
+      }
+    }
+  }
+  return min;
+}
+
+
+long find_volume(cv::Mat & src, cv::Mat & mask, int bgHeight){
+  long volume = 0;
+
+  for(int i=0; i < mask.rows ; ++i){
+    for(int j = 0; j < mask.cols; ++j){
+      if(mask.at<unsigned char>(i,j)>0){
+          volume += src.at<unsigned char>(i,j) - bgHeight;
+      }
+    }
+  }
+
+  return volume;
+}
+
+long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight){
+  long volume = 0;
+  long quant  = 0;
+
+  for(int i=0; i < mask.rows ; ++i){
+    for(int j = 0; j < mask.cols; ++j){
+      if(mask.at<unsigned char>(i,j)>0){
+          volume += src.at<unsigned char>(i,j) - bgHeight;
+          quant++;
+      }
+    }
+  }
+
+  return volume/quant;
+}
+
+
+
+
+
+
+void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     // ...
+    // Find Background
+    int background_avg_height = find_background(src, mask);
+
+    // Background Subtraction
+    long volume = find_volume(src,mask, background_avg_height);
+
+    int area = find_area(src, mask);
+
+    auto min_height = find_min_height(src,mask,background_avg_height);
+    auto max_height = find_max_height(src,mask,background_avg_height);
+
+    uv_mutex_lock(&task_mtx);
+    std::cout <<"background_avg_height "<< background_avg_height
+    << "\n volume " << volume << "\n area " << area << "\n min " << (int) min_height<<
+    "\n max " << (int) max_height << std::endl;
+    uv_mutex_unlock(&task_mtx);
+
 }
 
 void backend::launch_analysis(const callback_info & args) {

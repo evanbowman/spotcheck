@@ -39,7 +39,7 @@ private:
     static void split_sectors(const callback_info & args);
     static void clear_targets(const callback_info & args);
     static void launch_analysis(const callback_info & args);
-    static void analyze_target(Target & target, cv::Mat src, cv::Mat mask);
+    static void analyze_target(Target & target, cv::Mat & src, cv::Mat & mask);
     static void add_target(const callback_info & args);
     static void get_target_thresh(const callback_info & args);
     static void update_target_thresh(const callback_info & args);
