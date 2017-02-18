@@ -1,13 +1,10 @@
 #pragma once
 
-#include "analyze.hpp"
 #include "make_cv_roi.hpp"
 #include "async.hpp"
-#include "parse_gal.hpp"
-#include "spot.hpp"
-#include "test_thresh.hpp"
 #include "preview_normalized.hpp"
 
+#include <iostream>
 #include <array>
 #include <random>
 #include <cassert>
@@ -43,7 +40,6 @@ private:
     static void clear_targets(const callback_info & args);
     static void launch_analysis(const callback_info & args);
     static void analyze_target(Target & target, cv::Mat src, cv::Mat mask);
-    [[deprecated]] static void test_thresh(const callback_info & args);
     static void add_target(const callback_info & args);
     static void get_target_thresh(const callback_info & args);
     static void update_target_thresh(const callback_info & args);

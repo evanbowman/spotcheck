@@ -31,12 +31,11 @@ static size_t task_count;
 void backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 11> mappings = {
+    static const std::array<std::pair<const char *, membr_type>, 10> mappings = {
         {{"import_source_image", import_source_image},
          {"import_source_gal", import_source_gal},
          {"split_sectors", split_sectors},
 	 {"add_target", add_target},
-	 {"test_thresh", test_thresh},
 	 {"clear_targets", clear_targets},
 	 {"launch_analysis", launch_analysis},
 	 {"update_target_thresh", update_target_thresh},
@@ -86,24 +85,20 @@ void backend::import_source_gal(const callback_info & args) {
 	});
 }
 
-inline static void populate_results_json(const std::vector<spot> & spots,
-                                       std::ostream & ostr) {
-    ostr << "[";
-    const size_t index_max = spots.size() - 1;
-    size_t index = 0;
-    for (const auto & spot : spots) {
-        spot.serialize(ostr);
-        if (index != index_max) {
-            ostr << ",";
-        }
-        index += 1;
-    }
-    ostr << "]" << std::endl;
-}
-
-void backend::test_thresh(const callback_info & args) {
-    // ...
-}
+// inline static void populate_results_json(const std::vector<spot> & spots,
+//                                        std::ostream & ostr) {
+//     ostr << "[";
+//     const size_t index_max = spots.size() - 1;
+//     size_t index = 0;
+//     for (const auto & spot : spots) {
+//         spot.serialize(ostr);
+//         if (index != index_max) {
+//             ostr << ",";
+//         }
+//         index += 1;
+//     }
+//     ostr << "]" << std::endl;
+// }
 
 static int consume_connected(cv::Mat & src, int x, int y) {
     int count = 0;
@@ -185,7 +180,6 @@ static void process_sector(const backend::Target & target, const cv::Mat & src) 
     cv::imwrite(segment_fname, thresh);
     const std::string norm_fname = ::module_path
 	+ "/../../../frontend/temp/norm" + suffix + extension;
-        std::cout << norm_fname << std::endl;
     cv::imwrite(norm_fname, norm);
     uv_mutex_unlock(&::task_mtx);
 }
