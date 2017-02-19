@@ -1,5 +1,17 @@
 #include "analysis.hpp"
 
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+// threshold for canny edge detection
+const int THRESH = 100;
+
+cv::RNG rng(12345);
+
+
+
 
 int find_background(cv::Mat & src, cv::Mat & mask) {
   long sum = 0;
@@ -55,7 +67,6 @@ unsigned char find_min_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
   return min;
 }
 
-
 long find_volume(cv::Mat & src, cv::Mat & mask, int bgHeight){
   long volume = 0;
 
@@ -84,4 +95,32 @@ long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight){
   }
 
   return volume/quant;
+}
+
+void find_circularity(cv::Mat & mask){
+
+  //Do canny to get the edges of the mask,
+  cv::Mat canny_output;
+  std::vector<std::vector<cv::Point> > contours;
+  std::vector<cv::Vec4i> hierarchy;
+
+  cv::Canny(mask,canny_output, THRESH, THRESH*2, 3);
+
+  //find countours
+  cv::findContours( canny_output, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE, cv::Point(0, 0) );
+
+  std::cout << "#found curves" <<contours.size() << std::endl;
+
+
+
+
+  // auto perimeter = cv::cvArcLength();
+
+
+
+
+
+
+  /////////
+
 }

@@ -8,3 +8,4 @@ unsigned char find_max_height(cv::Mat & src, cv::Mat & mask, int bgHeight);
 unsigned char find_min_height(cv::Mat & src, cv::Mat & mask, int bgHeight);
 long find_volume(cv::Mat & src, cv::Mat & mask, int bgHeight);
 long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight);
+void find_circularity(cv::Mat & mask);

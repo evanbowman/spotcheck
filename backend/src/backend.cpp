@@ -231,8 +231,10 @@ void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     auto min_height = find_min_height(src,mask,background_avg_height);
     auto max_height = find_max_height(src,mask,background_avg_height);
 
+
     uv_mutex_lock(&task_mtx);
     std::cout << background_avg_height << " " << volume << std::endl;
+    find_circularity(mask);
     uv_mutex_unlock(&task_mtx);
 
 }
