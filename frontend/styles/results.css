@@ -10,12 +10,20 @@
     src: url("../fonts/OpenSans-Bold.ttf");
 }
 
+table {
+    user-select: none;
+}
+
 thead {
     font-family: "open-sans-bold";
     font-size: 14.5px;
     background: #7fb4b8;
     color: white;
     cursor: pointer;
+}
+
+.selected-thead {
+    background: #6E9DA0;
 }
 
 .hidden {
@@ -33,6 +41,7 @@ td {
 }
 
 tbody {
+    cursor: default;
     font-family: "open-sans-reg";
     font-size: 14.5px;
     color: #45484B;
@@ -40,7 +49,6 @@ tbody {
 
 #proxy-thead {
     width: 100%;
-    margin-top: 51px;
     border-collapse: collapse;
     z-index: 999;
     overflow: hidden;
@@ -52,10 +60,6 @@ tbody {
     width: 100%;
     overflow: hidden;
     table-layout: fixed;
-}
-
-main {
-    margin-top: 39px;
 }
 
 footer {

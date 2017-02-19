@@ -1,7 +1,7 @@
 var fs = require("fs");
 
 function ready(fn) {
-    if (document.readyState != "loading"){
+    if (document.readyState != "loading") {
         fn();
     } else {
         document.addEventListener("DOMContentLoaded", fn);
@@ -66,6 +66,14 @@ function inflateTbody(resultsJSON, table) {
     return tableBody;
 }
 
+
+function deselectAllTheadCells() {
+    var table = document.getElementById("proxy-thead");
+    for (var i = 0, cell; cell = table.rows[0].cells[i]; i++) {
+	cell.className = "";
+    }
+}
+
 function populateTable(resultsJSON) {
     var table = document.getElementById("results-table");
     var proxyTable = document.getElementById("proxy-thead");
@@ -77,14 +85,18 @@ function populateTable(resultsJSON) {
 	return;
     }
     for (var i = 0, cell; cell = proxyTable.rows[0].cells[i]; i++) {
-	cell.onclick = (function(cellno, tab) {
+	cell.onclick = (function(cellno, tab, head) {
 	    return function() {
+		for (var i = 0, cell; cell = head.rows[0].cells[i]; i++) {
+		    cell.className = "";
+		}
+		head.rows[0].cells[cellno].className = "selected-thead";
 		sortTable(tab.tBodies[0], cellno);
 	    }
-	})(i, table);
+	})(i, table, proxyTable);
     }
     inflateTbody(resultsJSON, table);
-    sortTable(table.tBodies[0], 0);
+    proxyTable.rows[0].cells[0].click();
 }
 
 function sortTable(tbl, bycell) {
