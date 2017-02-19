@@ -111,11 +111,10 @@ void find_circularity(cv::Mat & mask){
 
   std::cout << "#found curves" <<contours.size() << std::endl;
 
-
-
-
   // auto perimeter = cv::cvArcLength();
+  auto area= cv::contourArea(contours.front());
 
+  std::cout << "area " <<area << '\n';
 
 
 

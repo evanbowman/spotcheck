@@ -233,7 +233,8 @@ void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
 
 
     uv_mutex_lock(&task_mtx);
-    std::cout << background_avg_height << " " << volume << std::endl;
+    // std::cout << background_avg_height << " " << volume << std::endl;
+    std::cout <<"area " << area << std::endl;
     find_circularity(mask);
     uv_mutex_unlock(&task_mtx);
 
