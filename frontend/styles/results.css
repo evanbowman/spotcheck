@@ -13,6 +13,22 @@
 thead {
     font-family: "open-sans-bold";
     font-size: 14.5px;
+    background: #7fb4b8;
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+.noflex {
+    flex: none;
+}
+
+td {
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 tbody {
@@ -21,9 +37,24 @@ tbody {
     color: #45484B;
 }
 
+#proxy-thead {
+    width: 100%;
+    margin-top: 51px;
+    border-collapse: collapse;
+    z-index: 999;
+    overflow: hidden;
+    table-layout: fixed;
+}
+
 #results-table {
     border-collapse: collapse;
     width: 100%;
+    overflow: hidden;
+    table-layout: fixed;
+}
+
+main {
+    margin-top: 39px;
 }
 
 footer {

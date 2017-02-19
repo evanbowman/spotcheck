@@ -8,26 +8,23 @@ function ready(fn) {
     }
 }
 
-function populateTable(resultsJSON) {
-    var table = document.getElementById("results-table");
-    var galData = global.galData;
-    var numRows = 0;
-    if (resultsJSON.length > 0) {
-	var obj = resultsJSON[0];
-	var header = table.createTHead();
-	var row = header.insertRow(numRows++);
-	var cellno = 0;
-	var cell = row.insertCell(cellno++);
-	cell.innerHTML = "name";
+function inflateThead(resultsJSON, table) {
+    var obj = resultsJSON[0];
+    var header = table.createTHead();
+    var row = header.insertRow(0);
+    var cellno = 0;
+    var cell = row.insertCell(cellno++);
+    cell.innerHTML = "name";
+    cell = row.insertCell(cellno++);
+    cell.innerHTML = "id";
+    for (var key in obj) {
 	cell = row.insertCell(cellno++);
-	cell.innerHTML = "id";
-	for (var key in obj) {
-	    cell = row.insertCell(cellno++);
-	    cell.innerHTML = key;
-	}
-    } else {
-	return;
+	cell.innerHTML = key;
     }
+    return header;
+}
+
+function inflateTbody(resultsJSON, table) {
     var tableBody = document.createElement('TBODY');
     table.appendChild(tableBody);
     for (var i = 0; i < resultsJSON.length; ++i) {
@@ -66,7 +63,23 @@ function populateTable(resultsJSON) {
 	    }
 	}
     }
-    sortTable(document.getElementById("results-table").tBodies[0]);
+    return tableBody;
+}
+
+function populateTable(resultsJSON) {
+    var table = document.getElementById("results-table");
+    var proxyTable = document.getElementById("proxy-thead");
+    if (resultsJSON.length > 0) {
+	var header = inflateThead(resultsJSON, table);
+	header.className = "hidden";
+	var fakeHeader = inflateThead(resultsJSON, proxyTable);
+    } else {
+	return;
+    }
+    inflateTbody(resultsJSON, table);
+    var proxyBod = inflateTbody(resultsJSON, proxyTable);
+    proxyBod.className = "hidden";
+    sortTable(table.tBodies[0]);
 }
 
 function sortTable(tbl) {
@@ -105,8 +118,6 @@ function onBackPressed() {
 function onExportPressed() {
     document.getElementById("saveas").click();
 }
-
-
 
 document.getElementById("saveas").onchange = function() {
     var csvStr = "";
