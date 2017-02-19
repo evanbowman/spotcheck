@@ -25,3 +25,5 @@ Build Steps:
  2. Go to project root and zip everything
  3. Rename the archive to SpotCheck.nw
  4. Now the app can be run with the nw command (assuming you installed nwjs globally with npm)
+
+Note: for compiling with Visual Studio 2013, you may need to do this: http://stackoverflow.com/a/24882281
