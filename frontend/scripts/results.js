@@ -84,8 +84,6 @@ function populateTable(resultsJSON) {
 	})(i, table);
     }
     inflateTbody(resultsJSON, table);
-    var proxyBod = inflateTbody(resultsJSON, proxyTable);
-    proxyBod.className = "hidden";
     sortTable(table.tBodies[0], 0);
 }
 
