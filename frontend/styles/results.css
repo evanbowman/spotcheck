@@ -1,6 +1,38 @@
 @import url("appwindow.css");
 
+@font-face {
+    font-family: "open-sans-reg";
+    src: url("../fonts/OpenSans-Regular.ttf");
+}
+
+@font-face {
+    font-family: "open-sans-bold";
+    src: url("../fonts/OpenSans-Bold.ttf");
+}
+
+thead {
+    font-family: "open-sans-bold";
+    font-size: 14.5px;
+}
+
+tbody {
+    font-family: "open-sans-reg";
+    font-size: 14.5px;
+    color: #45484B;
+}
+
+#results-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
 footer {
     padding-top: 9px;
     text-align: center;
 }
+
+#saveas {
+    display: none;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}

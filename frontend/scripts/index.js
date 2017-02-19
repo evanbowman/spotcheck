@@ -108,8 +108,8 @@ function parseGal(fileData) {
 	var row = galdata[i].row - 1;
 	var col = galdata[i].column - 1;
 	var infoElement = Object.freeze({
-	    id: galdata[i].id,
-	    name: galdata[i].name
+	    id: galdata[i].id.trim(),
+	    name: galdata[i].name.trim()
 	});
 	global.galData[row][col] = infoElement;
     }
