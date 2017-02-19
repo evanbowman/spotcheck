@@ -29,6 +29,7 @@
 		'src/backend.cpp',
 		'src/preview_normalized.cpp',
 		'src/results.cpp',
+		'src/analysis.cpp',
 
 	    ]
 	}
