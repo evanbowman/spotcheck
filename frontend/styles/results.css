@@ -15,6 +15,7 @@ thead {
     font-size: 14.5px;
     background: #7fb4b8;
     color: white;
+    cursor: pointer;
 }
 
 .hidden {

@@ -76,23 +76,30 @@ function populateTable(resultsJSON) {
     } else {
 	return;
     }
+    for (var i = 0, cell; cell = proxyTable.rows[0].cells[i]; i++) {
+	cell.onclick = (function(cellno, tab) {
+	    return function() {
+		sortTable(tab.tBodies[0], cellno);
+	    }
+	})(i, table);
+    }
     inflateTbody(resultsJSON, table);
     var proxyBod = inflateTbody(resultsJSON, proxyTable);
     proxyBod.className = "hidden";
-    sortTable(table.tBodies[0]);
+    sortTable(table.tBodies[0], 0);
 }
 
-function sortTable(tbl) {
+function sortTable(tbl, bycell) {
     var store = [];
-    for(var i = 0, len = tbl.rows.length; i < len; i++){
+    for (var i = 0, len = tbl.rows.length; i < len; i++) {
         var row = tbl.rows[i];
-        var sortnr = parseFloat(row.cells[0].textContent || row.cells[0].innerText);
+        var sortnr = parseFloat(row.cells[bycell].textContent || row.cells[bycell].innerText);
         if(!isNaN(sortnr)) store.push([sortnr, row]);
     }
-    store.sort(function(x, y){
+    store.sort(function(x, y) {
         return x[0] - y[0];
     });
-    for(var i = 0, len = store.length; i < len; i++){
+    for (var i = 0, len = store.length; i < len; i++) {
         tbl.appendChild(store[i][1]);
     }
     store = null;
