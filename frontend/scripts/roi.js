@@ -6,9 +6,6 @@ function ready(fn) {
     }
 }
 
-var g_selectionActive = false;
-var g_marqueeTopLeft = Object.freeze({x: 0, y: 0});
-var g_marqueeBottomRight = Object.freeze({x: 1, y: 1});
 var g_dragging = false;
 
 function getImgOffsetAsRatio(e, callerCtx) {
@@ -20,28 +17,28 @@ function getImgOffsetAsRatio(e, callerCtx) {
 }
 
 $("main").on("mousedown", "#roi-preview", function(e) {
-    g_marqueeTopLeft = getImgOffsetAsRatio(e, this);
+    global.marqueeTopLeft = getImgOffsetAsRatio(e, this);
     g_dragging = true;
-    g_selectionActive = true;
+    global.selectionActive = true;
 });
 
 $("main").on("mousemove", "#roi-preview", function(e) {
     if (g_dragging) {
-	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
 	repaintPreview();
     }
 });
 
 $("main").on("mouseleave", "#roi-preview", function(e) {
     if (g_dragging) {
-	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
 	g_dragging = false;
     }
 });
 
 $("main").on("mouseup", "#roi-preview", function(e) {
     if (g_dragging) {
-	g_marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
 	g_dragging = false;
 	enableNextButton();
     }
@@ -108,10 +105,10 @@ function maskNonSelected(canvas, ctx, selX, selY, selWidth, selHeight) {
 }
 
 function renderSelectionGrid(canvas, ctx) {
-    var rectStartX = g_imgDrawInfo.xstart + g_imgDrawInfo.width * g_marqueeTopLeft.x;
-    var rectEndX = g_imgDrawInfo.xstart + g_imgDrawInfo.width * g_marqueeBottomRight.x;
-    var rectStartY = g_imgDrawInfo.ystart + g_imgDrawInfo.height * g_marqueeTopLeft.y;
-    var rectEndY = g_imgDrawInfo.ystart + g_imgDrawInfo.height * g_marqueeBottomRight.y;
+    var rectStartX = g_imgDrawInfo.xstart + g_imgDrawInfo.width * global.marqueeTopLeft.x;
+    var rectEndX = g_imgDrawInfo.xstart + g_imgDrawInfo.width * global.marqueeBottomRight.x;
+    var rectStartY = g_imgDrawInfo.ystart + g_imgDrawInfo.height * global.marqueeTopLeft.y;
+    var rectEndY = g_imgDrawInfo.ystart + g_imgDrawInfo.height * global.marqueeBottomRight.y;
     ctx.beginPath();
     ctx.lineWidth = "6";
     ctx.strokeStyle = "#EEEEEE";
@@ -153,7 +150,7 @@ function repaintPreview() {
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     renderBackendImgOutput(canvas, ctx);
-    if (g_selectionActive) {
+    if (global.selectionActive) {
 	renderSelectionGrid(canvas, ctx);
     }
 }
@@ -184,10 +181,10 @@ function onWindowUpdate() {
 
 function onNextPressed() {
     global.backend.clear_targets();
-    var startx = g_marqueeTopLeft.x;
-    var starty = g_marqueeTopLeft.y;
-    var dispx = (g_marqueeBottomRight.x - g_marqueeTopLeft.x) / global.roiCols;
-    var dispy = (g_marqueeBottomRight.y - g_marqueeTopLeft.y) / global.roiRows;
+    var startx = global.marqueeTopLeft.x;
+    var starty = global.marqueeTopLeft.y;
+    var dispx = (global.marqueeBottomRight.x - global.marqueeTopLeft.x) / global.roiCols;
+    var dispy = (global.marqueeBottomRight.y - global.marqueeTopLeft.y) / global.roiRows;
     var gridSectors = [];
     for (var i = 0; i < global.roiRows; ++i) {
 	for (var j = 0; j < global.roiCols; ++j) {
@@ -224,7 +221,11 @@ function enableNextButton() {
     nextButton.disabled = false;
 }
 
-ready(disableNextButton);
+ready(() => {
+    if (!global.selectionActive) {
+	disableNextButton();
+    }
+});
 
 ready(() => {
     document.getElementById("roi-rows-tb").value = global.roiRows;

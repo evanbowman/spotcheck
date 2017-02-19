@@ -41,8 +41,8 @@ unsigned char find_max_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
     for (int i = 0; i < mask.rows; ++i) {
         for (int j = 0; j < mask.cols; ++j) {
             if (mask.at<unsigned char>(i, j) > 0) {
-                if (max < mask.at<unsigned char>(i, j)) {
-                    max = mask.at<unsigned char>(i, j) - bgHeight;
+                if (max < src.at<unsigned char>(i, j) - bgHeight) {
+                    max = src.at<unsigned char>(i, j) - bgHeight;
                 }
             }
         }
@@ -55,8 +55,8 @@ unsigned char find_min_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
     for (int i = 0; i < mask.rows; ++i) {
         for (int j = 0; j < mask.cols; ++j) {
             if (mask.at<unsigned char>(i, j) > 0) {
-                if (min > mask.at<unsigned char>(i, j)) {
-                    min = mask.at<unsigned char>(i, j) - bgHeight;
+                if (min > src.at<unsigned char>(i, j) - bgHeight) {
+                    min = src.at<unsigned char>(i, j) - bgHeight;
                 }
             }
         }
@@ -112,3 +112,4 @@ void find_circularity(cv::Mat & mask){
   auto area= cv::contourArea(contours.front());
 
   std::cout << "area " <<area << '\n';
+}

@@ -3,6 +3,10 @@ var fs = require("fs");
 var g_hasHeightMap = false;
 var g_hasMetaData = false;
 
+global.selectionActive = false;
+global.marqueeTopLeft = Object.freeze({x: 0, y: 0});
+global.marqueeBottomRight = Object.freeze({x: 1, y: 1});
+
 function ready(fn) {
     if (document.readyState != "loading"){
         fn();
