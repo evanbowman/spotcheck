@@ -9,11 +9,12 @@ class result {
     unsigned char m_min_height, m_max_height;
     long m_volume;
     long m_average_height;
+    double m_circularity;
 
 public:
     result(int rowId, int colId, int bgHeight, int area,
            unsigned char min_height, unsigned char max_height, long volume,
-           long average_height);
+           long average_height, double circularity);
 
     void serialize(std::ostream & target) const;
 };
