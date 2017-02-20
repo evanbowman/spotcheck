@@ -258,9 +258,11 @@ void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     auto min_height = find_min_height(src, mask, background_avg_height);
     auto max_height = find_max_height(src, mask, background_avg_height);
     long avg_height = find_average_height(src, mask, background_avg_height);
+    double circularity = find_circularity(mask);
     uv_mutex_lock(&task_mtx);
     m_results.emplace_back(target.rowId, target.colId, background_avg_height,
-                           area, min_height, max_height, volume, avg_height);
+                           area, min_height, max_height, volume, avg_height,
+                           circularity);
 
     find_circularity(mask);
     std::cout << "area " << area << std::endl;
