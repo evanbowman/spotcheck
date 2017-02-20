@@ -1,33 +1,30 @@
 var fs = require("fs");
 
 function ready(fn) {
-    if (document.readyState != "loading"){
+    if (document.readyState != "loading") {
         fn();
     } else {
         document.addEventListener("DOMContentLoaded", fn);
     }
 }
 
-function populateTable(resultsJSON) {
-    var table = document.getElementById("results-table");
-    var galData = global.galData;
-    var numRows = 0;
-    if (resultsJSON.length > 0) {
-	var obj = resultsJSON[0];
-	var header = table.createTHead();
-	var row = header.insertRow(numRows++);
-	var cellno = 0;
-	var cell = row.insertCell(cellno++);
-	cell.innerHTML = "name";
+function inflateThead(resultsJSON, table) {
+    var obj = resultsJSON[0];
+    var header = table.createTHead();
+    var row = header.insertRow(0);
+    var cellno = 0;
+    var cell = row.insertCell(cellno++);
+    cell.innerHTML = "name";
+    cell = row.insertCell(cellno++);
+    cell.innerHTML = "id";
+    for (var key in obj) {
 	cell = row.insertCell(cellno++);
-	cell.innerHTML = "id";
-	for (var key in obj) {
-	    cell = row.insertCell(cellno++);
-	    cell.innerHTML = key;
-	}
-    } else {
-	return;
+	cell.innerHTML = key;
     }
+    return header;
+}
+
+function inflateTbody(resultsJSON, table) {
     var tableBody = document.createElement('TBODY');
     table.appendChild(tableBody);
     for (var i = 0; i < resultsJSON.length; ++i) {
@@ -66,20 +63,53 @@ function populateTable(resultsJSON) {
 	    }
 	}
     }
-    sortTable(document.getElementById("results-table").tBodies[0]);
+    return tableBody;
 }
 
-function sortTable(tbl) {
+
+function deselectAllTheadCells() {
+    var table = document.getElementById("proxy-thead");
+    for (var i = 0, cell; cell = table.rows[0].cells[i]; i++) {
+	cell.className = "";
+    }
+}
+
+function populateTable(resultsJSON) {
+    var table = document.getElementById("results-table");
+    var proxyTable = document.getElementById("proxy-thead");
+    if (resultsJSON.length > 0) {
+	var header = inflateThead(resultsJSON, table);
+	header.className = "hidden";
+	var fakeHeader = inflateThead(resultsJSON, proxyTable);
+    } else {
+	return;
+    }
+    for (var i = 0, cell; cell = proxyTable.rows[0].cells[i]; i++) {
+	cell.onclick = (function(cellno, tab, head) {
+	    return function() {
+		for (var i = 0, cell; cell = head.rows[0].cells[i]; i++) {
+		    cell.className = "";
+		}
+		head.rows[0].cells[cellno].className = "selected-thead";
+		sortTable(tab.tBodies[0], cellno);
+	    }
+	})(i, table, proxyTable);
+    }
+    inflateTbody(resultsJSON, table);
+    proxyTable.rows[0].cells[0].click();
+}
+
+function sortTable(tbl, bycell) {
     var store = [];
-    for(var i = 0, len = tbl.rows.length; i < len; i++){
+    for (var i = 0, len = tbl.rows.length; i < len; i++) {
         var row = tbl.rows[i];
-        var sortnr = parseFloat(row.cells[0].textContent || row.cells[0].innerText);
+        var sortnr = parseFloat(row.cells[bycell].textContent || row.cells[bycell].innerText);
         if(!isNaN(sortnr)) store.push([sortnr, row]);
     }
-    store.sort(function(x, y){
+    store.sort(function(x, y) {
         return x[0] - y[0];
     });
-    for(var i = 0, len = store.length; i < len; i++){
+    for (var i = 0, len = store.length; i < len; i++) {
         tbl.appendChild(store[i][1]);
     }
     store = null;
@@ -105,8 +135,6 @@ function onBackPressed() {
 function onExportPressed() {
     document.getElementById("saveas").click();
 }
-
-
 
 document.getElementById("saveas").onchange = function() {
     var csvStr = "";

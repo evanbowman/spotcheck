@@ -10,20 +10,56 @@
     src: url("../fonts/OpenSans-Bold.ttf");
 }
 
+table {
+    user-select: none;
+}
+
 thead {
     font-family: "open-sans-bold";
     font-size: 14.5px;
+    background: #7fb4b8;
+    color: white;
+    cursor: pointer;
+}
+
+.selected-thead {
+    background: #6E9DA0;
+}
+
+.hidden {
+    display: none;
+}
+
+.noflex {
+    flex: none;
+}
+
+td {
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 tbody {
+    cursor: default;
     font-family: "open-sans-reg";
     font-size: 14.5px;
     color: #45484B;
 }
 
+#proxy-thead {
+    width: 100%;
+    border-collapse: collapse;
+    z-index: 999;
+    overflow: hidden;
+    table-layout: fixed;
+}
+
 #results-table {
     border-collapse: collapse;
     width: 100%;
+    overflow: hidden;
+    table-layout: fixed;
 }
 
 footer {
