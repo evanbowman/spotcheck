@@ -30,6 +30,7 @@ footer {
 }
 
 main {
+    overflow: hidden;
     padding: 15px;
 }
 
