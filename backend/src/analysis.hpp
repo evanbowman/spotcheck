@@ -1,6 +1,12 @@
 #pragma once
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <iostream>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <stdio.h>
+#include <stdlib.h>
+#include <algorithm>
 
 int find_background(cv::Mat & src, cv::Mat & mask);
 int find_area(cv::Mat & src, cv::Mat & mask);

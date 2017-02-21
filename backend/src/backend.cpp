@@ -89,21 +89,6 @@ void backend::import_source_gal(const callback_info & args) {
     });
 }
 
-// inline static void populate_results_json(const std::vector<spot> & spots,
-//                                        std::ostream & ostr) {
-//     ostr << "[";
-//     const size_t index_max = spots.size() - 1;
-//     size_t index = 0;
-//     for (const auto & spot : spots) {
-//         spot.serialize(ostr);
-//         if (index != index_max) {
-//             ostr << ",";
-//         }
-//         index += 1;
-//     }
-//     ostr << "]" << std::endl;
-// }
-
 static int consume_connected(cv::Mat & src, int x, int y) {
     int count = 0;
     using coord = std::pair<int, int>;
@@ -251,7 +236,7 @@ void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     // Background Subtraction
     long volume = find_volume(src, mask, background_avg_height);
     int area = find_area(src, mask);
-
+    
     std::cout << background_avg_height << " " << volume << std::endl;
 
     find_circularity(mask);
@@ -263,9 +248,6 @@ void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     m_results.emplace_back(target.rowId, target.colId, background_avg_height,
                            area, min_height, max_height, volume, avg_height,
                            circularity);
-
-    find_circularity(mask);
-    std::cout << "area " << area << std::endl;
     uv_mutex_unlock(&task_mtx);
 }
 

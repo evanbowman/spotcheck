@@ -1,13 +1,8 @@
 #include "analysis.hpp"
 
-#include <iostream>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <stdio.h>
-#include <stdlib.h>
 // threshold for canny edge detection
 // const int THRESH = 50;
-const double PI = 3.141592653589793238463;
+static const double PI = 3.141592653589793238463;
 
 // debug
 extern std::string module_path;
@@ -26,7 +21,7 @@ int find_background(cv::Mat & src, cv::Mat & mask) {
             }
         }
     }
-    return sum / quant;
+    return sum / std::max(quant, 1);
 }
 
 int find_area(cv::Mat & src, cv::Mat & mask) {
@@ -96,7 +91,7 @@ long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
         }
     }
 
-    return volume / quant;
+    return volume / std::min(1l, quant);
 }
 
 double find_circularity(cv::Mat & mask) {
@@ -123,14 +118,10 @@ double find_circularity(cv::Mat & mask) {
             maxPerim = contAr;
             maxCont = i;
         }
-        printf("countour: %d, area: %f\n", i, contAr);
     }
 
     auto area = cv::contourArea(contours[maxCont], false);
     auto perimeter = cv::arcLength(contours[maxCont], true);
-
-    std::cout << "cvarea " << area << std::endl;
-    std::cout << "cvperim " << perimeter << std::endl;
 
     // circularity
     // https://en.wikipedia.org/wiki/Shape_factor_%28image_analysis_and_microscopy%29
@@ -138,7 +129,6 @@ double find_circularity(cv::Mat & mask) {
     // 1 for circle, 0 less
 
     double circ = (4 * PI * area) / (perimeter * perimeter);
-    std::cout << "circ " << circ << std::endl;
 
     cv::Scalar RED = cv::Scalar(0, 0, 255);
     cv::Mat drawing = cv::Mat::zeros(contourFind.size(), CV_8UC3);
