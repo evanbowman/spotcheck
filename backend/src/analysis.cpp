@@ -172,7 +172,7 @@ double find_circularity(cv::Mat & mask) {
     std::cout << "IMAGE NUM " << rnd << "\n";
     double maxPerim = 0;
     int maxCont = 0;
-    for (uint i = 0; i < contours.size(); i++) {
+    for (size_t i = 0; i < contours.size(); i++) {
         // std::cout << contours[i] << std::endl;
         double contAr = cv::arcLength(contours[i], true);
         if (maxPerim < contAr) {
@@ -205,7 +205,7 @@ double find_circularity(cv::Mat & mask) {
 
     // Draw contours
     cv::Mat drawing = cv::Mat::zeros(contourFind.size(), CV_8UC3);
-    for (uint i = 0; i < contours.size(); i++) {
+    for (size_t i = 0; i < contours.size(); i++) {
         cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
                                       rng.uniform(0, 255));
         cv::drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0,
