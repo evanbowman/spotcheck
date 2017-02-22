@@ -119,19 +119,23 @@ function parseGal(fileData) {
     }
 }
 
+function importGalFile(path) {
+    fs.readFile(path, (err, data) => {
+	if (err) {
+	    window.alert("Failed to load file: " + err);
+	}
+	parseGal("" + data);
+	g_hasMetaData = true;
+	if (g_hasHeightMap) {
+	    ready(enableNextButton);
+	}
+    });
+}
+
 ready(() => {
     updateFrame("gal-frame", (path) => {
 	if (verifyExtension(path, "gal")) {
-	    fs.readFile(path, (err, data) => {
-		if (err) {
-		    window.alert("Failed to load file: " + err);
-		}
-		parseGal("" + data);
-		g_hasMetaData = true;
-		if (g_hasHeightMap) {
-		    ready(enableNextButton);
-		}
-	    });
+	    importGalFile(path);
 	} else {
 	    window.alert("File extension invalid. Expected: gal");
 	}
@@ -152,12 +156,7 @@ $("#choose-tiff").on("change", function() {
 
 $("#choose-gal").on("change", function() {
     if (verifyExtension(this.value, "gal")) {
-	global.backend.import_source_gal(() => {
-	    g_hasMetaData = true;
-	    if (g_hasHeightMap) {
-		ready(enableNextButton);
-	    }
-        }, this.value);
+	importGalFile(this.value);
     }
 });
 
