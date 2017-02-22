@@ -244,4 +244,6 @@ ready(() => {
 ready(() => {
     document.getElementById("roi-rows-tb").value = global.roiRows;
     document.getElementById("roi-cols-tb").value = global.roiCols;
+    document.getElementById("first-col-id-tb").value = global.colStart;
+    document.getElementById("first-row-id-tb").value = global.rowStart;
 });

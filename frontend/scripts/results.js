@@ -35,14 +35,12 @@ function inflateTbody(resultsJSON, table) {
 	var rowId, colId;
 	if (obj.hasOwnProperty("row")) {
 	    rowId = parseInt(obj["row"]) + (global.rowStart - 1);
-	    window.alert(rowId);
 	} else {
 	    window.alert("Internal error: malformed results JSON, missing field 'col'");
 	    return;
 	}
 	if (obj.hasOwnProperty("col")) {
 	    colId = parseInt(obj["col"]) + (global.colStart - 1);
-	    window.alert(colId);
 	} else {
 	    window.alert("Internal error: malformed results JSON, missing field 'row'");
 	    return;
