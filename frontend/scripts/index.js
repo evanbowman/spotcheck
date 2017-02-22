@@ -104,6 +104,8 @@ function parseGal(fileData) {
     }
     global.roiRows = rowMax;
     global.roiCols = colMax;
+    global.rowStart = 1;
+    global.colStart = 1;
     global.galData = new Array(rowMax);
     for (var i = 0; i < rowMax; ++i) {
 	global.galData[i] = new Array(colMax);

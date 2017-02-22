@@ -67,6 +67,14 @@ $("#roi-cols-tb").on("input", function() {
     repaintPreview();
 });
 
+$("#first-col-id-tb").on("input", function() {
+    global.rowStart = getTbValueAsInt(this);
+});
+
+$("#first-row-id-tb").on("input", function() {
+    global.colStart = getTbValueAsInt(this);
+});
+
 $("#roi-preview").on("dragstart", function(event) { event.preventDefault(); });
 
 var g_imgDrawInfo = {
@@ -199,7 +207,7 @@ function onNextPressed() {
 				      starty + dispy * i,
 				      startx + dispx * (j + 1),
 				      starty + dispy * (i + 1),
-				      0.0 /* TODO... */);
+				      0.0);
 	}
     }
     global.backend.split_sectors(() => {
