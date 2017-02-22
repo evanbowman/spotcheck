@@ -1,3 +1,5 @@
+var gui = require("nw.gui");
+
 function ready(fn) {
     if (document.readyState == "complete") {
 	fn();
@@ -12,6 +14,10 @@ function onNextPressed() {
 	    window.location.href = "frontend/layouts/results.html";
 	}
     });
+}
+
+function onHelpPressed() {
+    gui.Shell.openExternal("https://github.com/evanbowman/spotcheck/wiki/Tutorial:-Feature-segmentation");
 }
 
 function onBackPressed() {

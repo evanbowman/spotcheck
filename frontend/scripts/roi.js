@@ -1,3 +1,5 @@
+var gui = require("nw.gui");
+
 function ready(fn) {
     if (document.readyState == "complete") {
 	fn();
@@ -177,6 +179,10 @@ function onWindowUpdate() {
 	canvas.height = $("#roi-preview").parent().height();
 	repaintPreview();
     });
+}
+
+function onHelpPressed() {
+    gui.Shell.openExternal("https://github.com/evanbowman/spotcheck/wiki/Tutorial:-Selecting-your-region-of-interest");
 }
 
 function onNextPressed() {

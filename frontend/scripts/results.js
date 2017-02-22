@@ -57,7 +57,13 @@ function inflateTbody(resultsJSON, table) {
 	    }
 	}
 	for (var key in obj) {
-	    if (obj.hasOwnProperty(key)) {
+	    if (key == "row") {
+		var cell = tr.insertCell(cellno++);
+		cell.innerHTML = rowId + 1;
+	    } else if (key == "col") {
+		var cell = tr.insertCell(cellno++);
+		cell.innerHTML = colId + 1;
+	    } else if (obj.hasOwnProperty(key)) {
 		var cell = tr.insertCell(cellno++);
 		cell.innerHTML = obj[key];
 	    }
