@@ -81,7 +81,7 @@ long find_volume(cv::Mat & src, cv::Mat & mask, int bgHeight) {
 long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
     long volume = 0;
     long quant = 0;
-
+    
     for (int i = 0; i < mask.rows; ++i) {
         for (int j = 0; j < mask.cols; ++j) {
             if (mask.at<unsigned char>(i, j) > 0) {
