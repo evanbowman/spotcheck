@@ -91,7 +91,7 @@ long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight) {
         }
     }
 
-    return volume / std::min(1l, quant);
+    return volume / std::max(1l, quant);
 }
 
 double find_circularity(cv::Mat & mask) {
