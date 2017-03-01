@@ -77,8 +77,9 @@ function parseGal(fileData) {
     var colMax = 1;
     for (var k = n; k < lines.length; k++) {
 	//SPLIT LINE DATA
-	var temp = lines[k].split("	");
+	var temp = lines[k].split(/\s+/);
 	if (temp.length != 5) {
+	    window.alert("gal parser failed to interpret line " + (k + 1));
 	    continue;
 	}
 

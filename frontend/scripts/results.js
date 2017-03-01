@@ -49,7 +49,11 @@ function inflateTbody(resultsJSON, table) {
 	var idCell = tr.insertCell(cellno++);
 	if (rowId < global.galData.length) {
 	    if (colId < global.galData[rowId].length) {
-		nameCell.innerHTML = global.galData[rowId][colId].name;
+		try {
+		    nameCell.innerHTML = global.galData[rowId][colId].name;
+		} catch (err) {
+		    window.alert("missing name field for " + rowId + " " + colId);
+		}
 		idCell.innerHTML = global.galData[rowId][colId].id;
 	    } else {
 		nameCell.innerHTML = " ";

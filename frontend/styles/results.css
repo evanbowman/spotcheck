@@ -1,5 +1,3 @@
-@import url("appwindow.css");
-
 @font-face {
     font-family: "open-sans-reg";
     src: url("../fonts/OpenSans-Regular.ttf");
@@ -8,6 +6,33 @@
 @font-face {
     font-family: "open-sans-bold";
     src: url("../fonts/OpenSans-Bold.ttf");
+}
+
+html, body {
+    height: 100%;
+    background: rgb(255, 255, 255);
+    margin: 0;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    flex: auto;
+}
+
+header, footer, main {
+    position: relative;
+}
+
+header, footer {
+    flex: none;
 }
 
 table {
@@ -53,6 +78,7 @@ tbody {
     z-index: 999;
     overflow: hidden;
     table-layout: fixed;
+    flex: none;
 }
 
 #results-table {
