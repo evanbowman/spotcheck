@@ -1,0 +1,35 @@
+html, body {
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    margin: 10px;
+    flex: auto;
+}
+
+header, footer, main {
+    position: relative;
+}
+
+.hidden {
+    display: none;
+}
+
+header, footer {
+    flex: none;
+}
+
+footer {
+    padding-top: 9px;
+    text-align: center;
+}

@@ -7,11 +7,16 @@
 	<script type="text/javascript" src="../scripts/visualization.js"></script>
     </head>
     <body>
+	<header>
+	    
+	</header>
 	<main>
-	    <canvas id="chart" class="hidden" width="400" height="400"></canvas>
+	    <canvas id="chart" width="400" height="400"></canvas>
 	</main>
 	<footer>
-	    
+	    <input type="button" value="Back" onclick="onBackPressed()">
+	    <input type="button" value="Export" onclick="onExportPressed()">
+	    <input id="saveas" type="file" class="hidden" accept=".png" nwsaveas>
 	</footer>
     </body>
 </html>
