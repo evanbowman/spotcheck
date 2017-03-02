@@ -29,6 +29,15 @@ header, footer {
     flex: none;
 }
 
+header {
+    text-align: right;
+}
+
+#properties {
+    margin-top: 15px;
+    margin-right: 9px;
+}
+
 footer {
     padding-top: 9px;
     text-align: center;
