@@ -54,7 +54,7 @@ ready(() => {
     });
 });
 
-function create_info_container() {
+function infoContainer() {
     this.block = 0;
     this.row = 0;
     this.column = 0;
@@ -76,17 +76,19 @@ function parseGal(fileData) {
     var rowMax = 1;
     var colMax = 1;
     for (var k = n; k < lines.length; k++) {
-	//SPLIT LINE DATA
-	var temp = lines[k].split(/\s+/);
+	var temp = lines[k].trim().split(/\s+/);
 	if (temp.length != 5) {
+	    if (temp.length == 1) {
+		if (temp == lines[k].trim()) {
+		    continue;
+		}
+	    }
 	    window.alert("gal parser failed to interpret line " + (k + 1));
 	    continue;
 	}
 
-	//CREATE CONTAINER
-	empty_container = new create_info_container();
+	empty_container = new infoContainer();
 	
-	//CONVERT STRINGS TO INTS
 	temp[0] = parseInt(temp[0]);
 	temp[1] = parseInt(temp[1]);
 	temp[2] = parseInt(temp[2]);
