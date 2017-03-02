@@ -59,9 +59,15 @@ function loadResults() {
     g_resultsJSON = JSON.parse(fs.readFileSync("./frontend/temp/results.json"));
 }
 
-function getAvailableFields() {
+function findAvailableFields() {
     var obj = g_resultsJSON[0];
-    
+    var fields = [];
+    for (var key in obj) {
+	if (key != "row" && key != "col" && key != "name" && key != "id") {
+	    fields.push(key);
+	}
+    }
+    return fields;
 }
 
 function refreshChart(locusFieldName) {
@@ -92,11 +98,22 @@ function refreshChart(locusFieldName) {
     });
 }
 
+function populateSelector(fields) {
+    var selector = document.getElementById("properties");
+    for (var i = 0; i < fields.length; ++i) {
+	var opt = document.createElement("option");
+	opt.value = fields[i];
+	opt.innerHTML = fields[i];
+	selector.appendChild(opt);
+    }
+}
+
 function init() {
     loadResults();
-    getAvailableFields();
+    var fields = findAvailableFields();
+    populateSelector(fields);
     g_labels = createChartLabels();
-    refreshChart("volume");
+    refreshChart(fields[0]);
     document.getElementById("saveas").onchange = function() {
 	var fname = this.value;
 	var imgData = document.getElementById("chart").toDataURL('image/png');
@@ -107,6 +124,10 @@ function init() {
 		window.alert(err);
 	    }
 	});
+    };
+    document.getElementById("properties").onchange = function() {
+	var value = this.value;
+	refreshChart(value);
     };
 }
 
