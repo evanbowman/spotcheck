@@ -71,6 +71,12 @@ function findAvailableFields() {
 }
 
 function refreshChart(locusFieldName) {
+    var chart = document.getElementById("chart");
+    var parent = chart.parentNode;
+    parent.removeChild(chart);
+    chart = document.createElement("canvas");
+    chart.id = "chart";
+    parent.appendChild(chart);
     var data = createChartData(g_labels, locusFieldName);
     var g_chart = new Chart(chart.getContext("2d"), {
 	type: 'bar',
