@@ -3,6 +3,8 @@
     <head>
 	<link href="../styles/spotcheck.css" type="text/css" rel="stylesheet">
 	<link href="../styles/results.css" type="text/css" rel="stylesheet">
+	<script type="text/javascript" src="../scripts/jquery-3.1.1.min.js"></script>
+	<script src="../scripts/results.js"></script>
 	<title>SpotCheck</title>
     </head>
     <body>
@@ -12,9 +14,8 @@
 	</main>
 	<footer>
 	    <input id="saveas" type="file" accept=".csv" nwsaveas>
-	    <script type="text/javascript" src="../scripts/jquery-3.1.1.min.js"></script>
-	    <script src="../scripts/results.js"></script>
 	    <input type="button" id="back" value="Back" onclick="onBackPressed()">
+	    <input type="button" id="create-chart" value="Create Chart" onclick="onCreateChartPressed()">
 	    <input type="button" id="export" value="Export" onclick="onExportPressed()">
 	</footer>
     </body>

@@ -24,27 +24,25 @@ function inflateThead(resultsJSON, table) {
     return header;
 }
 
+function verifyValidData(JSONObj) {
+    if (!JSONObj.hasOwnProperty("row") ||
+	!JSONObj.hasOwnProperty("col")) {
+	throw "Results data has invalid format";
+    }
+}
+
 function inflateTbody(resultsJSON, table) {
     var tableBody = document.createElement('TBODY');
     table.appendChild(tableBody);
     for (var i = 0; i < resultsJSON.length; ++i) {
 	var obj = resultsJSON[i];
+	verifyValidData(obj);
 	var tr = document.createElement('TR');
 	tableBody.appendChild(tr);
 	var cellno = 0;
 	var rowId, colId;
-	if (obj.hasOwnProperty("row")) {
-	    rowId = parseInt(obj["row"]) + (global.rowStart - 1);
-	} else {
-	    window.alert("Internal error: malformed results JSON, missing field 'col'");
-	    return;
-	}
-	if (obj.hasOwnProperty("col")) {
-	    colId = parseInt(obj["col"]) + (global.colStart - 1);
-	} else {
-	    window.alert("Internal error: malformed results JSON, missing field 'row'");
-	    return;
-	}
+	rowId = parseInt(obj["row"]) + (global.rowStart - 1);
+	colId = parseInt(obj["col"]) + (global.colStart - 1);
 	var nameCell = tr.insertCell(cellno++);
 	var idCell = tr.insertCell(cellno++);
 	if (rowId < global.galData.length) {
@@ -75,7 +73,6 @@ function inflateTbody(resultsJSON, table) {
     }
     return tableBody;
 }
-
 
 function deselectAllTheadCells() {
     var table = document.getElementById("proxy-thead");
@@ -126,6 +123,22 @@ function sortTable(tbl, bycell) {
 }
 
 function init() {
+    document.getElementById("saveas").onchange = function() {
+	var csvStr = "";
+	var table = document.getElementById("results-table");
+	for (var i = 0, row; row = table.rows[i]; i++) {
+	    for (var j = 0, col; col = row.cells[j]; j++) {
+		csvStr += col.innerHTML + ",";
+	    }
+	    csvStr += "\n";
+	}
+	var fname = this.value;
+	fs.writeFile(fname, csvStr, (err) => {
+	    if (err) {
+		throw err;
+	    }
+	});
+    }
     global.backend.write_results_JSON(function() {
 	fs.readFile("./frontend/temp/results.json", (err, data) => {
 	    if (err) {
@@ -146,21 +159,10 @@ function onExportPressed() {
     document.getElementById("saveas").click();
 }
 
-document.getElementById("saveas").onchange = function() {
-    var csvStr = "";
-    var table = document.getElementById("results-table");
-    for (var i = 0, row; row = table.rows[i]; i++) {
-	for (var j = 0, col; col = row.cells[j]; j++) {
-	    csvStr += col.innerHTML + ",";
-	}
-	csvStr += "\n";
-    }
-    var fname = this.value;
-    fs.writeFile(fname, csvStr, (err) => {
-	if (err) {
-	    throw err;
-	}
-    });
+var g_chart;
+
+function onCreateChartPressed() {
+    window.location.href = "visualization.html";
 }
 
-ready(init());
+ready(init);

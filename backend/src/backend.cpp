@@ -276,7 +276,6 @@ void backend::launch_analysis(const callback_info & args) {
             uv_mutex_unlock(&::task_mtx);
         });
     }
-    std::cout << ::module_path << std::endl;
 }
 
 void backend::update_target_thresh(const callback_info & args) {

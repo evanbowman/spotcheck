@@ -18,34 +18,6 @@ function getImgOffsetAsRatio(e, callerCtx) {
     });
 }
 
-$("main").on("mousedown", "#roi-preview", function(e) {
-    global.marqueeTopLeft = getImgOffsetAsRatio(e, this);
-    g_dragging = true;
-    global.selectionActive = true;
-});
-
-$("main").on("mousemove", "#roi-preview", function(e) {
-    if (g_dragging) {
-	global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
-	repaintPreview();
-    }
-});
-
-$("main").on("mouseleave", "#roi-preview", function(e) {
-    if (g_dragging) {
-	global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
-	g_dragging = false;
-    }
-});
-
-$("main").on("mouseup", "#roi-preview", function(e) {
-    if (g_dragging) {
-	global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
-	g_dragging = false;
-	enableNextButton();
-    }
-});
-
 function getTbValueAsInt(callerCtx) {
     if (callerCtx.value.length == 0) {
 	return 0;
@@ -56,26 +28,6 @@ function getTbValueAsInt(callerCtx) {
     }
     return value;
 }
-
-$("#roi-rows-tb").on("input", function() {
-    global.roiRows = getTbValueAsInt(this);
-    repaintPreview();
-});
-
-$("#roi-cols-tb").on("input", function() {
-    global.roiCols = getTbValueAsInt(this);
-    repaintPreview();
-});
-
-$("#first-col-id-tb").on("input", function() {
-    global.rowStart = getTbValueAsInt(this);
-});
-
-$("#first-row-id-tb").on("input", function() {
-    global.colStart = getTbValueAsInt(this);
-});
-
-$("#roi-preview").on("dragstart", function(event) { event.preventDefault(); });
 
 var g_imgDrawInfo = {
     xstart: 0, ystart: 0, width: 0, height: 0, scale: 1
@@ -176,10 +128,6 @@ function updateRoioldImg() {
     img.src = src + '?v=' + date.getTime();
 }
 
-document.getElementById("roi-img").onload = function() {
-    repaintPreview();
-}
-
 function onWindowUpdate() {
     ready(function() {
 	var canvas = document.getElementById("roi-canvas");
@@ -242,6 +190,48 @@ ready(() => {
 });
 
 ready(() => {
+    document.getElementById("roi-img").onload = function() {
+	repaintPreview();
+    }
+    $("main").on("mousedown", "#roi-preview", function(e) {
+	global.marqueeTopLeft = getImgOffsetAsRatio(e, this);
+	g_dragging = true;
+	global.selectionActive = true;
+    });
+    $("main").on("mousemove", "#roi-preview", function(e) {
+	if (g_dragging) {
+	    global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	    repaintPreview();
+	}
+    });
+    $("main").on("mouseleave", "#roi-preview", function(e) {
+	if (g_dragging) {
+	    global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	    g_dragging = false;
+	}
+    });
+    $("main").on("mouseup", "#roi-preview", function(e) {
+	if (g_dragging) {
+	    global.marqueeBottomRight = getImgOffsetAsRatio(e, this);
+	    g_dragging = false;
+	    enableNextButton();
+	}
+    });
+    $("#roi-rows-tb").on("input", function() {
+	global.roiRows = getTbValueAsInt(this);
+	repaintPreview();
+    });
+    $("#roi-cols-tb").on("input", function() {
+	global.roiCols = getTbValueAsInt(this);
+	repaintPreview();
+    });
+    $("#first-col-id-tb").on("input", function() {
+	global.rowStart = getTbValueAsInt(this);
+    });
+    $("#first-row-id-tb").on("input", function() {
+	global.colStart = getTbValueAsInt(this);
+    });
+    $("#roi-preview").on("dragstart", function(event) { event.preventDefault(); });
     document.getElementById("roi-rows-tb").value = global.roiRows;
     document.getElementById("roi-cols-tb").value = global.roiCols;
     document.getElementById("first-col-id-tb").value = global.colStart;
