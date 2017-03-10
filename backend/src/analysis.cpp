@@ -119,7 +119,7 @@ double find_circularity(cv::Mat & mask) {
     cv::findContours(contourFind, contours, hierarchy, CV_RETR_LIST,
                      CV_CHAIN_APPROX_NONE, cv::Point(0, 0));
 
-    std::cout << "found " << contours.size() << "contours" << std::endl;
+    // std::cout << "found " << contours.size() << "contours" << std::endl;
 
     // / Draw contours
     // cv::Mat drawing = cv::Mat::zeros(contourFind.size(), CV_8UC3);
@@ -137,15 +137,16 @@ double find_circularity(cv::Mat & mask) {
     compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(9);
 
-    char num[8];
-    int rnd = rng.uniform(0, 100);
-    // std::cout << rnd << std::endl;
-    sprintf(num, "%d", rnd);
-
-    static const auto extension = ".png";
-    const std::string fname =
-        ::module_path + "/../../../frontend/temp/contours_" + num + extension;
-    std::cout << fname << std::endl;
+    // char num[8];
+    // int rnd = rng.uniform(0, 100);
+    // // std::cout << rnd << std::endl;
+    // sprintf(num, "%d", rnd);
+    //
+    // static const auto extension = ".png";
+    // const std::string fname =
+    //     ::module_path + "/../../../frontend/temp/contours_" + num +
+    //     extension;
+    // std::cout << fname << std::endl;
 
     /* ID by max area fails, did by perimeter instead
     // can delete this block, left in for future ref
@@ -169,6 +170,112 @@ double find_circularity(cv::Mat & mask) {
     */
 
     /* try by contour perimeter instead.*/
+    // std::cout << "IMAGE NUM " << rnd << "\n";
+    double maxPerim = 0;
+    int maxCont = 0;
+    for (uint i = 0; i < contours.size(); i++) {
+        // std::cout << contours[i] << std::endl;
+        double contAr = cv::arcLength(contours[i], true);
+        if (maxPerim < contAr) {
+            maxPerim = contAr;
+            maxCont = i;
+        }
+        // printf("countour: %d, area: %f\n", i, contAr);
+    }
+
+    // cv::imwrite(fname, canny_output);
+    // cv::imwrite(fname, drawing);
+
+    //
+
+    auto area = cv::contourArea(contours[maxCont], false);
+    auto perimeter = cv::arcLength(contours[maxCont], true);
+
+    // std::cout << "cvarea " << area << std::endl;
+    // std::cout << "cvperim " << perimeter << std::endl;
+
+    // circularity
+    // https://en.wikipedia.org/wiki/Shape_factor_%28image_analysis_and_microscopy%29
+    // f_circ = 4*pi*Area/(perimeter^2)
+    // 1 for circle, 0 less
+
+    double circ = (4 * PI * area) / (perimeter * perimeter);
+    // std::cout << "circ " << circ << std::endl;
+
+    // cv::Scalar RED = cv::Scalar(0, 0, 255);
+    //
+    // // Draw contours
+    // cv::Mat drawing = cv::Mat::zeros(contourFind.size(), CV_8UC3);
+    // for (uint i = 0; i < contours.size(); i++) {
+    //     cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0,
+    //     255),
+    //                                   rng.uniform(0, 255));
+    //     cv::drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0,
+    //                      cv::Point());
+    // }
+
+    // largest drawn in red
+    // // debug code, can comment out .
+    // cv::drawContours(drawing, contours, maxCont, RED, 2, 8, hierarchy, 0,
+    //                  cv::Point());
+    //
+    // cv::imwrite(fname, drawing);
+
+    return circ;
+}
+
+void find_mean_radial_profile(cv::Mat & src, cv::Mat & mask) {
+    // Do canny to get the edges of the mask,
+    cv::Mat canny_output;
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
+
+    // SEEMS TO WORK
+    // COULD TUNE THRESHOLDS
+    cv::Canny(mask, canny_output, 0, 255, 3);
+
+    // contourFind modifies the input for some reason
+    auto contourFind = canny_output;
+
+    // find countours
+    // cv::findContours(contourFind, contours, hierarchy, CV_RETR_CCOMP,
+    //  CV_CHAIN_APPROX_NONE, cv::Point(0, 0));
+    cv::findContours(contourFind, contours, hierarchy, CV_RETR_LIST,
+                     CV_CHAIN_APPROX_NONE, cv::Point(0, 0));
+
+    std::cout << "found " << contours.size() << "contours" << std::endl;
+
+    //  /// Get the moments
+    cv::vector<cv::Moments> mu(contours.size());
+    for (uint i = 0; i < contours.size(); i++) {
+        mu[i] = cv::moments(contours[i], false);
+        // std::cout << "moments " << i << " " << mu[i] << '\n';
+    }
+
+    ///  Get the mass centers:
+    cv::vector<cv::Point2f> mc(contours.size());
+    for (uint i = 0; i < contours.size(); i++) {
+        mc[i] = cv::Point2f(mu[i].m10 / mu[i].m00, mu[i].m01 / mu[i].m00);
+        std::cout << "mCenter_" << i << " " << mc[i] << '\n';
+    }
+
+    // Debug Code write to file
+    std::cout << ::module_path << std::endl;
+    std::vector<int> compression_params;
+    compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(9);
+
+    char num[8];
+    int rnd = rng.uniform(0, 100);
+    // std::cout << rnd << std::endl;
+    sprintf(num, "%d", rnd);
+
+    static const auto extension = ".png";
+    const std::string fname =
+        ::module_path + "/../../../frontend/temp/circProf_" + num + extension;
+    std::cout << fname << std::endl;
+
+    // obtain largest contour in image by contour length
     std::cout << "IMAGE NUM " << rnd << "\n";
     double maxPerim = 0;
     int maxCont = 0;
@@ -181,42 +288,31 @@ double find_circularity(cv::Mat & mask) {
         }
         printf("countour: %d, area: %f\n", i, contAr);
     }
-
-    // cv::imwrite(fname, canny_output);
-    // cv::imwrite(fname, drawing);
-
-    //
-
-    auto area = cv::contourArea(contours[maxCont], false);
-    auto perimeter = cv::arcLength(contours[maxCont], true);
-
-    std::cout << "cvarea " << area << std::endl;
-    std::cout << "cvperim " << perimeter << std::endl;
-
-    // circularity
-    // https://en.wikipedia.org/wiki/Shape_factor_%28image_analysis_and_microscopy%29
-    // f_circ = 4*pi*Area/(perimeter^2)
-    // 1 for circle, 0 less
-
-    double circ = (4 * PI * area) / (perimeter * perimeter);
-    std::cout << "circ " << circ << std::endl;
-
     cv::Scalar RED = cv::Scalar(0, 0, 255);
+    cv::Scalar GREEN = cv::Scalar(0, 255, 0);
+    cv::Scalar BLUE = cv::Scalar(255, 0, 0);
 
     // Draw contours
     cv::Mat drawing = cv::Mat::zeros(contourFind.size(), CV_8UC3);
-    for (uint i = 0; i < contours.size(); i++) {
-        cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
-                                      rng.uniform(0, 255));
-        cv::drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0,
-                         cv::Point());
-    }
+    // for (uint i = 0; i < contours.size(); i++) {
+    //     cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0,
+    //     255),
+    //                                   rng.uniform(0, 255));
+    //     cv::drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0,
+    //                      cv::Point());
+    // }
 
     // largest drawn in red
-    cv::drawContours(drawing, contours, maxCont, RED, 2, 8, hierarchy, 0,
+    // debug code, can comment out .
+    cv::drawContours(drawing, contours, maxCont, RED, 1, 8, hierarchy, 0,
                      cv::Point());
+    // draw the center of mass of the largest contour as a
+    // circle
+    for (uint i = 0; i < contours.size(); i++) {
+        cv::circle(drawing, mc[i], 2, BLUE, 1, 8, 0);
+    }
+    cv::circle(drawing, mc[maxCont], 2, GREEN, 1, 8, 0);
+    std::cout << mc[maxCont] << '\n';
 
     cv::imwrite(fname, drawing);
-
-    return circ;
 }

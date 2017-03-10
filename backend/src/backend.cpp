@@ -263,9 +263,10 @@ void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     m_results.emplace_back(target.rowId, target.colId, background_avg_height,
                            area, min_height, max_height, volume, avg_height,
                            circularity);
-
-    find_circularity(mask);
-    std::cout << "area " << area << std::endl;
+    // debug code to be deleted?
+    // find_circularity(mask);
+    // std::cout << "area " << area << std::endl;
+    find_mean_radial_profile(src, mask);
     uv_mutex_unlock(&task_mtx);
 }
 
