@@ -224,7 +224,8 @@ double find_circularity(cv::Mat & mask) {
     return circ;
 }
 
-void find_mean_radial_profile(cv::Mat & src, cv::Mat & mask) {
+std::vector<std::vector<uchar>> find_mean_radial_profile(cv::Mat & src,
+                                                         cv::Mat & mask) {
     // Do canny to get the edges of the mask,
     cv::Mat canny_output;
     std::vector<std::vector<cv::Point>> contours;
@@ -313,6 +314,40 @@ void find_mean_radial_profile(cv::Mat & src, cv::Mat & mask) {
     }
     cv::circle(drawing, mc[maxCont], 2, GREEN, 1, 8, 0);
     std::cout << mc[maxCont] << '\n';
-
     cv::imwrite(fname, drawing);
+    // with the largest contour and its moment, find the line cuts
+    // for now we'll iterate over all of the points in the perimeter
+    // allocate a structure to hold the radial profiles
+    auto mainCont = contours.at(maxCont);
+    auto ctr = mc[maxCont];
+    std::vector<std::vector<uchar>> radialProfiles(mainCont.size());
+
+    for (uint i = 0; i < mainCont.size(); i++) {
+        cv::LineIterator it(src, ctr, mainCont[i], 8);
+        for (int j = 0; j < it.count; j++, ++it) {
+            auto val = src.at<unsigned char>(it.pos());
+            radialProfiles[i].emplace_back(val);
+            std::cout << (int)val << '\n';
+        }
+    }
+
+    // check the obtained profiles
+    for (uint i = 0; i < radialProfiles.size(); i++) {
+        std::cout << i << ": ";
+        for (uint j = 0; j < radialProfiles.at(i).size(); j++) {
+            std::cout << (int)radialProfiles.at(i).at(j) << ", ";
+        }
+        std::cout << '\n';
+    }
+
+    // for (auto mn : mainCont) {
+    //     std::cout << "printing line values" << '\n';
+    //     cv::LineIterator it(src, ctr, mn, 8);
+    //     for (int i = 0; i < it.count; i++, ++it) {
+    //         auto val = src.at<unsigned char>(it.pos());
+    //         radialProfiles[i].emplace_back(val);
+    //         std::cout << (int)val << '\n';
+    //     }
+    // }
+    return radialProfiles;
 }

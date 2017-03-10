@@ -9,4 +9,5 @@ unsigned char find_min_height(cv::Mat & src, cv::Mat & mask, int bgHeight);
 long find_volume(cv::Mat & src, cv::Mat & mask, int bgHeight);
 long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight);
 double find_circularity(cv::Mat & mask);
-void find_mean_radial_profile(cv::Mat & src, cv::Mat & mask);
+std::vector<std::vector<uchar>> find_mean_radial_profile(cv::Mat & src,
+                                                         cv::Mat & mask);
