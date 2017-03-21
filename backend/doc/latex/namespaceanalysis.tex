@@ -1,0 +1,160 @@
+\hypertarget{namespaceanalysis}{}\section{analysis Namespace Reference}
+\label{namespaceanalysis}\index{analysis@{analysis}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+cv\+::\+R\+NG \hyperlink{namespaceanalysis_adac9def4c9a41ec6a7c2a03ac6c095cc}{rng} (12345)
+\item 
+int \hyperlink{namespaceanalysis_a6f9bf7edf5878b407c133ddbd89f7af8}{find\+\_\+background} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask)
+\begin{DoxyCompactList}\small\item\em Calculates a target\textquotesingle{}s the average background value. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceanalysis_ad544440f3a463acd72807f108c6c5fbf}{find\+\_\+area} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask)
+\begin{DoxyCompactList}\small\item\em Calculates a target\textquotesingle{}s area. \end{DoxyCompactList}\item 
+unsigned char \hyperlink{namespaceanalysis_a3f5d294c05ef3a60c6c625a14462ee57}{find\+\_\+max\+\_\+height} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask, int bg\+Height)
+\item 
+unsigned char \hyperlink{namespaceanalysis_a2b1a5cd712bd7a8d9bb92ca72f4af6e9}{find\+\_\+min\+\_\+height} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask, int bg\+Height)
+\item 
+long \hyperlink{namespaceanalysis_a5a9ccaf8d4509e238bc361861913b778}{find\+\_\+volume} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask, int bg\+Height)
+\begin{DoxyCompactList}\small\item\em Calculates a target\textquotesingle{}s volume. \end{DoxyCompactList}\item 
+long \hyperlink{namespaceanalysis_adb80c786b6da83f9a3a82f6e404350e0}{find\+\_\+average\+\_\+height} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask, int bg\+Height)
+\begin{DoxyCompactList}\small\item\em Calculates a target\textquotesingle{}s average height. \end{DoxyCompactList}\item 
+double \hyperlink{namespaceanalysis_a6eb28fd6cbc5314e98708ce6a43f457f}{find\+\_\+circularity} (cv\+::\+Mat \&mask)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{namespaceanalysis_a2dcdafce3743ed2b2c8ba209994cb4e1}{module\+\_\+path}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespaceanalysis_ad544440f3a463acd72807f108c6c5fbf}\label{namespaceanalysis_ad544440f3a463acd72807f108c6c5fbf}} 
+\index{analysis@{analysis}!find\+\_\+area@{find\+\_\+area}}
+\index{find\+\_\+area@{find\+\_\+area}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{find\+\_\+area()}{find\_area()}}
+{\footnotesize\ttfamily int analysis\+::find\+\_\+area (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask }\end{DoxyParamCaption})}
+
+
+
+Calculates a target\textquotesingle{}s area. 
+
+This function calulates a target\textquotesingle{}s area by computing an integral of all of the binary mask\textquotesingle{}s nonzero pixels.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceanalysis_adb80c786b6da83f9a3a82f6e404350e0}\label{namespaceanalysis_adb80c786b6da83f9a3a82f6e404350e0}} 
+\index{analysis@{analysis}!find\+\_\+average\+\_\+height@{find\+\_\+average\+\_\+height}}
+\index{find\+\_\+average\+\_\+height@{find\+\_\+average\+\_\+height}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{find\+\_\+average\+\_\+height()}{find\_average\_height()}}
+{\footnotesize\ttfamily long analysis\+::find\+\_\+average\+\_\+height (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask,  }\item[{int}]{bg\+Height }\end{DoxyParamCaption})}
+
+
+
+Calculates a target\textquotesingle{}s average height. 
+
+This function works calculates the average height of a target.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceanalysis_a6f9bf7edf5878b407c133ddbd89f7af8}\label{namespaceanalysis_a6f9bf7edf5878b407c133ddbd89f7af8}} 
+\index{analysis@{analysis}!find\+\_\+background@{find\+\_\+background}}
+\index{find\+\_\+background@{find\+\_\+background}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{find\+\_\+background()}{find\_background()}}
+{\footnotesize\ttfamily int analysis\+::find\+\_\+background (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask }\end{DoxyParamCaption})}
+
+
+
+Calculates a target\textquotesingle{}s the average background value. 
+
+This function calculates the average background value for a subimage. It does so by computing an average of all of the src pixels that correspond to a binary zero mask value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet detection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceanalysis_a6eb28fd6cbc5314e98708ce6a43f457f}\label{namespaceanalysis_a6eb28fd6cbc5314e98708ce6a43f457f}} 
+\index{analysis@{analysis}!find\+\_\+circularity@{find\+\_\+circularity}}
+\index{find\+\_\+circularity@{find\+\_\+circularity}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{find\+\_\+circularity()}{find\_circularity()}}
+{\footnotesize\ttfamily double analysis\+::find\+\_\+circularity (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{mask }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceanalysis_a3f5d294c05ef3a60c6c625a14462ee57}\label{namespaceanalysis_a3f5d294c05ef3a60c6c625a14462ee57}} 
+\index{analysis@{analysis}!find\+\_\+max\+\_\+height@{find\+\_\+max\+\_\+height}}
+\index{find\+\_\+max\+\_\+height@{find\+\_\+max\+\_\+height}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{find\+\_\+max\+\_\+height()}{find\_max\_height()}}
+{\footnotesize\ttfamily unsigned char analysis\+::find\+\_\+max\+\_\+height (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask,  }\item[{int}]{bg\+Height }\end{DoxyParamCaption})}
+
+Calculates a target\textquotesingle{}s max height
+
+This function does a simple search for a droplet\textquotesingle{}s max height, by looking through all the pixels that correspond to a nonzero binary mask value and picking the largest one.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceanalysis_a2b1a5cd712bd7a8d9bb92ca72f4af6e9}\label{namespaceanalysis_a2b1a5cd712bd7a8d9bb92ca72f4af6e9}} 
+\index{analysis@{analysis}!find\+\_\+min\+\_\+height@{find\+\_\+min\+\_\+height}}
+\index{find\+\_\+min\+\_\+height@{find\+\_\+min\+\_\+height}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{find\+\_\+min\+\_\+height()}{find\_min\_height()}}
+{\footnotesize\ttfamily unsigned char analysis\+::find\+\_\+min\+\_\+height (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask,  }\item[{int}]{bg\+Height }\end{DoxyParamCaption})}
+
+Calculates a target\textquotesingle{}s max height
+
+This function does a simple search for a droplet\textquotesingle{}s max height, by looking through all the pixels that correspond to a nonzero binary mask value and picking the smallest one.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceanalysis_a5a9ccaf8d4509e238bc361861913b778}\label{namespaceanalysis_a5a9ccaf8d4509e238bc361861913b778}} 
+\index{analysis@{analysis}!find\+\_\+volume@{find\+\_\+volume}}
+\index{find\+\_\+volume@{find\+\_\+volume}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{find\+\_\+volume()}{find\_volume()}}
+{\footnotesize\ttfamily long analysis\+::find\+\_\+volume (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask,  }\item[{int}]{bg\+Height }\end{DoxyParamCaption})}
+
+
+
+Calculates a target\textquotesingle{}s volume. 
+
+This function works exactly like find\+\_\+area, except that it integrates src pixels rather than mask pixels.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceanalysis_adac9def4c9a41ec6a7c2a03ac6c095cc}\label{namespaceanalysis_adac9def4c9a41ec6a7c2a03ac6c095cc}} 
+\index{analysis@{analysis}!rng@{rng}}
+\index{rng@{rng}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{rng()}{rng()}}
+{\footnotesize\ttfamily cv\+::\+R\+NG analysis\+::rng (\begin{DoxyParamCaption}\item[{12345}]{ }\end{DoxyParamCaption})}
+
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{namespaceanalysis_a2dcdafce3743ed2b2c8ba209994cb4e1}\label{namespaceanalysis_a2dcdafce3743ed2b2c8ba209994cb4e1}} 
+\index{analysis@{analysis}!module\+\_\+path@{module\+\_\+path}}
+\index{module\+\_\+path@{module\+\_\+path}!analysis@{analysis}}
+\subsubsection{\texorpdfstring{module\+\_\+path}{module\_path}}
+{\footnotesize\ttfamily std\+::string analysis\+::module\+\_\+path}
+

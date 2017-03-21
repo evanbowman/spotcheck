@@ -1,3 +1,6 @@
+//! @file
+//! @brief Analysis Functions
+
 #pragma once
 
 #include <opencv2/imgproc/imgproc.hpp>

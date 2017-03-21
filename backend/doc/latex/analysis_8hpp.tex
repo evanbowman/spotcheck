@@ -1,0 +1,149 @@
+\hypertarget{analysis_8hpp}{}\section{analysis.\+hpp File Reference}
+\label{analysis_8hpp}\index{analysis.\+hpp@{analysis.\+hpp}}
+
+
+Analysis Functions.  
+
+
+{\ttfamily \#include $<$opencv2/imgproc/imgproc.\+hpp$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$opencv2/highgui/highgui.\+hpp$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{analysis_8hpp_a9e252dfc1a70e6524a3b74d23d8d8092}{find\+\_\+background} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask)
+\begin{DoxyCompactList}\small\item\em Calculates a target\textquotesingle{}s the average background value. \end{DoxyCompactList}\item 
+int \hyperlink{analysis_8hpp_a068116eb59ea8433c8c9cc020a15fb2e}{find\+\_\+area} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask)
+\begin{DoxyCompactList}\small\item\em Calculates a target\textquotesingle{}s area. \end{DoxyCompactList}\item 
+unsigned char \hyperlink{analysis_8hpp_a3dc19d7b5aa9e517a3ccfef69d66b764}{find\+\_\+max\+\_\+height} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask, int bg\+Height)
+\item 
+unsigned char \hyperlink{analysis_8hpp_a05d683bfb77875967d79ad5fdfa79a2c}{find\+\_\+min\+\_\+height} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask, int bg\+Height)
+\item 
+long \hyperlink{analysis_8hpp_a293679f9c37eef65c42a1d2bd228e8e5}{find\+\_\+volume} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask, int bg\+Height)
+\begin{DoxyCompactList}\small\item\em Calculates a target\textquotesingle{}s volume. \end{DoxyCompactList}\item 
+long \hyperlink{analysis_8hpp_aa0a3d6be0b6848039ec16fb288641b35}{find\+\_\+average\+\_\+height} (cv\+::\+Mat \&src, cv\+::\+Mat \&mask, int bg\+Height)
+\begin{DoxyCompactList}\small\item\em Calculates a target\textquotesingle{}s average height. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{analysis_8hpp_adb1b33ece4dfa48222af9f0d5d6bba71}\label{analysis_8hpp_adb1b33ece4dfa48222af9f0d5d6bba71}} 
+double {\bfseries find\+\_\+circularity} (cv\+::\+Mat \&mask)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Analysis Functions. 
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{analysis_8hpp_a068116eb59ea8433c8c9cc020a15fb2e}\label{analysis_8hpp_a068116eb59ea8433c8c9cc020a15fb2e}} 
+\index{analysis.\+hpp@{analysis.\+hpp}!find\+\_\+area@{find\+\_\+area}}
+\index{find\+\_\+area@{find\+\_\+area}!analysis.\+hpp@{analysis.\+hpp}}
+\subsubsection{\texorpdfstring{find\+\_\+area()}{find\_area()}}
+{\footnotesize\ttfamily int find\+\_\+area (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask }\end{DoxyParamCaption})}
+
+
+
+Calculates a target\textquotesingle{}s area. 
+
+This function calulates a target\textquotesingle{}s area by computing an integral of all of the binary mask\textquotesingle{}s nonzero pixels.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{analysis_8hpp_aa0a3d6be0b6848039ec16fb288641b35}\label{analysis_8hpp_aa0a3d6be0b6848039ec16fb288641b35}} 
+\index{analysis.\+hpp@{analysis.\+hpp}!find\+\_\+average\+\_\+height@{find\+\_\+average\+\_\+height}}
+\index{find\+\_\+average\+\_\+height@{find\+\_\+average\+\_\+height}!analysis.\+hpp@{analysis.\+hpp}}
+\subsubsection{\texorpdfstring{find\+\_\+average\+\_\+height()}{find\_average\_height()}}
+{\footnotesize\ttfamily long find\+\_\+average\+\_\+height (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask,  }\item[{int}]{bg\+Height }\end{DoxyParamCaption})}
+
+
+
+Calculates a target\textquotesingle{}s average height. 
+
+This function works calculates the average height of a target.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{analysis_8hpp_a9e252dfc1a70e6524a3b74d23d8d8092}\label{analysis_8hpp_a9e252dfc1a70e6524a3b74d23d8d8092}} 
+\index{analysis.\+hpp@{analysis.\+hpp}!find\+\_\+background@{find\+\_\+background}}
+\index{find\+\_\+background@{find\+\_\+background}!analysis.\+hpp@{analysis.\+hpp}}
+\subsubsection{\texorpdfstring{find\+\_\+background()}{find\_background()}}
+{\footnotesize\ttfamily int find\+\_\+background (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask }\end{DoxyParamCaption})}
+
+
+
+Calculates a target\textquotesingle{}s the average background value. 
+
+This function calculates the average background value for a subimage. It does so by computing an average of all of the src pixels that correspond to a binary zero mask value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet detection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{analysis_8hpp_a3dc19d7b5aa9e517a3ccfef69d66b764}\label{analysis_8hpp_a3dc19d7b5aa9e517a3ccfef69d66b764}} 
+\index{analysis.\+hpp@{analysis.\+hpp}!find\+\_\+max\+\_\+height@{find\+\_\+max\+\_\+height}}
+\index{find\+\_\+max\+\_\+height@{find\+\_\+max\+\_\+height}!analysis.\+hpp@{analysis.\+hpp}}
+\subsubsection{\texorpdfstring{find\+\_\+max\+\_\+height()}{find\_max\_height()}}
+{\footnotesize\ttfamily unsigned char find\+\_\+max\+\_\+height (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask,  }\item[{int}]{bg\+Height }\end{DoxyParamCaption})}
+
+Calculates a target\textquotesingle{}s max height
+
+This function does a simple search for a droplet\textquotesingle{}s max height, by looking through all the pixels that correspond to a nonzero binary mask value and picking the largest one.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{analysis_8hpp_a05d683bfb77875967d79ad5fdfa79a2c}\label{analysis_8hpp_a05d683bfb77875967d79ad5fdfa79a2c}} 
+\index{analysis.\+hpp@{analysis.\+hpp}!find\+\_\+min\+\_\+height@{find\+\_\+min\+\_\+height}}
+\index{find\+\_\+min\+\_\+height@{find\+\_\+min\+\_\+height}!analysis.\+hpp@{analysis.\+hpp}}
+\subsubsection{\texorpdfstring{find\+\_\+min\+\_\+height()}{find\_min\_height()}}
+{\footnotesize\ttfamily unsigned char find\+\_\+min\+\_\+height (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask,  }\item[{int}]{bg\+Height }\end{DoxyParamCaption})}
+
+Calculates a target\textquotesingle{}s max height
+
+This function does a simple search for a droplet\textquotesingle{}s max height, by looking through all the pixels that correspond to a nonzero binary mask value and picking the smallest one.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{analysis_8hpp_a293679f9c37eef65c42a1d2bd228e8e5}\label{analysis_8hpp_a293679f9c37eef65c42a1d2bd228e8e5}} 
+\index{analysis.\+hpp@{analysis.\+hpp}!find\+\_\+volume@{find\+\_\+volume}}
+\index{find\+\_\+volume@{find\+\_\+volume}!analysis.\+hpp@{analysis.\+hpp}}
+\subsubsection{\texorpdfstring{find\+\_\+volume()}{find\_volume()}}
+{\footnotesize\ttfamily long find\+\_\+volume (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask,  }\item[{int}]{bg\+Height }\end{DoxyParamCaption})}
+
+
+
+Calculates a target\textquotesingle{}s volume. 
+
+This function works exactly like find\+\_\+area, except that it integrates src pixels rather than mask pixels.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The heightmap source subimage \\
+\hline
+{\em mask} & The binary droplet dection mask \\
+\hline
+\end{DoxyParams}

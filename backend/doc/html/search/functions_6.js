@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['split_5fsectors',['split_sectors',['../classbackend.html#a3b212ebed9184a5818c9ce81b5513a3c',1,'backend']]]
+  ['provide_5fnorm_5fpreview',['provide_norm_preview',['../classbackend.html#aa4a237c847f3bdc527b7bf01f2fa1974',1,'backend']]]
 ];

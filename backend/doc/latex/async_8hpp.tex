@@ -1,0 +1,59 @@
+\hypertarget{async_8hpp}{}\section{async.\+hpp File Reference}
+\label{async_8hpp}\index{async.\+hpp@{async.\+hpp}}
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$tuple$>$}\newline
+{\ttfamily \#include $<$uv.\+h$>$}\newline
+{\ttfamily \#include $<$v8.\+h$>$}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structdetail_1_1apply__impl}{detail\+::apply\+\_\+impl$<$ F, Tuple, Done, Total, N $>$}
+\item 
+struct \hyperlink{structdetail_1_1apply__impl_3_01_f_00_01_tuple_00_01true_00_01_total_00_01_n_8_8_8_01_4}{detail\+::apply\+\_\+impl$<$ F, Tuple, true, Total, N... $>$}
+\item 
+struct \hyperlink{structasync}{async}
+\item 
+struct \hyperlink{structasync_1_1work}{async\+::work$<$ F, Args $>$}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespacedetail}{detail}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \hyperlink{async_8hpp_a711cca243fbc83899b2042512990bf45}{js\+\_\+persist\+\_\+cb} = v8\+::\+Persistent$<$ v8\+::\+Function $>$
+\item 
+using \hyperlink{async_8hpp_aa0cd468f1012e2fa22b824f35890caa6}{js\+\_\+cb} = v8\+::\+Local$<$ v8\+::\+Function $>$
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename F , typename Tuple $>$ }\\void \hyperlink{async_8hpp_a279d07361424ab04bb2f0e3e021b8c35}{apply} (F f, Tuple \&\&t)
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\mbox{\Hypertarget{async_8hpp_aa0cd468f1012e2fa22b824f35890caa6}\label{async_8hpp_aa0cd468f1012e2fa22b824f35890caa6}} 
+\index{async.\+hpp@{async.\+hpp}!js\+\_\+cb@{js\+\_\+cb}}
+\index{js\+\_\+cb@{js\+\_\+cb}!async.\+hpp@{async.\+hpp}}
+\subsubsection{\texorpdfstring{js\+\_\+cb}{js\_cb}}
+{\footnotesize\ttfamily using \hyperlink{async_8hpp_aa0cd468f1012e2fa22b824f35890caa6}{js\+\_\+cb} =  v8\+::\+Local$<$v8\+::\+Function$>$}
+
+\mbox{\Hypertarget{async_8hpp_a711cca243fbc83899b2042512990bf45}\label{async_8hpp_a711cca243fbc83899b2042512990bf45}} 
+\index{async.\+hpp@{async.\+hpp}!js\+\_\+persist\+\_\+cb@{js\+\_\+persist\+\_\+cb}}
+\index{js\+\_\+persist\+\_\+cb@{js\+\_\+persist\+\_\+cb}!async.\+hpp@{async.\+hpp}}
+\subsubsection{\texorpdfstring{js\+\_\+persist\+\_\+cb}{js\_persist\_cb}}
+{\footnotesize\ttfamily using \hyperlink{async_8hpp_a711cca243fbc83899b2042512990bf45}{js\+\_\+persist\+\_\+cb} =  v8\+::\+Persistent$<$v8\+::\+Function$>$}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{async_8hpp_a279d07361424ab04bb2f0e3e021b8c35}\label{async_8hpp_a279d07361424ab04bb2f0e3e021b8c35}} 
+\index{async.\+hpp@{async.\+hpp}!apply@{apply}}
+\index{apply@{apply}!async.\+hpp@{async.\+hpp}}
+\subsubsection{\texorpdfstring{apply()}{apply()}}
+{\footnotesize\ttfamily template$<$typename F , typename Tuple $>$ \\
+void apply (\begin{DoxyParamCaption}\item[{F}]{f,  }\item[{Tuple \&\&}]{t }\end{DoxyParamCaption})}
+

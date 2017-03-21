@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['update_5ftarget_5fthresh',['update_target_thresh',['../classbackend.html#a567b1f81aaa959b25ab5448752a5a371',1,'backend']]]
+  ['split_5fsectors',['split_sectors',['../classbackend.html#a3b212ebed9184a5818c9ce81b5513a3c',1,'backend']]]
 ];
