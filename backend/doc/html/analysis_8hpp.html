@@ -67,12 +67,12 @@ $(function() {
 
 <p>Analysis Functions.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;opencv2/imgproc/imgproc.hpp&gt;</code><br />
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;opencv2/highgui/highgui.hpp&gt;</code><br />
+<code>#include &lt;opencv2/imgproc/imgproc.hpp&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
 </div>
 <p><a href="analysis_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -100,6 +100,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>find_circularity</b
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Analysis Functions. </p>
+<p>This file provides the definitions for all of the analysis metrics supported by SpotCheck. Each analysis function takes as parameters src; a matrix representing a sub-image of the original heightmap, one that contains a single mirco-array spot, and mask; a binary matrix representing where in the sub-image the droplet can be found.</p>
+<p>In order to add a new analysis metric and have it show up in the frontend, add a new function in this file, and call the function in backend::analyze_target. Then, add a member to the <a class="el" href="class_result.html">Result</a> class to hold the result of the analysis metric, and modify result::serialize so that it additionally outputs the member variable that you just added to the <a class="el" href="class_result.html">Result</a> class. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="a068116eb59ea8433c8c9cc020a15fb2e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a068116eb59ea8433c8c9cc020a15fb2e">&#9670;&nbsp;</a></span>find_area()</h2>

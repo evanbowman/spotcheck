@@ -5,12 +5,12 @@
 Analysis Functions.  
 
 
-{\ttfamily \#include $<$opencv2/imgproc/imgproc.\+hpp$>$}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
 {\ttfamily \#include $<$iostream$>$}\newline
 {\ttfamily \#include $<$opencv2/highgui/highgui.\+hpp$>$}\newline
+{\ttfamily \#include $<$opencv2/imgproc/imgproc.\+hpp$>$}\newline
 {\ttfamily \#include $<$stdio.\+h$>$}\newline
 {\ttfamily \#include $<$stdlib.\+h$>$}\newline
-{\ttfamily \#include $<$algorithm$>$}\newline
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -34,7 +34,9 @@ double {\bfseries find\+\_\+circularity} (cv\+::\+Mat \&mask)
 \subsection{Detailed Description}
 Analysis Functions. 
 
+This file provides the definitions for all of the analysis metrics supported by Spot\+Check. Each analysis function takes as parameters src; a matrix representing a sub-\/image of the original heightmap, one that contains a single mirco-\/array spot, and mask; a binary matrix representing where in the sub-\/image the droplet can be found.
 
+In order to add a new analysis metric and have it show up in the frontend, add a new function in this file, and call the function in backend\+::analyze\+\_\+target. Then, add a member to the \hyperlink{class_result}{Result} class to hold the result of the analysis metric, and modify result\+::serialize so that it additionally outputs the member variable that you just added to the \hyperlink{class_result}{Result} class. 
 
 \subsection{Function Documentation}
 \mbox{\Hypertarget{analysis_8hpp_a068116eb59ea8433c8c9cc020a15fb2e}\label{analysis_8hpp_a068116eb59ea8433c8c9cc020a15fb2e}} 

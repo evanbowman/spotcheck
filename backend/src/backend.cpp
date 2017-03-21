@@ -1,15 +1,19 @@
 #include "backend.hpp"
 #include "analysis.hpp"
 
-v8::Persistent<v8::Function> backend::constructor;
+v8::Persistent<v8::Function> Backend::constructor;
 
-std::vector<result> backend::m_results;
+std::vector<Result> Backend::m_results;
 
-cv::Mat backend::m_source_image;
+cv::Mat Backend::m_source_image;
 
-std::vector<backend::Target> backend::m_targets;
+std::vector<Backend::Target> Backend::m_targets;
 
 std::string module_path;
+
+float Backend::m_camera_pixel_pitch;
+
+float Backend::m_magnification;
 
 inline static std::string get_mod_path(v8::Isolate * isolate,
                                        v8::Local<v8::Object> & module) {
@@ -28,10 +32,23 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
     return *utf8_mod_dirname;
 }
 
+void Backend::load_profile_data() {
+    std::fstream config_file(::module_path + "/../../../spotcheck-profile.yml");
+    std::stringstream ss;
+    ss << config_file.rdbuf();
+    YAML::Node node = YAML::Load(ss.str());
+    if (auto camera_pixel_pitch = node["camera-pixel-pitch"]) {
+        m_camera_pixel_pitch = camera_pixel_pitch.as<float>();
+    }
+    if (auto magnification = node["magnification"]) {
+        m_magnification = magnification.as<float>();
+    }
+}
+
 uv_mutex_t task_mtx;
 static size_t task_count;
 
-void backend::init(v8::Local<v8::Object> exports,
+void Backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
     static const std::array<std::pair<const char *, membr_type>, 11> mappings =
@@ -46,7 +63,7 @@ void backend::init(v8::Local<v8::Object> exports,
           {"write_results_JSON", write_results_JSON},
           {"get_target_thresh", get_target_thresh},
           {"provide_norm_preview", provide_norm_preview}}};
-    static const char * js_class_name = "backend";
+    static const char * js_class_name = "Backend";
     v8::Isolate * isolate = exports->GetIsolate();
     ::module_path = ::get_mod_path(isolate, module);
     v8::Local<v8::FunctionTemplate> tpl =
@@ -60,16 +77,17 @@ void backend::init(v8::Local<v8::Object> exports,
     exports->Set(v8::String::NewFromUtf8(isolate, js_class_name),
                  tpl->GetFunction());
     assert(uv_mutex_init(&::task_mtx) == 0);
+    load_profile_data();
 }
 
-void backend::alloc(const callback_info & args) {
+void Backend::alloc(const callback_info & args) {
     assert(args.IsConstructCall());
-    auto obj = new backend();
+    auto obj = new Backend();
     obj->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
 }
 
-void backend::import_source_image(const callback_info & args) {
+void Backend::import_source_image(const callback_info & args) {
     assert(args.Length() == 2);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     v8::String::Utf8Value str_arg(args[1]->ToString());
@@ -79,7 +97,7 @@ void backend::import_source_image(const callback_info & args) {
     });
 }
 
-void backend::import_source_gal(const callback_info & args) {
+void Backend::import_source_gal(const callback_info & args) {
     assert(args.Length() == 2);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     v8::String::Utf8Value str_arg(args[1]->ToString());
@@ -145,7 +163,7 @@ static void mask_largest_connected(cv::Mat & src) {
     cv::threshold(src, src, 127, 255, cv::THRESH_BINARY);
 }
 
-static void process_sector(const backend::Target & target,
+static void process_sector(const Backend::Target & target,
                            const cv::Mat & src) {
     auto roi = make_cv_roi({{target.fractStartx, target.fractStarty,
                              target.fractEndx, target.fractEndy}},
@@ -172,7 +190,7 @@ static void process_sector(const backend::Target & target,
     uv_mutex_unlock(&::task_mtx);
 }
 
-void backend::split_sectors(const callback_info & args) {
+void Backend::split_sectors(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     uv_mutex_lock(&::task_mtx);
@@ -199,12 +217,12 @@ void backend::split_sectors(const callback_info & args) {
     }
 }
 
-void backend::is_busy(const callback_info & args) {
+void Backend::is_busy(const callback_info & args) {
     auto isolate = v8::Isolate::GetCurrent();
     args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
 }
 
-static inline void populate_results_JSON(const std::vector<result> & results,
+static inline void populate_results_JSON(const std::vector<Result> & results,
                                          std::ostream & ostr) {
     ostr << "[";
     const size_t max_index = results.size() - 1;
@@ -219,7 +237,7 @@ static inline void populate_results_JSON(const std::vector<result> & results,
     ostr << "]" << std::endl;
 }
 
-void backend::write_results_JSON(const callback_info & args) {
+void Backend::write_results_JSON(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     async::start(js_callback, [] {
@@ -230,7 +248,7 @@ void backend::write_results_JSON(const callback_info & args) {
     });
 }
 
-void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
+void Backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     // Find Background
     int background_avg_height = find_background(src, mask);
     // Background Subtraction
@@ -247,7 +265,7 @@ void backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     uv_mutex_unlock(&task_mtx);
 }
 
-void backend::launch_analysis(const callback_info & args) {
+void Backend::launch_analysis(const callback_info & args) {
     assert(args.Length() == 1);
     m_results.clear();
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
@@ -278,7 +296,7 @@ void backend::launch_analysis(const callback_info & args) {
     }
 }
 
-void backend::update_target_thresh(const callback_info & args) {
+void Backend::update_target_thresh(const callback_info & args) {
     assert(args.Length() == 4);
     const int64_t targetRow = args[1]->IntegerValue();
     const int64_t targetCol = args[2]->IntegerValue();
@@ -294,7 +312,7 @@ void backend::update_target_thresh(const callback_info & args) {
                  [target] { process_sector(*target, m_source_image); });
 }
 
-void backend::add_target(const callback_info & args) {
+void Backend::add_target(const callback_info & args) {
     assert(args.Length() == 7);
     m_targets.push_back(
         {v8::Local<v8::Integer>::Cast(args[0])->Value(),
@@ -306,18 +324,18 @@ void backend::add_target(const callback_info & args) {
          args[6]->IntegerValue()});
 }
 
-void backend::clear_targets(const callback_info & args) {
+void Backend::clear_targets(const callback_info & args) {
     assert(args.Length() == 0);
     m_targets.clear();
 }
 
-void backend::provide_norm_preview(const callback_info & args) {
+void Backend::provide_norm_preview(const callback_info & args) {
     assert(args.Length() == 1);
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     async::start(js_callback, [&] { preview_normalized(m_source_image); });
 }
 
-void backend::get_target_thresh(const callback_info & args) {
+void Backend::get_target_thresh(const callback_info & args) {
     assert(args.Length() == 2);
     const int64_t targetRow = args[0]->IntegerValue();
     const int64_t targetCol = args[1]->IntegerValue();

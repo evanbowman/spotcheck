@@ -68,6 +68,11 @@ $(function() {
 <div class="title">backend Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>The interface between Spotcheck's analysis functions, OpenCV, and the application's frontend.  
+ <a href="classbackend.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="backend_8hpp_source.html">backend.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for backend:</div>
 <div class="dyncontent">
@@ -139,7 +144,10 @@ Static Public Attributes</h2></td></tr>
 static v8::Persistent&lt; v8::Function &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>constructor</b></td></tr>
 <tr class="separator:a2e36e089be85fa5fcdec6d9ab50c3199"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The interface between Spotcheck's analysis functions, OpenCV, and the application's frontend. </p>
+<p>The backend class provides an interface for passing data between the app's frontend and SpotCheck's image analysis functions as described in <a class="el" href="analysis_8hpp.html" title="Analysis Functions. ">analysis.hpp</a>. It does so by defining the mapping between it's own class methods and javascript functions, so that a backend object can be instantiated directly in javascript! To better understand how the dispatch between a backend object's methods and javascript functions works, see the implementation of <a class="el" href="classbackend.html#a44ff4b919d81243742ff4b4bedde4f83" title="Initializes the backend module. ">backend::init</a> in backend.cpp. The frontend begins by telling the backend to load a tiff heightmap with <a class="el" href="classbackend.html#a516007959f2bc8b4f5f83d1a448a6090" title="Imports the source image into the backend. ">backend::import_source_image</a>, and then by describing what subregions of the image to analyze by calling <a class="el" href="classbackend.html#ac981fabc3077c133dca35b5cb7e6f66c" title="Adds an analysis target to the backend. ">backend::add_target</a> for each square of the frontend's selection grid. After specifying all the targets to analyze, the frontend calls <a class="el" href="classbackend.html#adea4e670e5c1e84d295c5cd03deceb4a" title="Launches analysis on all of the backend&#39;s analysis targets. ">backend::launch_analysis</a>, which submits a task to the app's threadpool for each analysis target. Each task runs <a class="el" href="classbackend.html#a23963a7c7e73bba71cbf77e27224efd8" title="Runs analysis on a single analysis target. ">backend::analyze_target</a> on a single target, and upon completion, writes a result object containing the analysis results to backend::m_results. The frontend can then call <a class="el" href="classbackend.html#a91fe1ff0bbdc9e29d6958e0cf72d10ba" title="Serialize the backend&#39;s results to a JSON format. ">backend::write_results_JSON</a> to import the results data as an array of javascript objects. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ac981fabc3077c133dca35b5cb7e6f66c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac981fabc3077c133dca35b5cb7e6f66c">&#9670;&nbsp;</a></span>add_target()</h2>
 

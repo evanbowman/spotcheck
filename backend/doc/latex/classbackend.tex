@@ -1,5 +1,14 @@
 \hypertarget{classbackend}{}\section{backend Class Reference}
 \label{classbackend}\index{backend@{backend}}
+
+
+The interface between Spotcheck\textquotesingle{}s analysis functions, Open\+CV, and the application\textquotesingle{}s frontend.  
+
+
+
+
+{\ttfamily \#include $<$backend.\+hpp$>$}
+
 Inheritance diagram for backend\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -55,6 +64,11 @@ static void \hyperlink{classbackend_aea5762a8de17d93aadb8d1a870e1474d}{is\+\_\+b
 static v8\+::\+Persistent$<$ v8\+::\+Function $>$ {\bfseries constructor}
 \end{DoxyCompactItemize}
 
+
+\subsection{Detailed Description}
+The interface between Spotcheck\textquotesingle{}s analysis functions, Open\+CV, and the application\textquotesingle{}s frontend. 
+
+The backend class provides an interface for passing data between the app\textquotesingle{}s frontend and Spot\+Check\textquotesingle{}s image analysis functions as described in \hyperlink{analysis_8hpp}{analysis.\+hpp}. It does so by defining the mapping between it\textquotesingle{}s own class methods and javascript functions, so that a backend object can be instantiated directly in javascript! To better understand how the dispatch between a backend object\textquotesingle{}s methods and javascript functions works, see the implementation of \hyperlink{classbackend_a44ff4b919d81243742ff4b4bedde4f83}{backend\+::init} in backend.\+cpp. The frontend begins by telling the backend to load a tiff heightmap with \hyperlink{classbackend_a516007959f2bc8b4f5f83d1a448a6090}{backend\+::import\+\_\+source\+\_\+image}, and then by describing what subregions of the image to analyze by calling \hyperlink{classbackend_ac981fabc3077c133dca35b5cb7e6f66c}{backend\+::add\+\_\+target} for each square of the frontend\textquotesingle{}s selection grid. After specifying all the targets to analyze, the frontend calls \hyperlink{classbackend_adea4e670e5c1e84d295c5cd03deceb4a}{backend\+::launch\+\_\+analysis}, which submits a task to the app\textquotesingle{}s threadpool for each analysis target. Each task runs \hyperlink{classbackend_a23963a7c7e73bba71cbf77e27224efd8}{backend\+::analyze\+\_\+target} on a single target, and upon completion, writes a result object containing the analysis results to backend\+::m\+\_\+results. The frontend can then call \hyperlink{classbackend_a91fe1ff0bbdc9e29d6958e0cf72d10ba}{backend\+::write\+\_\+results\+\_\+\+J\+S\+ON} to import the results data as an array of javascript objects. 
 
 \subsection{Member Function Documentation}
 \mbox{\Hypertarget{classbackend_ac981fabc3077c133dca35b5cb7e6f66c}\label{classbackend_ac981fabc3077c133dca35b5cb7e6f66c}} 

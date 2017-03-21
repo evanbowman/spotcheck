@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['backend',['backend',['../classbackend.html',1,'']]]
+  ['backend',['Backend',['../class_backend.html',1,'']]]
 ];

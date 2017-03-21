@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['result',['result',['../classresult.html',1,'']]]
+  ['result',['Result',['../class_result.html',1,'']]]
 ];

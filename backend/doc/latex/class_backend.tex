@@ -1,0 +1,239 @@
+\hypertarget{class_backend}{}\section{Backend Class Reference}
+\label{class_backend}\index{Backend@{Backend}}
+
+
+The interface between Spotcheck\textquotesingle{}s analysis functions, Open\+CV, and the application\textquotesingle{}s frontend.  
+
+
+
+
+{\ttfamily \#include $<$backend.\+hpp$>$}
+
+Inheritance diagram for Backend\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_backend}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_backend_1_1_target}{Target}
+\end{DoxyCompactItemize}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_backend_a311090170815b6db258f8f6ad08ba3f9}\label{class_backend_a311090170815b6db258f8f6ad08ba3f9}} 
+using {\bfseries callback\+\_\+info} = v8\+::\+Function\+Callback\+Info$<$ v8\+::\+Value $>$
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{class_backend_a3bbb39435c576093a6b74520ae463398}{init} (v8\+::\+Local$<$ v8\+::\+Object $>$ exports, v8\+::\+Local$<$ v8\+::\+Object $>$ module)
+\begin{DoxyCompactList}\small\item\em Initializes the \hyperlink{class_backend}{Backend} module. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_af235a0e3a5689fb47afe9b392b93d979}{alloc} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Allocates a new \hyperlink{class_backend}{Backend} object. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_aef5331c3d0f698924124af87c2d5877c}{import\+\_\+source\+\_\+image} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Imports the source image into the \hyperlink{class_backend}{Backend}. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_a874fced9ef73eda11ce1489b5ec4838e}{import\+\_\+source\+\_\+gal} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Imports the source gal into the \hyperlink{class_backend}{Backend}. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_abe8afa9fcd0ae0564b27c306bd35948d}{split\+\_\+sectors} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Splits the \hyperlink{class_backend}{Backend}\textquotesingle{}s heightmap into smaller chunks. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_a30d9aa2b62ba8349b403ae6af2ec6b69}{clear\+\_\+targets} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Clears the \hyperlink{class_backend}{Backend}\textquotesingle{}s analysis targets. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_acab7db3b3b0f34798a48ba22a7e3e9ff}{launch\+\_\+analysis} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Launches analysis on all of the \hyperlink{class_backend}{Backend}\textquotesingle{}s analysis targets. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_a149d05a4861bc09a73908f9817666586}{analyze\+\_\+target} (\hyperlink{struct_backend_1_1_target}{Target} \&target, cv\+::\+Mat \&src, cv\+::\+Mat \&mask)
+\begin{DoxyCompactList}\small\item\em Runs analysis on a single analysis target. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_ad8eb1ddd04ee12fe1e720b09b4fc4c4e}{add\+\_\+target} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Adds an analysis target to the \hyperlink{class_backend}{Backend}. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_a7932975deb5e38ef957ef62112a730e4}{get\+\_\+target\+\_\+thresh} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Gets the threshold value for a target. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_a2bc5c7f6eb7a1c6ec5b5572410c4e81e}{write\+\_\+results\+\_\+\+J\+S\+ON} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Serialize the \hyperlink{class_backend}{Backend}\textquotesingle{}s results to a J\+S\+ON format. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_ad2db57d3d4eb38bfda56212c8465ca8a}{update\+\_\+target\+\_\+thresh} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Updates the threshold value for an analysis target. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_a848c3f31e41690d5e27e0f260651ec9a}{provide\+\_\+norm\+\_\+preview} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Provides a preview of the entire heighmap. \end{DoxyCompactList}\item 
+static void \hyperlink{class_backend_ad23273def503c1749707c57ac92e9212}{is\+\_\+busy} (const callback\+\_\+info \&args)
+\begin{DoxyCompactList}\small\item\em Queries whether the \hyperlink{class_backend}{Backend} is working on analysis targets. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_backend_a68ea10283f69788d9104a664cc44913f}\label{class_backend_a68ea10283f69788d9104a664cc44913f}} 
+static v8\+::\+Persistent$<$ v8\+::\+Function $>$ {\bfseries constructor}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The interface between Spotcheck\textquotesingle{}s analysis functions, Open\+CV, and the application\textquotesingle{}s frontend. 
+
+The \hyperlink{class_backend}{Backend} class provides an interface for passing data between the app\textquotesingle{}s frontend and Spot\+Check\textquotesingle{}s image analysis functions as described in \hyperlink{analysis_8hpp}{analysis.\+hpp}. It does so by defining the mapping between it\textquotesingle{}s own class methods and javascript functions, so that a \hyperlink{class_backend}{Backend} object can be instantiated directly in javascript! To better understand how the dispatch between a \hyperlink{class_backend}{Backend} object\textquotesingle{}s methods and javascript functions works, see the implementation of \hyperlink{class_backend_a3bbb39435c576093a6b74520ae463398}{Backend\+::init} in Backend.\+cpp. The frontend begins by telling the \hyperlink{class_backend}{Backend} to load a tiff heightmap with \hyperlink{class_backend_aef5331c3d0f698924124af87c2d5877c}{Backend\+::import\+\_\+source\+\_\+image}, and then by describing what subregions of the image to analyze by calling \hyperlink{class_backend_ad8eb1ddd04ee12fe1e720b09b4fc4c4e}{Backend\+::add\+\_\+target} for each square of the frontend\textquotesingle{}s selection grid. After specifying all the targets to analyze, the frontend calls \hyperlink{class_backend_acab7db3b3b0f34798a48ba22a7e3e9ff}{Backend\+::launch\+\_\+analysis}, which submits a task to the app\textquotesingle{}s threadpool for each analysis target. Each task runs \hyperlink{class_backend_a149d05a4861bc09a73908f9817666586}{Backend\+::analyze\+\_\+target} on a single target, and upon completion, writes a result object containing the analysis results to Backend\+::m\+\_\+results. The frontend can then call \hyperlink{class_backend_a2bc5c7f6eb7a1c6ec5b5572410c4e81e}{Backend\+::write\+\_\+results\+\_\+\+J\+S\+ON} to import the results data as an array of javascript objects. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_backend_ad8eb1ddd04ee12fe1e720b09b4fc4c4e}\label{class_backend_ad8eb1ddd04ee12fe1e720b09b4fc4c4e}} 
+\index{Backend@{Backend}!add\+\_\+target@{add\+\_\+target}}
+\index{add\+\_\+target@{add\+\_\+target}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{add\+\_\+target()}{add\_target()}}
+{\footnotesize\ttfamily void Backend\+::add\+\_\+target (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Adds an analysis target to the \hyperlink{class_backend}{Backend}. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It adds an analysis target to the \hyperlink{class_backend}{Backend}, where each target is metadata that describes the subregion of the image to be analysed. From javascript, it takes seven parameters\+: 1) row\+Id\+: The row of the selection grid where the subimage lies. 2) col\+Id\+: The column of the selection grid where the subimage lies. 3) fract\+Startx\+: The x percentage into the image where the subimage begins. 4) fract\+Starty\+: The y percentage into the image where the subimage begins. 5) fract\+Endx\+: The x percentage into the image where the subimage ends. 6) fract\+Endy\+: The y percentage into the image where the subimage ends. 7) threshold\+: A default threshold value (unused) \mbox{\Hypertarget{class_backend_af235a0e3a5689fb47afe9b392b93d979}\label{class_backend_af235a0e3a5689fb47afe9b392b93d979}} 
+\index{Backend@{Backend}!alloc@{alloc}}
+\index{alloc@{alloc}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{alloc()}{alloc()}}
+{\footnotesize\ttfamily void Backend\+::alloc (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Allocates a new \hyperlink{class_backend}{Backend} object. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It is called upon allocation of a new \hyperlink{class_backend}{Backend} object by the frontend, and is responsible for performing the initial memory allocation.
+
+\begin{DoxyReturn}{Returns}
+A \hyperlink{class_backend}{Backend} javascript object. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_backend_a149d05a4861bc09a73908f9817666586}\label{class_backend_a149d05a4861bc09a73908f9817666586}} 
+\index{Backend@{Backend}!analyze\+\_\+target@{analyze\+\_\+target}}
+\index{analyze\+\_\+target@{analyze\+\_\+target}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{analyze\+\_\+target()}{analyze\_target()}}
+{\footnotesize\ttfamily void Backend\+::analyze\+\_\+target (\begin{DoxyParamCaption}\item[{\hyperlink{struct_backend_1_1_target}{Target} \&}]{target,  }\item[{cv\+::\+Mat \&}]{src,  }\item[{cv\+::\+Mat \&}]{mask }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Runs analysis on a single analysis target. 
+
+This function runs the full suite of analysis metrics on a subregion of the heightmap. Upon completion, it writes a result object to the \hyperlink{class_backend}{Backend}\textquotesingle{}s list of results.
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & The target struct with metadata about the target subregion \\
+\hline
+{\em src} & The original source image representing the subregion \\
+\hline
+{\em mask} & A binary mask of the subregion representing droplet location \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_backend_a30d9aa2b62ba8349b403ae6af2ec6b69}\label{class_backend_a30d9aa2b62ba8349b403ae6af2ec6b69}} 
+\index{Backend@{Backend}!clear\+\_\+targets@{clear\+\_\+targets}}
+\index{clear\+\_\+targets@{clear\+\_\+targets}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{clear\+\_\+targets()}{clear\_targets()}}
+{\footnotesize\ttfamily void Backend\+::clear\+\_\+targets (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Clears the \hyperlink{class_backend}{Backend}\textquotesingle{}s analysis targets. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It clears out the list of analysis targets maintained by the \hyperlink{class_backend}{Backend}. \mbox{\Hypertarget{class_backend_a7932975deb5e38ef957ef62112a730e4}\label{class_backend_a7932975deb5e38ef957ef62112a730e4}} 
+\index{Backend@{Backend}!get\+\_\+target\+\_\+thresh@{get\+\_\+target\+\_\+thresh}}
+\index{get\+\_\+target\+\_\+thresh@{get\+\_\+target\+\_\+thresh}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{get\+\_\+target\+\_\+thresh()}{get\_target\_thresh()}}
+{\footnotesize\ttfamily void Backend\+::get\+\_\+target\+\_\+thresh (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the threshold value for a target. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It takes two parameters, the target row followed by the target column of the desired subimage to the current threshold value for. \mbox{\Hypertarget{class_backend_a874fced9ef73eda11ce1489b5ec4838e}\label{class_backend_a874fced9ef73eda11ce1489b5ec4838e}} 
+\index{Backend@{Backend}!import\+\_\+source\+\_\+gal@{import\+\_\+source\+\_\+gal}}
+\index{import\+\_\+source\+\_\+gal@{import\+\_\+source\+\_\+gal}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{import\+\_\+source\+\_\+gal()}{import\_source\_gal()}}
+{\footnotesize\ttfamily void Backend\+::import\+\_\+source\+\_\+gal (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Imports the source gal into the \hyperlink{class_backend}{Backend}. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It takes two javascript objects as parameters; a path to the gal file to be loaded and a callback to execute upon completion.
+
+\begin{DoxyRefDesc}{Deprecated}
+\item[\hyperlink{deprecated__deprecated000001}{Deprecated}]The frontend now handles gal data imports. \end{DoxyRefDesc}
+\mbox{\Hypertarget{class_backend_aef5331c3d0f698924124af87c2d5877c}\label{class_backend_aef5331c3d0f698924124af87c2d5877c}} 
+\index{Backend@{Backend}!import\+\_\+source\+\_\+image@{import\+\_\+source\+\_\+image}}
+\index{import\+\_\+source\+\_\+image@{import\+\_\+source\+\_\+image}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{import\+\_\+source\+\_\+image()}{import\_source\_image()}}
+{\footnotesize\ttfamily void Backend\+::import\+\_\+source\+\_\+image (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Imports the source image into the \hyperlink{class_backend}{Backend}. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It takes two javascript objects as parameters; a path to the image to be loaded and a callback to execute upon completion. \mbox{\Hypertarget{class_backend_a3bbb39435c576093a6b74520ae463398}\label{class_backend_a3bbb39435c576093a6b74520ae463398}} 
+\index{Backend@{Backend}!init@{init}}
+\index{init@{init}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily void Backend\+::init (\begin{DoxyParamCaption}\item[{v8\+::\+Local$<$ v8\+::\+Object $>$}]{exports,  }\item[{v8\+::\+Local$<$ v8\+::\+Object $>$}]{module }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Initializes the \hyperlink{class_backend}{Backend} module. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It is responsible for performing the mapping between this class\textquotesingle{} static members and the javascript A\+PI functions accessible from the frontend. \mbox{\Hypertarget{class_backend_ad23273def503c1749707c57ac92e9212}\label{class_backend_ad23273def503c1749707c57ac92e9212}} 
+\index{Backend@{Backend}!is\+\_\+busy@{is\+\_\+busy}}
+\index{is\+\_\+busy@{is\+\_\+busy}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{is\+\_\+busy()}{is\_busy()}}
+{\footnotesize\ttfamily void Backend\+::is\+\_\+busy (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Queries whether the \hyperlink{class_backend}{Backend} is working on analysis targets. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It returns true if the \hyperlink{class_backend}{Backend} has no more analysis tasks to complete. \mbox{\Hypertarget{class_backend_acab7db3b3b0f34798a48ba22a7e3e9ff}\label{class_backend_acab7db3b3b0f34798a48ba22a7e3e9ff}} 
+\index{Backend@{Backend}!launch\+\_\+analysis@{launch\+\_\+analysis}}
+\index{launch\+\_\+analysis@{launch\+\_\+analysis}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{launch\+\_\+analysis()}{launch\_analysis()}}
+{\footnotesize\ttfamily void Backend\+::launch\+\_\+analysis (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Launches analysis on all of the \hyperlink{class_backend}{Backend}\textquotesingle{}s analysis targets. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It launches an analysis run, which submits an asynchronous task for each analysis target, each of which calls \hyperlink{class_backend_a149d05a4861bc09a73908f9817666586}{Backend\+::analyze\+\_\+target} on the dataset for that target. \mbox{\Hypertarget{class_backend_a848c3f31e41690d5e27e0f260651ec9a}\label{class_backend_a848c3f31e41690d5e27e0f260651ec9a}} 
+\index{Backend@{Backend}!provide\+\_\+norm\+\_\+preview@{provide\+\_\+norm\+\_\+preview}}
+\index{provide\+\_\+norm\+\_\+preview@{provide\+\_\+norm\+\_\+preview}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{provide\+\_\+norm\+\_\+preview()}{provide\_norm\_preview()}}
+{\footnotesize\ttfamily void Backend\+::provide\+\_\+norm\+\_\+preview (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Provides a preview of the entire heighmap. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It takes one parameter, a callback to be executed upon completion. \mbox{\Hypertarget{class_backend_abe8afa9fcd0ae0564b27c306bd35948d}\label{class_backend_abe8afa9fcd0ae0564b27c306bd35948d}} 
+\index{Backend@{Backend}!split\+\_\+sectors@{split\+\_\+sectors}}
+\index{split\+\_\+sectors@{split\+\_\+sectors}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{split\+\_\+sectors()}{split\_sectors()}}
+{\footnotesize\ttfamily void Backend\+::split\+\_\+sectors (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits the \hyperlink{class_backend}{Backend}\textquotesingle{}s heightmap into smaller chunks. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It splits the source heightmap into smaller subimages based on the list of targets previously specified by calling \hyperlink{class_backend_ad8eb1ddd04ee12fe1e720b09b4fc4c4e}{Backend.\+add\+\_\+target}(...). After processing each sector, it writes three images to the directory frontend/temp/\+: the original segmented image, a binary mask representing where the microarray droplet might be located within the image, and a normalized image for easier viewing within the frontend. \mbox{\Hypertarget{class_backend_ad2db57d3d4eb38bfda56212c8465ca8a}\label{class_backend_ad2db57d3d4eb38bfda56212c8465ca8a}} 
+\index{Backend@{Backend}!update\+\_\+target\+\_\+thresh@{update\+\_\+target\+\_\+thresh}}
+\index{update\+\_\+target\+\_\+thresh@{update\+\_\+target\+\_\+thresh}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{update\+\_\+target\+\_\+thresh()}{update\_target\_thresh()}}
+{\footnotesize\ttfamily void Backend\+::update\+\_\+target\+\_\+thresh (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Updates the threshold value for an analysis target. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It takes four parameters; a callback, followed by the row and column describing which target to modify, then the substitute threshold value. \mbox{\Hypertarget{class_backend_a2bc5c7f6eb7a1c6ec5b5572410c4e81e}\label{class_backend_a2bc5c7f6eb7a1c6ec5b5572410c4e81e}} 
+\index{Backend@{Backend}!write\+\_\+results\+\_\+\+J\+S\+ON@{write\+\_\+results\+\_\+\+J\+S\+ON}}
+\index{write\+\_\+results\+\_\+\+J\+S\+ON@{write\+\_\+results\+\_\+\+J\+S\+ON}!Backend@{Backend}}
+\subsubsection{\texorpdfstring{write\+\_\+results\+\_\+\+J\+S\+O\+N()}{write\_results\_JSON()}}
+{\footnotesize\ttfamily void Backend\+::write\+\_\+results\+\_\+\+J\+S\+ON (\begin{DoxyParamCaption}\item[{const callback\+\_\+info \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Serialize the \hyperlink{class_backend}{Backend}\textquotesingle{}s results to a J\+S\+ON format. 
+
+This function is part of the \hyperlink{class_backend}{Backend} javascript A\+PI. It takes one parameter, a javascript callback function to be called when serialization finishes. The \hyperlink{class_backend}{Backend} writes results to the path frontend/temp/results.\+json. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{backend_8hpp}{backend.\+hpp}\item 
+backend.\+cpp\end{DoxyCompactItemize}

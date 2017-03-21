@@ -10,6 +10,7 @@
 			    '-lopencv_highgui',
                             '-lopencv_imgproc',
                             '-lopencv_core',
+                            '-lyaml-cpp'
                         ]
 		    }
 		}],

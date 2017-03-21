@@ -1,15 +1,28 @@
 //! @file
 //! @brief Analysis Functions
+//!
+//! This file provides the definitions for all of the analysis metrics supported
+//! by SpotCheck. Each analysis function takes as parameters src; a matrix
+//! representing a sub-image of the original heightmap, one that contains a
+//! single mirco-array spot, and mask; a binary matrix representing where in the
+//! sub-image the droplet can be found.
+//!
+//! In order to add a new analysis metric and have it show up in the frontend,
+//! add a new function in this file, and call the function in
+//! backend::analyze_target. Then, add a member to the Result class to hold the
+//! result of the analysis metric, and modify result::serialize so that it
+//! additionally outputs the member variable that you just added to the Result
+//! class.
 
 #pragma once
 
-#include <opencv2/imgproc/imgproc.hpp>
+#include <algorithm>
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <stdio.h>
 #include <stdlib.h>
-#include <algorithm>
 
 //! @brief Calculates a target's the average background value
 //!
@@ -66,6 +79,5 @@ long find_volume(cv::Mat & src, cv::Mat & mask, int bgHeight);
 //! @param src The heightmap source subimage
 //! @param mask The binary droplet dection mask
 long find_average_height(cv::Mat & src, cv::Mat & mask, int bgHeight);
-
 
 double find_circularity(cv::Mat & mask);

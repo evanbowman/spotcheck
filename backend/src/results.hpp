@@ -1,8 +1,12 @@
+//! @file
+//! @brief A class that encapsulates and serializes result data.
+
 #pragma once
 
 #include <iostream>
 
-class result {
+//! @class Result
+class Result {
     int m_rowId, m_colId;
     int m_bgHeight;
     int m_area;
@@ -12,7 +16,7 @@ class result {
     double m_circularity;
 
 public:
-    result(int rowId, int colId, int bgHeight, int area,
+    Result(int rowId, int colId, int bgHeight, int area,
            unsigned char min_height, unsigned char max_height, long volume,
            long average_height, double circularity);
 
