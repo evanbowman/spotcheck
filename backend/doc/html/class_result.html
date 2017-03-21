@@ -65,16 +65,50 @@ $(function() {
 <div class="title">Result Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A class that encapsulates and serializes result data.  
+ <a href="class_result.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="results_8hpp_source.html">results.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:acc26931e2c32fddb02413449b7f03278"><td class="memItemLeft" align="right" valign="top"><a id="acc26931e2c32fddb02413449b7f03278"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Result</b> (int rowId, int colId, int bgHeight, int area, unsigned char min_height, unsigned char max_height, long volume, long average_height, double circularity)</td></tr>
 <tr class="separator:acc26931e2c32fddb02413449b7f03278"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60cc412b37005131a08b776e63755ded"><td class="memItemLeft" align="right" valign="top"><a id="a60cc412b37005131a08b776e63755ded"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (std::ostream &amp;target) const</td></tr>
+<tr class="memitem:a60cc412b37005131a08b776e63755ded"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_result.html#a60cc412b37005131a08b776e63755ded">serialize</a> (std::ostream &amp;target) const</td></tr>
+<tr class="memdesc:a60cc412b37005131a08b776e63755ded"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a JSON representation of <a class="el" href="class_result.html" title="A class that encapsulates and serializes result data. ">Result</a> to a std::ostream.  <a href="#a60cc412b37005131a08b776e63755ded">More...</a><br /></td></tr>
 <tr class="separator:a60cc412b37005131a08b776e63755ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A class that encapsulates and serializes result data. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a60cc412b37005131a08b776e63755ded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60cc412b37005131a08b776e63755ded">&#9670;&nbsp;</a></span>serialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Result::serialize </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes a JSON representation of <a class="el" href="class_result.html" title="A class that encapsulates and serializes result data. ">Result</a> to a std::ostream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Any output stream format, e.g. std::cout, std::fstream, etc. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="results_8hpp_source.html">results.hpp</a></li>
 <li>results.cpp</li>

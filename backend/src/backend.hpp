@@ -24,7 +24,8 @@
 #include <tuple>
 #include <utility>
 #include <v8.h>
-#include <yaml-cpp/yaml.h>
+// TODO: integrate yaml-cpp into windows builds
+// #include <yaml-cpp/yaml.h>
 
 //! @brief The interface between Spotcheck's analysis functions, OpenCV, and
 //! the application's frontend.

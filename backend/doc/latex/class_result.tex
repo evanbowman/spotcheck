@@ -1,14 +1,43 @@
 \hypertarget{class_result}{}\section{Result Class Reference}
 \label{class_result}\index{Result@{Result}}
+
+
+A class that encapsulates and serializes result data.  
+
+
+
+
+{\ttfamily \#include $<$results.\+hpp$>$}
+
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\Hypertarget{class_result_acc26931e2c32fddb02413449b7f03278}\label{class_result_acc26931e2c32fddb02413449b7f03278}} 
 {\bfseries Result} (int row\+Id, int col\+Id, int bg\+Height, int area, unsigned char min\+\_\+height, unsigned char max\+\_\+height, long volume, long average\+\_\+height, double circularity)
 \item 
+void \hyperlink{class_result_a60cc412b37005131a08b776e63755ded}{serialize} (std\+::ostream \&target) const
+\begin{DoxyCompactList}\small\item\em Writes a J\+S\+ON representation of \hyperlink{class_result}{Result} to a std\+::ostream. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A class that encapsulates and serializes result data. 
+
+\subsection{Member Function Documentation}
 \mbox{\Hypertarget{class_result_a60cc412b37005131a08b776e63755ded}\label{class_result_a60cc412b37005131a08b776e63755ded}} 
-void {\bfseries serialize} (std\+::ostream \&target) const
-\end{DoxyCompactItemize}
+\index{Result@{Result}!serialize@{serialize}}
+\index{serialize@{serialize}!Result@{Result}}
+\subsubsection{\texorpdfstring{serialize()}{serialize()}}
+{\footnotesize\ttfamily void Result\+::serialize (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{target }\end{DoxyParamCaption}) const}
+
+
+
+Writes a J\+S\+ON representation of \hyperlink{class_result}{Result} to a std\+::ostream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Any output stream format, e.\+g. std\+::cout, std\+::fstream, etc. \\
+\hline
+\end{DoxyParams}
 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}

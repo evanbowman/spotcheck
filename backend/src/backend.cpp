@@ -32,18 +32,18 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
     return *utf8_mod_dirname;
 }
 
-void Backend::load_profile_data() {
-    std::fstream config_file(::module_path + "/../../../spotcheck-profile.yml");
-    std::stringstream ss;
-    ss << config_file.rdbuf();
-    YAML::Node node = YAML::Load(ss.str());
-    if (auto camera_pixel_pitch = node["camera-pixel-pitch"]) {
-        m_camera_pixel_pitch = camera_pixel_pitch.as<float>();
-    }
-    if (auto magnification = node["magnification"]) {
-        m_magnification = magnification.as<float>();
-    }
-}
+// void Backend::load_profile_data() {
+//     std::fstream config_file(::module_path + "/../../../spotcheck-profile.yml");
+//     std::stringstream ss;
+//     ss << config_file.rdbuf();
+//     YAML::Node node = YAML::Load(ss.str());
+//     if (auto camera_pixel_pitch = node["camera-pixel-pitch"]) {
+//         m_camera_pixel_pitch = camera_pixel_pitch.as<float>();
+//     }
+//     if (auto magnification = node["magnification"]) {
+//         m_magnification = magnification.as<float>();
+//     }
+// }
 
 uv_mutex_t task_mtx;
 static size_t task_count;
@@ -77,7 +77,7 @@ void Backend::init(v8::Local<v8::Object> exports,
     exports->Set(v8::String::NewFromUtf8(isolate, js_class_name),
                  tpl->GetFunction());
     assert(uv_mutex_init(&::task_mtx) == 0);
-    load_profile_data();
+    // load_profile_data();
 }
 
 void Backend::alloc(const callback_info & args) {

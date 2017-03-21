@@ -9,10 +9,11 @@
 //!
 //! In order to add a new analysis metric and have it show up in the frontend,
 //! add a new function in this file, and call the function in
-//! backend::analyze_target. Then, add a member to the Result class to hold the
-//! result of the analysis metric, and modify result::serialize so that it
+//! Backend::analyze_target. Then, add a member to the Result class to hold the
+//! result of the analysis metric, and modify Result::serialize so that it
 //! additionally outputs the member variable that you just added to the Result
-//! class.
+//! class. You should also update the Result constructor so that it accepts a
+//! new parameter for initializing the member variable that you just added.
 
 #pragma once
 

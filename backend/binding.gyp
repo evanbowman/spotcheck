@@ -18,6 +18,7 @@
 		    'include_dirs': [
 			'C:\\opencv\\build\\include'
 		    ],
+                    # link_setting for windows is out of date, !!add yaml-cpp to libraries or revert to previous commit
 		    'link_settings': {
 			'libraries': ['C:\\opencv\\build\\x64\\vc12\\staticlib\\opencv_imgproc2413.lib',
 				      'C:\\opencv\\build\\x64\\vc12\\staticlib\\opencv_highgui2413.lib',
