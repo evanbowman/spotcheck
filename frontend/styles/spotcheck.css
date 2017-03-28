@@ -23,9 +23,9 @@ h2 {
 
 input[type=text] {
     background-color: rgb(255, 255, 255);
-    border: 1px solid;
     padding: 4px 20px;
     margin: 4px;
+    border: 1px solid;
     border-color: rgb(224, 229, 230);
     color: rgb(99, 152, 156);
     font-family: "open-sans-bold";

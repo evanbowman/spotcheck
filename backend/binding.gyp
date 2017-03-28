@@ -9,8 +9,7 @@
                             '-L/usr/local/lib',
 			    '-lopencv_highgui',
                             '-lopencv_imgproc',
-                            '-lopencv_core',
-                            '-lyaml-cpp'
+                            '-lopencv_core'
                         ]
 		    }
 		}],
