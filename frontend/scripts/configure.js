@@ -42,6 +42,8 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 editor.setOption("theme", "solarized dark");
 editor.setOption("mode", "javascript");
 
+var g_editing = "";
+
 function onScriptSavePressed() {
     var nameField = document.getElementById("script-name-field");
     if (nameField.value == "") {
@@ -49,24 +51,36 @@ function onScriptSavePressed() {
 	return;
     }
     if (g_metricTable.hasOwnProperty(nameField.value)) {
-	window.alert("That metric name is already in use!");
-	nameField.focus();
-	return;
+	if (nameField.value != g_editing) {
+	    window.alert("That metric name is already in use!");
+	    nameField.focus();
+	    return;
+	}
     }
     g_metricTable[nameField.value] = {
 	src: editor.getValue(),
 	builtin: false,
     };
-    $("#table").append([
-	"<tr>",
-	"<td>" + nameField.value + "</td>",
-	"</tr>"
-    ].join(""));
-    $("tr").click(onRowClicked);
+    if (nameField.value != g_editing) {
+	$("#table").append([
+	    "<tr>",
+	    "<td>" + nameField.value + "</td>",
+	    "</tr>"
+	].join(""));
+	$("tr").click(onRowClicked);
+    }
     span.click();
+    g_editing = "";
 }
 
 function onDonePressed() {
+    var userMetrics = {};
+    for (key in g_metricTable) {
+	if (!g_metricTable[key]["builtin"]) {
+	    userMetrics[key] = g_metricTable[key];
+	}
+    }
+    window.alert(JSON.stringify(userMetrics));
     window.location.href = "index.html";
 }
 
@@ -93,6 +107,7 @@ function onEditPressed() {
     editor.setValue(g_metricTable[currentName]["src"]);
     document.getElementById("script-name-field").value = currentName;
     document.getElementById("modal-btn").click();
+    g_editing = currentName;
 }
 
 $("tr").click(onRowClicked);
