@@ -127,7 +127,11 @@ public:
     //! @param target The target struct with metadata about the target subregion
     //! @param src The original source image representing the subregion
     //! @param mask A binary mask of the subregion representing droplet location
-    static void analyze_target(Target & target, cv::Mat & src, cv::Mat & mask);
+    //! @param xScale meters/(xpixelDim)
+    //! @param yScale meters/(ypixelDim)
+    //! @param hScale meters/(1/255 pixel val tick)
+    static void analyze_target(Target & target, cv::Mat & src, cv::Mat & mask,
+                               double xScale, double yScale, double hScale);
 
     //! @brief Adds an analysis target to the Backend
     //!

@@ -33,7 +33,8 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
 }
 
 // void Backend::load_profile_data() {
-//     std::fstream config_file(::module_path + "/../../../spotcheck-profile.yml");
+//     std::fstream config_file(::module_path +
+//     "/../../../spotcheck-profile.yml");
 //     std::stringstream ss;
 //     ss << config_file.rdbuf();
 //     YAML::Node node = YAML::Load(ss.str());
@@ -248,15 +249,22 @@ void Backend::write_results_JSON(const callback_info & args) {
     });
 }
 
-void Backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
+void Backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask,
+                             double xScale, double yScale, double hScale) {
     // Find Background
     int background_avg_height = find_background(src, mask);
     // Background Subtraction
-    long volume = find_volume(src, mask, background_avg_height);
-    int area = find_area(src, mask);
-    auto min_height = find_min_height(src, mask, background_avg_height);
-    auto max_height = find_max_height(src, mask, background_avg_height);
-    long avg_height = find_average_height(src, mask, background_avg_height);
+    // long volume = find_volume(src, mask, background_avg_height);
+    double volume = find_volume(src, mask, background_avg_height);
+    volume *= (xScale) * (yScale) * (hScale);
+    double area = find_area(src, mask);
+    area *= (xScale) * (yScale);
+    double min_height = find_min_height(src, mask, background_avg_height);
+    min_height *= hScale;
+    double max_height = find_max_height(src, mask, background_avg_height);
+    max_height *= hScale;
+    double avg_height = find_average_height(src, mask, background_avg_height);
+    avg_height *= hScale;
     double circularity = (volume > 0) ? find_circularity(mask) : 0.0;
     uv_mutex_lock(&task_mtx);
     m_results.emplace_back(target.rowId, target.colId, background_avg_height,
@@ -288,7 +296,16 @@ void Backend::launch_analysis(const callback_info & args) {
             assert(!src.empty());
             assert(!mask.empty());
             uv_mutex_unlock(&::task_mtx);
-            analyze_target(target, src, mask);
+            /////////////
+            // make scale addition here
+            // expect:
+            // xScale, yScale to be in (meters/pixelDimension)
+            // hScale to be (meters/tic)
+            double xScale = 1;
+            double yScale = 1;
+            double hScale = 1;
+            analyze_target(target, src, mask, xScale, yScale, hScale);
+            ///////////////
             uv_mutex_lock(&::task_mtx);
             --::task_count;
             uv_mutex_unlock(&::task_mtx);
