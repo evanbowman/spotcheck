@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<link href="../styles/spotcheck.css" type="text/css" rel="stylesheet">
+	<link href="../styles/configure.css" type="text/css" rel="stylesheet">
+	<link rel="stylesheet" href="../styles/codemirror/codemirror.css">
+	<link rel="stylesheet" href="../styles/codemirror/solarized.css">
+    </head>
+    <body>
+	<div class="modal" id="modal">
+	    <div class="modal-content" id="modal-content">
+		<span class="close">&times;</span>
+		<h2 id="name-text">metric name:</h2>
+		<input type="text" id="script-name-field">
+		<form id="editor"><textarea id="code" name="code"></textarea></form>
+		<input type="button" id="script-save-btn" value="save" onclick="onScriptSavePressed()">
+	    </div>
+	</div>
+	<header>
+	    <input type="button" id="create-btn" value="create metric" onclick="onCreatePressed()">
+	    <input type="button" id="create-btn" value="remove metric" onclick="onRemovePressed()">
+	</header>
+	<main>
+	    <table id="table">
+		<tr> <td>area</td> </tr>
+		<tr> <td>min height</td> </tr>
+		<tr> <td>max height</td> </tr>
+		<tr> <td>average height</td> </tr>
+		<tr> <td>circularity</td> </tr>
+		<tr> <td>volume</td> </tr>
+	    </table>
+	</main>
+	<button id="modal-btn"></button>
+	<footer>
+	    <input type="button" id="done-btn" value="done" onclick="onDonePressed()">
+	    <script type="text/javascript" src="../scripts/codemirror/codemirror.js"></script>
+	    <script type="text/javascript" src="../scripts/codemirror/javascript.js"></script>
+	    <script type="text/javascript" src="../scripts/jquery-3.1.1.min.js"></script>
+	    <script type="text/javascript" src="../scripts/configure.js"></script>
+	</footer>
+    </body>
+</html>
