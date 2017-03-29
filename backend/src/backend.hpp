@@ -4,14 +4,13 @@
 #pragma once
 
 #include "async.hpp"
+#include "json.hpp"
 #include "make_cv_roi.hpp"
 #include "preview_normalized.hpp"
 #include "results.hpp"
-#include "json.hpp"
 
 #include <algorithm>
 #include <array>
-#include <set>
 #include <cassert>
 #include <cmath>
 #include <fstream>
@@ -21,6 +20,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <random>
+#include <set>
 #include <stack>
 #include <string>
 #include <tuple>

@@ -13,9 +13,9 @@ std::map<std::string, std::string> Backend::m_usr_scripts;
 
 std::string module_path;
 
-static const std::array<std::string, 7> g_builtins {
-    {"area", "min height", "max height", "avg height", "bkg height", "circularity", "volume"}
-};
+static const std::array<std::string, 7> g_builtins{
+    {"area", "min height", "max height", "avg height", "bkg height",
+     "circularity", "volume"}};
 
 std::set<std::string> Backend::m_enabled_builtins;
 
@@ -53,8 +53,8 @@ void Backend::init(v8::Local<v8::Object> exports,
           {"write_results_JSON", write_results_JSON},
           {"get_target_thresh", get_target_thresh},
           {"provide_norm_preview", provide_norm_preview},
-	  {"configure", configure},
-	  {"write_default_config", write_default_config}}};
+          {"configure", configure},
+          {"write_default_config", write_default_config}}};
     static const char * js_class_name = "Backend";
     v8::Isolate * isolate = exports->GetIsolate();
     ::module_path = ::get_mod_path(isolate, module);
@@ -203,8 +203,9 @@ void Backend::is_busy(const callback_info & args) {
     args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
 }
 
-static inline void populate_results_JSON(const std::map<std::pair<int64_t, int64_t>, Result> & results,
-                                         std::ostream & ostr) {
+static inline void populate_results_JSON(
+    const std::map<std::pair<int64_t, int64_t>, Result> & results,
+    std::ostream & ostr) {
     ostr << "[";
     const size_t max_index = results.size() - 1;
     size_t index = 0;
@@ -233,61 +234,57 @@ void Backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     auto result = m_results.find({target.rowId, target.colId});
     const int background_avg_height = find_background(src, mask);
     if (m_enabled_builtins.find("bkg height") != m_enabled_builtins.end()) {
-	uv_mutex_lock(&task_mtx);
-	result->second.add_data({
-		"bkg height",
-		static_cast<double>(background_avg_height)
-	    });
-	uv_mutex_unlock(&task_mtx);
+        uv_mutex_lock(&task_mtx);
+        result->second.add_data(
+            {"bkg height", static_cast<double>(background_avg_height)});
+        uv_mutex_unlock(&task_mtx);
     }
     const double volume = find_volume(src, mask, background_avg_height);
     if (m_enabled_builtins.find("volume") != m_enabled_builtins.end()) {
-	uv_mutex_lock(&task_mtx);
-	result->second.add_data({"volume", volume});
-	uv_mutex_unlock(&task_mtx);
+        uv_mutex_lock(&task_mtx);
+        result->second.add_data({"volume", volume});
+        uv_mutex_unlock(&task_mtx);
     }
     if (m_enabled_builtins.find("area") != m_enabled_builtins.end()) {
-	const double area = find_area(src, mask);
-	uv_mutex_lock(&task_mtx);
-	result->second.add_data({ "area", area });
-	uv_mutex_unlock(&task_mtx);
+        const double area = find_area(src, mask);
+        uv_mutex_lock(&task_mtx);
+        result->second.add_data({"area", area});
+        uv_mutex_unlock(&task_mtx);
     }
     if (m_enabled_builtins.find("min height") != m_enabled_builtins.end()) {
-	const double min_height = find_min_height(src, mask, background_avg_height);
-	uv_mutex_lock(&task_mtx);
-	result->second.add_data({"min height", min_height});
-	uv_mutex_unlock(&task_mtx);
+        const double min_height =
+            find_min_height(src, mask, background_avg_height);
+        uv_mutex_lock(&task_mtx);
+        result->second.add_data({"min height", min_height});
+        uv_mutex_unlock(&task_mtx);
     }
     if (m_enabled_builtins.find("max height") != m_enabled_builtins.end()) {
-	const double max_height = find_max_height(src, mask, background_avg_height);
-	uv_mutex_lock(&task_mtx);
-	result->second.add_data({"max height", max_height});
-	uv_mutex_unlock(&task_mtx);
+        const double max_height =
+            find_max_height(src, mask, background_avg_height);
+        uv_mutex_lock(&task_mtx);
+        result->second.add_data({"max height", max_height});
+        uv_mutex_unlock(&task_mtx);
     }
     if (m_enabled_builtins.find("avg height") != m_enabled_builtins.end()) {
-	const double avg_height = find_average_height(src, mask, background_avg_height);
-	uv_mutex_lock(&task_mtx);
-	result->second.add_data({"avg height", avg_height});
-	uv_mutex_unlock(&task_mtx);
+        const double avg_height =
+            find_average_height(src, mask, background_avg_height);
+        uv_mutex_lock(&task_mtx);
+        result->second.add_data({"avg height", avg_height});
+        uv_mutex_unlock(&task_mtx);
     }
     const double circularity = (volume > 0) ? find_circularity(mask) : 0.0;
     if (m_enabled_builtins.find("circularity") != m_enabled_builtins.end()) {
-	uv_mutex_lock(&task_mtx);
-	result->second.add_data({"circularity", circularity});
-	uv_mutex_unlock(&task_mtx);
+        uv_mutex_lock(&task_mtx);
+        result->second.add_data({"circularity", circularity});
+        uv_mutex_unlock(&task_mtx);
     }
-}
-
-static void expose_src_and_mask_to_javascript(std::array<v8::Handle<v8::Value>, 2> argv,
-					      cv::Mat & src, cv::Mat & mask) {
-    // ... TODO
 }
 
 static cv::Mat load_src_img(const Backend::Target & target) {
     static const auto extension = ".png";
     const std::string original_loc = "/../../../frontend/temp/original";
     const auto suffix =
-                std::to_string(target.rowId) + std::to_string(target.colId);
+        std::to_string(target.rowId) + std::to_string(target.colId);
     uv_mutex_lock(&::task_mtx);
     cv::Mat src = cv::imread(::module_path + original_loc + suffix + extension,
                              CV_LOAD_IMAGE_GRAYSCALE);
@@ -299,12 +296,19 @@ static cv::Mat load_mask_img(const Backend::Target & target) {
     static const auto extension = ".png";
     const std::string mask_loc = "/../../../frontend/temp/mask";
     const auto suffix =
-                std::to_string(target.rowId) + std::to_string(target.colId);
+        std::to_string(target.rowId) + std::to_string(target.colId);
     uv_mutex_lock(&::task_mtx);
     cv::Mat mask = cv::imread(::module_path + mask_loc + suffix + extension,
-			      CV_LOAD_IMAGE_GRAYSCALE);
+                              CV_LOAD_IMAGE_GRAYSCALE);
     uv_mutex_unlock(&::task_mtx);
     return mask;
+}
+
+static void v8_wrap_cv_mat(v8::Isolate * isolate,
+			   const cv::Mat & mat,
+			   v8::Handle<v8::Object> & obj) {
+    obj->Set(v8::String::NewFromUtf8(isolate, "rows"), v8::Number::New(isolate, mat.rows));
+    obj->Set(v8::String::NewFromUtf8(isolate, "cols"), v8::Number::New(isolate, mat.cols));
 }
 
 void Backend::run_user_metrics() {
@@ -314,21 +318,31 @@ void Backend::run_user_metrics() {
     context->Enter();
     v8::HandleScope handle_scope(isolate);
     for (const auto & scr_node : m_usr_scripts) {
-	v8::Handle<v8::String> code = v8::String::NewFromUtf8(isolate, scr_node.second.c_str());
-	auto script = v8::Script::Compile(code);
-	script->Run();
-	auto entry = isolate->GetCurrentContext()->Global()->Get(v8::String::NewFromUtf8(isolate, "main"));
-	auto fn = v8::Local<v8::Function>::New(isolate, v8::Handle<v8::Function>::Cast(entry));
-	for (const auto & target : m_targets) {
+        v8::Handle<v8::String> code =
+            v8::String::NewFromUtf8(isolate, scr_node.second.c_str());
+        auto script = v8::Script::Compile(code);
+        script->Run();
+        auto entry = isolate->GetCurrentContext()->Global()->Get(
+            v8::String::NewFromUtf8(isolate, "main"));
+        auto fn = v8::Local<v8::Function>::New(
+            isolate, v8::Handle<v8::Function>::Cast(entry));
+        for (const auto & target : m_targets) {
+	    v8::Handle<v8::Object> srcObj = v8::Object::New(isolate);
+	    v8::Handle<v8::Object> maskObj = v8::Object::New(isolate);
 	    std::array<v8::Handle<v8::Value>, 2> argv {{
-		v8::Object::New(isolate), v8::Object::New(isolate)
+		srcObj, maskObj
 	    }};
-	    auto src = load_src_img(target);
-	    auto mask = load_mask_img(target);
-	    expose_src_and_mask_to_javascript(argv, src, mask);
-	    float result = fn->Call(isolate->GetCurrentContext()->Global(), argv.size(), argv.data())->ToNumber()->Value();
-	    m_results[{target.rowId, target.colId}].add_data({scr_node.first, result});
-	}
+            auto srcMat = load_src_img(target);
+            auto maskMat = load_mask_img(target);
+	    v8_wrap_cv_mat(isolate, srcMat, srcObj);
+	    v8_wrap_cv_mat(isolate, maskMat, maskObj);
+            float result = fn->Call(isolate->GetCurrentContext()->Global(),
+                                    argv.size(), argv.data())
+                               ->ToNumber()
+                               ->Value();
+            m_results[{target.rowId, target.colId}].add_data(
+                {scr_node.first, result});
+        }
     }
     context->Exit();
 }
@@ -341,16 +355,16 @@ void Backend::launch_analysis(const callback_info & args) {
     ::task_count = m_targets.size();
     uv_mutex_unlock(&::task_mtx);
     for (const auto & target : m_targets) {
-	Result result;
-	result.add_data({"row", target.rowId});
-	result.add_data({"col", target.colId});
-    	m_results[{target.rowId, target.colId}] = result;
+        Result result;
+        result.add_data({"row", target.rowId});
+        result.add_data({"col", target.colId});
+        m_results[{target.rowId, target.colId}] = result;
     }
     run_user_metrics();
     for (auto & target : m_targets) {
         async::start(js_callback, [&target] {
-	    auto src = load_src_img(target);
-	    auto mask = load_mask_img(target);
+            auto src = load_src_img(target);
+            auto mask = load_mask_img(target);
             analyze_target(target, src, mask);
             uv_mutex_lock(&::task_mtx);
             --::task_count;
@@ -391,7 +405,7 @@ void Backend::write_default_config(const callback_info & args) {
     assert(args.Length() == 1);
     std::string out = "{";
     for (const auto & builtin : g_builtins) {
-	out += "\"" + builtin + "\":{\"builtin\":true,\"enabled\":true},";
+        out += "\"" + builtin + "\":{\"builtin\":true,\"enabled\":true},";
     }
     out.pop_back();
     out += "}";
@@ -413,13 +427,13 @@ void Backend::configure(const callback_info & args) {
     m_enabled_builtins.clear();
     m_usr_scripts.clear();
     for (json::iterator it = j.begin(); it != j.end(); ++it) {
-	if (it.value()["enabled"].get<bool>()) {
-	    if (it.value()["builtin"].get<bool>()) {
-	    	m_enabled_builtins.insert(it.key());
-	    } else {
-		m_usr_scripts[it.key()] = it.value()["src"].get<std::string>();
-	    }
-	}
+        if (it.value()["enabled"].get<bool>()) {
+            if (it.value()["builtin"].get<bool>()) {
+                m_enabled_builtins.insert(it.key());
+            } else {
+                m_usr_scripts[it.key()] = it.value()["src"].get<std::string>();
+            }
+        }
     }
 }
 

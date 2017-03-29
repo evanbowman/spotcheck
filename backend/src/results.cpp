@@ -8,8 +8,7 @@ void Result::serialize(std::ostream & ostr) const {
     std::string out;
     out += "{";
     for (auto & kvp : m_keyValuePairs) {
-	out += "\"" + kvp.first + "\":"
-	    + std::to_string(kvp.second) + ",";
+        out += "\"" + kvp.first + "\":" + std::to_string(kvp.second) + ",";
     }
     // Note: some JSON parsers don't like there to be a comma with
     // no data after it, so pop it off the string.
