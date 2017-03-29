@@ -184,6 +184,10 @@ public:
 
     //! @brief Configures backend test suite based on user config file.
     //!
+    //! Responsible for populating the backend's table of enabled builtin
+    //! functions, as well as user defined metrics. It compiles each user
+    //! metric script and stores them internally for use when running analysis.
+    //!
     //! This function is part of the Backend javascript API. It takes as a
     //! parameter the path to load the config file from.
     static void configure(const callback_info & args);
@@ -193,11 +197,23 @@ public:
     //! A default config file contains all of the builtin metrics available
     //! to users.
     static void write_default_config(const callback_info & args);
-    
+
 private:
-    static std::vector<Result> m_results;
+    static std::map<std::pair<int64_t, int64_t>, Result> m_results;
     static cv::Mat m_source_image;
     static std::vector<Target> m_targets;
     static std::set<std::string> m_enabled_builtins;
-    static void load_profile_data();
+    static std::map<std::string, std::string> m_usr_scripts;
+
+    //! @brief Compiles each user script and runs it on all targets.
+    //!
+    //! To be safe, be sure to call this function in launch_analysis
+    //! PRIOR to the loop that launches the asynchronous builtin
+    //! analysis functions. This will ensure that all the data gets
+    //! written before the frontend requests the results.
+    //!
+    //! All of the user metrics run in a sandboxed, isolated context,
+    //! where there should be no risk of injection attacks. Eval is also
+    //! disabled.
+    static void run_user_metrics();
 };

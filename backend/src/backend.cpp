@@ -3,11 +3,13 @@
 
 v8::Persistent<v8::Function> Backend::constructor;
 
-std::vector<Result> Backend::m_results;
+std::map<std::pair<int64_t, int64_t>, Result> Backend::m_results;
 
 cv::Mat Backend::m_source_image;
 
 std::vector<Backend::Target> Backend::m_targets;
+
+std::map<std::string, std::string> Backend::m_usr_scripts;
 
 std::string module_path;
 
@@ -201,13 +203,13 @@ void Backend::is_busy(const callback_info & args) {
     args.GetReturnValue().Set(v8::Boolean::New(isolate, task_count > 0));
 }
 
-static inline void populate_results_JSON(const std::vector<Result> & results,
+static inline void populate_results_JSON(const std::map<std::pair<int64_t, int64_t>, Result> & results,
                                          std::ostream & ostr) {
     ostr << "[";
     const size_t max_index = results.size() - 1;
     size_t index = 0;
     for (auto & res : results) {
-        res.serialize(ostr);
+        res.second.serialize(ostr);
         if (index != max_index) {
             ostr << ",";
         }
@@ -228,51 +230,72 @@ void Backend::write_results_JSON(const callback_info & args) {
 }
 
 void Backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
-    Result result;
+    auto result = m_results.find({target.rowId, target.colId});
     const int background_avg_height = find_background(src, mask);
-    result.add_data({"row", target.rowId});
-    result.add_data({"col", target.colId});
     if (m_enabled_builtins.find("bkg height") != m_enabled_builtins.end()) {
-	result.add_data({
-	    "bkg height",
+	uv_mutex_lock(&task_mtx);
+	result->second.add_data({
+		"bkg height",
 		static_cast<double>(background_avg_height)
-	});
+	    });
+	uv_mutex_unlock(&task_mtx);
     }
     const double volume = find_volume(src, mask, background_avg_height);
     if (m_enabled_builtins.find("volume") != m_enabled_builtins.end()) {
-	result.add_data({"volume", volume});
+	uv_mutex_lock(&task_mtx);
+	result->second.add_data({"volume", volume});
+	uv_mutex_unlock(&task_mtx);
     }
     if (m_enabled_builtins.find("area") != m_enabled_builtins.end()) {
-	result.add_data({
-		"area",
-		static_cast<double>(find_area(src, mask))
-	    });
+	const double area = find_area(src, mask);
+	uv_mutex_lock(&task_mtx);
+	result->second.add_data({ "area", area });
+	uv_mutex_unlock(&task_mtx);
     }
     if (m_enabled_builtins.find("min height") != m_enabled_builtins.end()) {
-	result.add_data({
-		"min height",
-		static_cast<double>(find_min_height(src, mask, background_avg_height))
-	    });
+	const double min_height = find_min_height(src, mask, background_avg_height);
+	uv_mutex_lock(&task_mtx);
+	result->second.add_data({"min height", min_height});
+	uv_mutex_unlock(&task_mtx);
     }
     if (m_enabled_builtins.find("max height") != m_enabled_builtins.end()) {
-	result.add_data({
-		"max height",
-		static_cast<double>(find_max_height(src, mask, background_avg_height))
-	    });
+	const double max_height = find_max_height(src, mask, background_avg_height);
+	uv_mutex_lock(&task_mtx);
+	result->second.add_data({"max height", max_height});
+	uv_mutex_unlock(&task_mtx);
     }
     if (m_enabled_builtins.find("avg height") != m_enabled_builtins.end()) {
-	result.add_data({
-		"avg height",
-		static_cast<double>(find_average_height(src, mask, background_avg_height))
-	    });
+	const double avg_height = find_average_height(src, mask, background_avg_height);
+	uv_mutex_lock(&task_mtx);
+	result->second.add_data({"avg height", avg_height});
+	uv_mutex_unlock(&task_mtx);
     }
     const double circularity = (volume > 0) ? find_circularity(mask) : 0.0;
     if (m_enabled_builtins.find("circularity") != m_enabled_builtins.end()) {
-	result.add_data({"circularity", circularity});
+	uv_mutex_lock(&task_mtx);
+	result->second.add_data({"circularity", circularity});
+	uv_mutex_unlock(&task_mtx);
     }
-    uv_mutex_lock(&task_mtx);
-    m_results.push_back(result);
-    uv_mutex_unlock(&task_mtx);
+}
+
+void Backend::run_user_metrics() {
+    v8::Isolate * isolate = v8::Isolate::GetCurrent();
+    auto context = v8::Context::New(isolate);
+    context->AllowCodeGenerationFromStrings(false);
+    context->Enter();
+    v8::HandleScope handle_scope(isolate);
+    for (const auto & scr_node : m_usr_scripts) {
+	v8::Handle<v8::String> code = v8::String::NewFromUtf8(isolate, scr_node.second.c_str());
+	auto script = v8::Script::Compile(code);
+	script->Run();
+	auto entry = isolate->GetCurrentContext()->Global()->Get(v8::String::NewFromUtf8(isolate, "main"));
+	auto fn = v8::Local<v8::Function>::New(isolate, v8::Handle<v8::Function>::Cast(entry));
+	for (const auto & target : m_targets) {
+	    float result = fn->Call(isolate->GetCurrentContext()->Global(), 0, nullptr)->ToNumber()->Value();
+	    m_results[{target.rowId, target.colId}].add_data({scr_node.first, result});
+	}
+    }
+    context->Exit();
 }
 
 void Backend::launch_analysis(const callback_info & args) {
@@ -282,6 +305,13 @@ void Backend::launch_analysis(const callback_info & args) {
     uv_mutex_lock(&::task_mtx);
     ::task_count = m_targets.size();
     uv_mutex_unlock(&::task_mtx);
+    for (const auto & target : m_targets) {
+	Result result;
+	result.add_data({"row", target.rowId});
+	result.add_data({"col", target.colId});
+    	m_results[{target.rowId, target.colId}] = result;
+    }
+    run_user_metrics();
     for (auto & target : m_targets) {
         async::start(js_callback, [&target] {
             cv::Mat src, mask;
@@ -359,11 +389,11 @@ void Backend::configure(const callback_info & args) {
     auto j = json::parse(ss.str());
     m_enabled_builtins.clear();
     for (json::iterator it = j.begin(); it != j.end(); ++it) {
-	if (it.value().find("builtin") != it.value().end()) {
-	    if (it.value()["enabled"].get<bool>()) {
-		m_enabled_builtins.insert(it.key());
+	if (it.value()["enabled"].get<bool>()) {
+	    if (it.value()["builtin"].get<bool>()) {
+	    	m_enabled_builtins.insert(it.key());
 	    } else {
-		// ...
+		m_usr_scripts[it.key()] = it.value()["src"].get<std::string>();
 	    }
 	}
     }
