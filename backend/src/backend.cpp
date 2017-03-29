@@ -264,23 +264,27 @@ static cv::Mat load_mask_img(const Backend::Target & target) {
     return mask;
 }
 
-static v8::Handle<v8::Object> v8_wrap_cv_mat(v8::Isolate * isolate,
-					     cv::Mat & mat,
-					     v8::Handle<v8::FunctionTemplate> & tmpl) {
+static v8::Handle<v8::Object>
+v8_wrap_cv_mat(v8::Isolate * isolate, cv::Mat & mat,
+               v8::Handle<v8::FunctionTemplate> & tmpl) {
     v8::Handle<v8::Object> obj = tmpl->GetFunction()->NewInstance();
     obj->SetInternalField(0, v8::External::New(isolate, &mat));
-    obj->Set(v8::String::NewFromUtf8(isolate, "rows"), v8::Number::New(isolate, mat.rows));
-    obj->Set(v8::String::NewFromUtf8(isolate, "cols"), v8::Number::New(isolate, mat.cols));
-    obj->Set(v8::String::NewFromUtf8(isolate, "at"),
-	     v8::Function::New(isolate, [](const Backend::callback_info & args) {
-		     v8::Local<v8::Object> self = args.Holder();
-		     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
-		     auto mat_ptr = static_cast<cv::Mat *>(wrap->Value());
-		     const int row = v8::Local<v8::Number>::Cast(args[0])->Value();
-		     const int col = v8::Local<v8::Number>::Cast(args[1])->Value();
-		     args.GetReturnValue().Set(v8::Integer::New(args.GetIsolate(),
-								mat_ptr->at<unsigned char>(row, col)));
-		 }));
+    obj->Set(v8::String::NewFromUtf8(isolate, "rows"),
+             v8::Number::New(isolate, mat.rows));
+    obj->Set(v8::String::NewFromUtf8(isolate, "cols"),
+             v8::Number::New(isolate, mat.cols));
+    obj->Set(
+        v8::String::NewFromUtf8(isolate, "at"),
+        v8::Function::New(isolate, [](const Backend::callback_info & args) {
+            v8::Local<v8::Object> self = args.Holder();
+            auto wrap =
+                v8::Local<v8::External>::Cast(self->GetInternalField(0));
+            auto mat_ptr = static_cast<cv::Mat *>(wrap->Value());
+            const int row = v8::Local<v8::Number>::Cast(args[0])->Value();
+            const int col = v8::Local<v8::Number>::Cast(args[1])->Value();
+            args.GetReturnValue().Set(v8::Integer::New(
+                args.GetIsolate(), mat_ptr->at<unsigned char>(row, col)));
+        }));
     return obj;
 }
 
@@ -303,12 +307,11 @@ void Backend::run_user_metrics() {
         auto fn = v8::Local<v8::Function>::New(
             isolate, v8::Handle<v8::Function>::Cast(entry));
         for (const auto & target : m_targets) {
-	    auto srcMat = load_src_img(target);
+            auto srcMat = load_src_img(target);
             auto maskMat = load_mask_img(target);
-	    std::array<v8::Handle<v8::Value>, 2> argv {{
-		v8_wrap_cv_mat(isolate, srcMat, tmpl),
-		v8_wrap_cv_mat(isolate, maskMat, tmpl)
-	    }};
+            std::array<v8::Handle<v8::Value>, 2> argv{
+                {v8_wrap_cv_mat(isolate, srcMat, tmpl),
+                 v8_wrap_cv_mat(isolate, maskMat, tmpl)}};
             float result = fn->Call(isolate->GetCurrentContext()->Global(),
                                     argv.size(), argv.data())
                                ->ToNumber()
@@ -375,10 +378,51 @@ void Backend::add_target(const callback_info & args) {
 }
 
 static void add_stdlib_to_default_config(std::string & buffer) {
-    static const std::string area_metric = "\\nfunction main(src, mask) {\\n  var area = 0;\\n  for (var i = 0; i < mask.rows; ++i) {\\n    for (var j = 0; j < mask.cols; ++j) {\\n      if (mask.at(i, j) != 0) {\\n        area += 1;\\n      }\\n    }\\n  }\\n  return area;\\n}";
-    buffer += "\"area\":{\"builtin\":false,\"enabled\":true,\"src\":\"" + area_metric + "\"},";
-    static const std::string volume_metric = "\\nfunction findAvgBackground(src, mask) {\\n  var sum = 0;\\n  var quant = 0;\\n  for (var i = 0; i < mask.rows; ++i) {\\n    for (var j = 0; j < mask.cols; ++j) {\\n      if (mask.at(i, j) == 0) {\\n        sum += src.at(i, j);\\n        quant++;\\n      }\\n    }\\n  }\\n  return sum / Math.max(quant, 1);\\n}\\n\\nfunction main(src, mask) {\\n  var avgBkg = findAvgBackground(src, mask);\\n  var volume = 0;\\n  for (var i = 0; i < src.rows; ++i) {\\n    for (var j = 0; j < src.cols; ++j) {\\n      if (mask.at(i, j) > 0) {\\n        volume += src.at(i, j) - avgBkg;\\n      }\\n    }\\n  }\\n  return volume;\\n}\\n";
-    buffer += "\"volume\":{\"builtin\":false,\"enabled\":true,\"src\":\"" + volume_metric + "\"},";
+    static const std::string area_metric =
+        "\\n"
+        "function main(src, mask) {\\n"
+        "  var area = 0;\\n"
+        "  for (var i = 0; i < mask.rows; ++i) {\\n"
+        "    for (var j = 0; j < mask.cols; ++j) {\\n"
+        "      if (mask.at(i, j) != 0) {\\n"
+        "        area += 1;\\n"
+        "      }\\n"
+        "    }\\n"
+        "  }\\n"
+        "  return area;\\n"
+        "}";
+    buffer += "\"area\":{\"builtin\":false,\"enabled\":true,\"src\":\"" +
+              area_metric + "\"},";
+    static const std::string volume_metric =
+        "\\n"
+        "function main(src, mask) {\\n"
+        "  var avgBkg = findAvgBackground(src, mask);\\n"
+        "  var volume = 0;\\n"
+        "  for (var i = 0; i < src.rows; ++i) {\\n"
+        "    for (var j = 0; j < src.cols; ++j) {\\n"
+        "      if (mask.at(i, j) > 0) {\\n"
+        "        volume += src.at(i, j) - avgBkg;\\n"
+        "      }\\n"
+        "    }\\n"
+        "  }\\n"
+        "  return volume;\\n"
+        "}\\n"
+        "\\n"
+        "function findAvgBackground(src, mask) {\\n"
+        "  var sum = 0;\\n"
+        "  var quant = 0;\\n"
+        "  for (var i = 0; i < mask.rows; ++i) {\\n"
+        "    for (var j = 0; j < mask.cols; ++j) {\\n"
+        "      if (mask.at(i, j) == 0) {\\n"
+        "        sum += src.at(i, j);\\n"
+        "        quant++;\\n"
+        "      }\\n"
+        "    }\\n"
+        "  }\\n"
+        "  return sum / Math.max(quant, 1);\\n"
+        "}\\n";
+    buffer += "\"volume\":{\"builtin\":false,\"enabled\":true,\"src\":\"" +
+              volume_metric + "\"},";
 }
 
 void Backend::write_default_config(const callback_info & args) {

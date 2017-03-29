@@ -45,7 +45,7 @@ editor.setOption("mode", "javascript");
 
 var g_editing = "";
 
-function onScriptSavePressed() {
+function onDonePressed() {
     var nameField = document.getElementById("script-name-field");
     if (nameField.value == "") {
 	nameField.focus();
@@ -75,7 +75,7 @@ function onScriptSavePressed() {
     g_editing = "";
 }
 
-function onDonePressed() {
+function onSavePressed() {
     fs.writeFile(homeDir + "/.spotcheck.json", JSON.stringify(g_metricTable), function(err) {
 	if (err) {
 	    window.alert(err);
