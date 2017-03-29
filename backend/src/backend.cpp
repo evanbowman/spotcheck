@@ -13,9 +13,7 @@ std::map<std::string, std::string> Backend::m_usr_scripts;
 
 std::string module_path;
 
-static const std::array<std::string, 7> g_builtins{
-    {"area", "min height", "max height", "avg height", "bkg height",
-     "circularity", "volume"}};
+static const std::array<std::string, 1> g_builtins{{"circularity"}};
 
 std::set<std::string> Backend::m_enabled_builtins;
 
@@ -233,45 +231,7 @@ void Backend::write_results_JSON(const callback_info & args) {
 void Backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     auto result = m_results.find({target.rowId, target.colId});
     const int background_avg_height = find_background(src, mask);
-    if (m_enabled_builtins.find("bkg height") != m_enabled_builtins.end()) {
-        uv_mutex_lock(&task_mtx);
-        result->second.add_data(
-            {"bkg height", static_cast<double>(background_avg_height)});
-        uv_mutex_unlock(&task_mtx);
-    }
     const double volume = find_volume(src, mask, background_avg_height);
-    if (m_enabled_builtins.find("volume") != m_enabled_builtins.end()) {
-        uv_mutex_lock(&task_mtx);
-        result->second.add_data({"volume", volume});
-        uv_mutex_unlock(&task_mtx);
-    }
-    if (m_enabled_builtins.find("area") != m_enabled_builtins.end()) {
-        const double area = find_area(src, mask);
-        uv_mutex_lock(&task_mtx);
-        result->second.add_data({"area", area});
-        uv_mutex_unlock(&task_mtx);
-    }
-    if (m_enabled_builtins.find("min height") != m_enabled_builtins.end()) {
-        const double min_height =
-            find_min_height(src, mask, background_avg_height);
-        uv_mutex_lock(&task_mtx);
-        result->second.add_data({"min height", min_height});
-        uv_mutex_unlock(&task_mtx);
-    }
-    if (m_enabled_builtins.find("max height") != m_enabled_builtins.end()) {
-        const double max_height =
-            find_max_height(src, mask, background_avg_height);
-        uv_mutex_lock(&task_mtx);
-        result->second.add_data({"max height", max_height});
-        uv_mutex_unlock(&task_mtx);
-    }
-    if (m_enabled_builtins.find("avg height") != m_enabled_builtins.end()) {
-        const double avg_height =
-            find_average_height(src, mask, background_avg_height);
-        uv_mutex_lock(&task_mtx);
-        result->second.add_data({"avg height", avg_height});
-        uv_mutex_unlock(&task_mtx);
-    }
     const double circularity = (volume > 0) ? find_circularity(mask) : 0.0;
     if (m_enabled_builtins.find("circularity") != m_enabled_builtins.end()) {
         uv_mutex_lock(&task_mtx);
@@ -304,19 +264,35 @@ static cv::Mat load_mask_img(const Backend::Target & target) {
     return mask;
 }
 
-static void v8_wrap_cv_mat(v8::Isolate * isolate,
-			   const cv::Mat & mat,
-			   v8::Handle<v8::Object> & obj) {
+static v8::Handle<v8::Object> v8_wrap_cv_mat(v8::Isolate * isolate,
+					     cv::Mat & mat,
+					     v8::Handle<v8::FunctionTemplate> & tmpl) {
+    v8::Handle<v8::Object> obj = tmpl->GetFunction()->NewInstance();
+    obj->SetInternalField(0, v8::External::New(isolate, &mat));
     obj->Set(v8::String::NewFromUtf8(isolate, "rows"), v8::Number::New(isolate, mat.rows));
     obj->Set(v8::String::NewFromUtf8(isolate, "cols"), v8::Number::New(isolate, mat.cols));
+    obj->Set(v8::String::NewFromUtf8(isolate, "at"),
+	     v8::Function::New(isolate, [](const Backend::callback_info & args) {
+		     v8::Local<v8::Object> self = args.Holder();
+		     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
+		     auto mat_ptr = static_cast<cv::Mat *>(wrap->Value());
+		     const int row = v8::Local<v8::Number>::Cast(args[0])->Value();
+		     const int col = v8::Local<v8::Number>::Cast(args[1])->Value();
+		     args.GetReturnValue().Set(v8::Integer::New(args.GetIsolate(),
+								mat_ptr->at<unsigned char>(row, col)));
+		 }));
+    return obj;
 }
 
 void Backend::run_user_metrics() {
     v8::Isolate * isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope handle_scope(isolate);
     auto context = v8::Context::New(isolate);
     context->AllowCodeGenerationFromStrings(false);
     context->Enter();
-    v8::HandleScope handle_scope(isolate);
+    v8::Handle<v8::FunctionTemplate> tmpl = v8::FunctionTemplate::New(isolate);
+    v8::Local<v8::ObjectTemplate> instance_t = tmpl->InstanceTemplate();
+    instance_t->SetInternalFieldCount(1);
     for (const auto & scr_node : m_usr_scripts) {
         v8::Handle<v8::String> code =
             v8::String::NewFromUtf8(isolate, scr_node.second.c_str());
@@ -327,15 +303,12 @@ void Backend::run_user_metrics() {
         auto fn = v8::Local<v8::Function>::New(
             isolate, v8::Handle<v8::Function>::Cast(entry));
         for (const auto & target : m_targets) {
-	    v8::Handle<v8::Object> srcObj = v8::Object::New(isolate);
-	    v8::Handle<v8::Object> maskObj = v8::Object::New(isolate);
-	    std::array<v8::Handle<v8::Value>, 2> argv {{
-		srcObj, maskObj
-	    }};
-            auto srcMat = load_src_img(target);
+	    auto srcMat = load_src_img(target);
             auto maskMat = load_mask_img(target);
-	    v8_wrap_cv_mat(isolate, srcMat, srcObj);
-	    v8_wrap_cv_mat(isolate, maskMat, maskObj);
+	    std::array<v8::Handle<v8::Value>, 2> argv {{
+		v8_wrap_cv_mat(isolate, srcMat, tmpl),
+		v8_wrap_cv_mat(isolate, maskMat, tmpl)
+	    }};
             float result = fn->Call(isolate->GetCurrentContext()->Global(),
                                     argv.size(), argv.data())
                                ->ToNumber()
@@ -401,12 +374,20 @@ void Backend::add_target(const callback_info & args) {
          args[6]->IntegerValue()});
 }
 
+static void add_stdlib_to_default_config(std::string & buffer) {
+    static const std::string area_metric = "\\nfunction main(src, mask) {\\n  var area = 0;\\n  for (var i = 0; i < mask.rows; ++i) {\\n    for (var j = 0; j < mask.cols; ++j) {\\n      if (mask.at(i, j) != 0) {\\n        area += 1;\\n      }\\n    }\\n  }\\n  return area;\\n}";
+    buffer += "\"area\":{\"builtin\":false,\"enabled\":true,\"src\":\"" + area_metric + "\"},";
+    static const std::string volume_metric = "\\nfunction findAvgBackground(src, mask) {\\n  var sum = 0;\\n  var quant = 0;\\n  for (var i = 0; i < mask.rows; ++i) {\\n    for (var j = 0; j < mask.cols; ++j) {\\n      if (mask.at(i, j) == 0) {\\n        sum += src.at(i, j);\\n        quant++;\\n      }\\n    }\\n  }\\n  return sum / Math.max(quant, 1);\\n}\\n\\nfunction main(src, mask) {\\n  var avgBkg = findAvgBackground(src, mask);\\n  var volume = 0;\\n  for (var i = 0; i < src.rows; ++i) {\\n    for (var j = 0; j < src.cols; ++j) {\\n      if (mask.at(i, j) > 0) {\\n        volume += src.at(i, j) - avgBkg;\\n      }\\n    }\\n  }\\n  return volume;\\n}\\n";
+    buffer += "\"volume\":{\"builtin\":false,\"enabled\":true,\"src\":\"" + volume_metric + "\"},";
+}
+
 void Backend::write_default_config(const callback_info & args) {
     assert(args.Length() == 1);
     std::string out = "{";
     for (const auto & builtin : g_builtins) {
         out += "\"" + builtin + "\":{\"builtin\":true,\"enabled\":true},";
     }
+    add_stdlib_to_default_config(out);
     out.pop_back();
     out += "}";
     v8::String::Utf8Value str_arg(args[0]->ToString());

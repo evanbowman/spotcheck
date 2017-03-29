@@ -99,7 +99,7 @@ function onRowClicked() {
 }
 
 function onCreatePressed() {
-    editor.setValue("// JavaScript Sandbox\n\n");
+    editor.setValue("\nfunction main(src, mask) {\n  var result = 0;\n  // ... your code here\n  return result;\n}");
     document.getElementById("modal-btn").click();
 }
 
