@@ -11,9 +11,11 @@ std::vector<Backend::Target> Backend::m_targets;
 
 std::string module_path;
 
-float Backend::m_camera_pixel_pitch;
+static const std::array<std::string, 7> g_builtins {
+    {"area", "min height", "max height", "avg height", "bkg height", "circularity", "volume"}
+};
 
-float Backend::m_magnification;
+std::set<std::string> Backend::m_enabled_builtins;
 
 inline static std::string get_mod_path(v8::Isolate * isolate,
                                        v8::Local<v8::Object> & module) {
@@ -32,28 +34,14 @@ inline static std::string get_mod_path(v8::Isolate * isolate,
     return *utf8_mod_dirname;
 }
 
-// void Backend::load_profile_data() {
-//     std::fstream config_file(::module_path + "/../../../spotcheck-profile.yml");
-//     std::stringstream ss;
-//     ss << config_file.rdbuf();
-//     YAML::Node node = YAML::Load(ss.str());
-//     if (auto camera_pixel_pitch = node["camera-pixel-pitch"]) {
-//         m_camera_pixel_pitch = camera_pixel_pitch.as<float>();
-//     }
-//     if (auto magnification = node["magnification"]) {
-//         m_magnification = magnification.as<float>();
-//     }
-// }
-
 uv_mutex_t task_mtx;
 static size_t task_count;
 
 void Backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 11> mappings =
+    static const std::array<std::pair<const char *, membr_type>, 12> mappings =
         {{{"import_source_image", import_source_image},
-          {"import_source_gal", import_source_gal},
           {"split_sectors", split_sectors},
           {"add_target", add_target},
           {"clear_targets", clear_targets},
@@ -62,7 +50,9 @@ void Backend::init(v8::Local<v8::Object> exports,
           {"is_busy", is_busy},
           {"write_results_JSON", write_results_JSON},
           {"get_target_thresh", get_target_thresh},
-          {"provide_norm_preview", provide_norm_preview}}};
+          {"provide_norm_preview", provide_norm_preview},
+	  {"configure", configure},
+	  {"write_default_config", write_default_config}}};
     static const char * js_class_name = "Backend";
     v8::Isolate * isolate = exports->GetIsolate();
     ::module_path = ::get_mod_path(isolate, module);
@@ -77,7 +67,6 @@ void Backend::init(v8::Local<v8::Object> exports,
     exports->Set(v8::String::NewFromUtf8(isolate, js_class_name),
                  tpl->GetFunction());
     assert(uv_mutex_init(&::task_mtx) == 0);
-    // load_profile_data();
 }
 
 void Backend::alloc(const callback_info & args) {
@@ -94,16 +83,6 @@ void Backend::import_source_image(const callback_info & args) {
     std::string path(*str_arg);
     async::start(js_callback, [path] {
         m_source_image = cv::imread(path, CV_LOAD_IMAGE_COLOR);
-    });
-}
-
-void Backend::import_source_gal(const callback_info & args) {
-    assert(args.Length() == 2);
-    auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
-    v8::String::Utf8Value str_arg(args[1]->ToString());
-    std::string path(*str_arg);
-    async::start(js_callback, [path] {
-        // TODO: load source gal...
     });
 }
 
@@ -249,19 +228,50 @@ void Backend::write_results_JSON(const callback_info & args) {
 }
 
 void Backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
-    // Find Background
-    int background_avg_height = find_background(src, mask);
-    // Background Subtraction
-    long volume = find_volume(src, mask, background_avg_height);
-    int area = find_area(src, mask);
-    auto min_height = find_min_height(src, mask, background_avg_height);
-    auto max_height = find_max_height(src, mask, background_avg_height);
-    long avg_height = find_average_height(src, mask, background_avg_height);
-    double circularity = (volume > 0) ? find_circularity(mask) : 0.0;
+    Result result;
+    const int background_avg_height = find_background(src, mask);
+    result.add_data({"row", target.rowId});
+    result.add_data({"col", target.colId});
+    if (m_enabled_builtins.find("bkg height") != m_enabled_builtins.end()) {
+	result.add_data({
+	    "bkg height",
+		static_cast<double>(background_avg_height)
+	});
+    }
+    const double volume = find_volume(src, mask, background_avg_height);
+    if (m_enabled_builtins.find("volume") != m_enabled_builtins.end()) {
+	result.add_data({"volume", volume});
+    }
+    if (m_enabled_builtins.find("area") != m_enabled_builtins.end()) {
+	result.add_data({
+		"area",
+		static_cast<double>(find_area(src, mask))
+	    });
+    }
+    if (m_enabled_builtins.find("min height") != m_enabled_builtins.end()) {
+	result.add_data({
+		"min height",
+		static_cast<double>(find_min_height(src, mask, background_avg_height))
+	    });
+    }
+    if (m_enabled_builtins.find("max height") != m_enabled_builtins.end()) {
+	result.add_data({
+		"max height",
+		static_cast<double>(find_max_height(src, mask, background_avg_height))
+	    });
+    }
+    if (m_enabled_builtins.find("avg height") != m_enabled_builtins.end()) {
+	result.add_data({
+		"avg height",
+		static_cast<double>(find_average_height(src, mask, background_avg_height))
+	    });
+    }
+    const double circularity = (volume > 0) ? find_circularity(mask) : 0.0;
+    if (m_enabled_builtins.find("circularity") != m_enabled_builtins.end()) {
+	result.add_data({"circularity", circularity});
+    }
     uv_mutex_lock(&task_mtx);
-    m_results.emplace_back(target.rowId, target.colId, background_avg_height,
-                           area, min_height, max_height, volume, avg_height,
-                           circularity);
+    m_results.push_back(result);
     uv_mutex_unlock(&task_mtx);
 }
 
@@ -322,6 +332,41 @@ void Backend::add_target(const callback_info & args) {
          std::min(1.0, v8::Local<v8::Number>::Cast(args[4])->Value()),
          std::min(1.0, v8::Local<v8::Number>::Cast(args[5])->Value()),
          args[6]->IntegerValue()});
+}
+
+void Backend::write_default_config(const callback_info & args) {
+    assert(args.Length() == 1);
+    std::string out = "{";
+    for (const auto & builtin : g_builtins) {
+	out += "\"" + builtin + "\":{\"builtin\":true,\"enabled\":true},";
+    }
+    out.pop_back();
+    out += "}";
+    v8::String::Utf8Value str_arg(args[0]->ToString());
+    std::string path(*str_arg);
+    std::fstream out_file(path, std::fstream::out);
+    out_file << out;
+}
+
+void Backend::configure(const callback_info & args) {
+    assert(args.Length() == 1);
+    v8::String::Utf8Value str_arg(args[0]->ToString());
+    std::string path(*str_arg);
+    using json = nlohmann::json;
+    std::fstream config_file(path);
+    std::stringstream ss;
+    ss << config_file.rdbuf();
+    auto j = json::parse(ss.str());
+    m_enabled_builtins.clear();
+    for (json::iterator it = j.begin(); it != j.end(); ++it) {
+	if (it.value().find("builtin") != it.value().end()) {
+	    if (it.value()["enabled"].get<bool>()) {
+		m_enabled_builtins.insert(it.key());
+	    } else {
+		// ...
+	    }
+	}
+    }
 }
 
 void Backend::clear_targets(const callback_info & args) {

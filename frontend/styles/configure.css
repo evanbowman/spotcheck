@@ -30,17 +30,13 @@ table {
 }	
 
 tr {
+    cursor: default;
+    font-size: 14.5px;
+    font-family: "open-sans-reg";
     transition: all 0.1s linear;
 }
 
 tr:nth-child(even){background-color: #f2f2f2}
-
-tbody {
-    cursor: default;
-    font-family: "open-sans-reg";
-    font-size: 14.5px;
-    color: #45484B;
-}
 
 td {
     padding-left: 20px;

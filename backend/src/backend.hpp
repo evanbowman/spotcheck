@@ -7,9 +7,11 @@
 #include "make_cv_roi.hpp"
 #include "preview_normalized.hpp"
 #include "results.hpp"
+#include "json.hpp"
 
 #include <algorithm>
 #include <array>
+#include <set>
 #include <cassert>
 #include <cmath>
 #include <fstream>
@@ -180,11 +182,22 @@ public:
     //! if the Backend has no more analysis tasks to complete.
     static void is_busy(const callback_info & args);
 
+    //! @brief Configures backend test suite based on user config file.
+    //!
+    //! This function is part of the Backend javascript API. It takes as a
+    //! parameter the path to load the config file from.
+    static void configure(const callback_info & args);
+
+    //! @brief Writes a default config file if the user does not have one.
+    //!
+    //! A default config file contains all of the builtin metrics available
+    //! to users.
+    static void write_default_config(const callback_info & args);
+    
 private:
     static std::vector<Result> m_results;
     static cv::Mat m_source_image;
     static std::vector<Target> m_targets;
-    static float m_camera_pixel_pitch;
-    static float m_magnification;
+    static std::set<std::string> m_enabled_builtins;
     static void load_profile_data();
 };

@@ -122,6 +122,31 @@ function sortTable(tbl, bycell) {
     store = null;
 }
 
+function parseTargets(resultsJSON) {
+    var targets = [];
+    for (var idx in resultsJSON) {
+	targets.push({row: resultsJSON[idx]["row"], col: resultsJSON[idx]["col"]});
+    }
+    return targets;
+}
+
+function runUserMetrics(resultsJSON, configJSON) {
+    const vm = require("vm");
+    const targets = parseTargets(resultsJSON);
+    const sandbox = {ctx: {src: null, mask: null, out: null}};
+    vm.createContext(sandbox);
+    for (key in configJSON) {
+	if (!configJSON[key]["builtin"] && configJSON[key]["enabled"]) {
+	    const script = new vm.Script(configJSON[key]["src"]);
+	    for (idx in targets) {
+		sandbox["ctx"]["src"] = targets[idx]["row"];
+		sandbox["ctx"]["mask"] = targets[idx]["col"];
+		script.runInContext(sandbox);
+	    }
+	}
+    }
+}
+
 function init() {
     document.getElementById("saveas").onchange = function() {
 	var csvStr = "";
@@ -146,6 +171,8 @@ function init() {
 		return;
 	    }
 	    var resultsJSON = JSON.parse(data);
+	    var configJSON = JSON.parse(fs.readFileSync(require("os").homedir() + "/.spotcheck.json"));
+	    runUserMetrics(resultsJSON, configJSON);
 	    populateTable(resultsJSON);
 	});
     });

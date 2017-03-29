@@ -4,7 +4,12 @@
 	<script type="text/javascript">
 	 const backendlib = require("./../../backend/build/Release/backendlib.node");
 	 global.backend = new backendlib.Backend();
-	 global.threshRenderCircles = true;
+	 var homeDir = require("os").homedir();
+	 const configFile = "/.spotcheck.json";
+	 if (!require("fs").existsSync(homeDir + configFile)) {
+	     global.backend.write_default_config(homeDir + configFile);
+	 }
+	 global.backend.configure(homeDir + configFile);
 	 window.location.href = "index.html";
 	</script>
     </body>

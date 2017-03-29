@@ -1,3 +1,5 @@
+var fs = require("fs");
+
 var currentSelected = null;
 
 var span = document.getElementsByClassName("close")[0];
@@ -5,33 +7,32 @@ var span = document.getElementsByClassName("close")[0];
 function onRemovePressed() {
     if (currentSelected) {
 	$(currentSelected).remove();
-	currentSelected = null;
 	document.getElementById("remove-btn").style.display = "none";
 	document.getElementById("edit-btn").style.display = "none";
 	delete g_metricTable[$(currentSelected).find("td:nth-child(1)").text()];
+	currentSelected = null;
     }
 }
 
-var g_metricTable = {
-    "area": {
-	builtin: true,
-    },
-    "min height": {
-	builtin: true,
-    },
-    "max height": {
-	builtin: true,
-    },
-    "average height": {
-	builtin: true,
-    },
-    "circularity": {
-	builtin: true,
-    },
-    "volume": {
-	builtin: true,
-    }
-};
+var g_metricTable = null;
+
+const configFile = "/.spotcheck.json";
+
+var homeDir = require("os").homedir();
+if (!fs.existsSync(homeDir + configFile)) {
+    global.backend.write_default_config(homeDir + configFile);
+}
+var data = fs.readFileSync(homeDir + configFile, "utf8");
+g_metricTable = JSON.parse(data);
+
+for (key in g_metricTable) {
+    $("#table").append([
+	"<tr>",
+	"<td>" + key + "</td>",
+	"</tr>"
+    ].join(""));
+}
+$("tr").click(onRowClicked);
 
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
@@ -60,6 +61,7 @@ function onScriptSavePressed() {
     g_metricTable[nameField.value] = {
 	src: editor.getValue(),
 	builtin: false,
+	enabled: true,
     };
     if (nameField.value != g_editing) {
 	$("#table").append([
@@ -74,13 +76,12 @@ function onScriptSavePressed() {
 }
 
 function onDonePressed() {
-    var userMetrics = {};
-    for (key in g_metricTable) {
-	if (!g_metricTable[key]["builtin"]) {
-	    userMetrics[key] = g_metricTable[key];
+    fs.writeFile(homeDir + "/.spotcheck.json", JSON.stringify(g_metricTable), function(err) {
+	if (err) {
+	    window.alert(err);
 	}
-    }
-    window.alert(JSON.stringify(userMetrics));
+	global.backend.configure(homeDir + "/.spotcheck.json");
+    });
     window.location.href = "index.html";
 }
 
@@ -98,7 +99,7 @@ function onRowClicked() {
 }
 
 function onCreatePressed() {
-    editor.setValue("\nfunction main(srcPixels, maskPixels) {\n  var result = 0;\n  //...\n  return result;\n}");
+    editor.setValue("// JavaScript Sandbox\n\n");
     document.getElementById("modal-btn").click();
 }
 
