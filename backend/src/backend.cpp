@@ -278,6 +278,35 @@ void Backend::analyze_target(Target & target, cv::Mat & src, cv::Mat & mask) {
     }
 }
 
+static void expose_src_and_mask_to_javascript(std::array<v8::Handle<v8::Value>, 2> argv,
+					      cv::Mat & src, cv::Mat & mask) {
+    // ... TODO
+}
+
+static cv::Mat load_src_img(const Backend::Target & target) {
+    static const auto extension = ".png";
+    const std::string original_loc = "/../../../frontend/temp/original";
+    const auto suffix =
+                std::to_string(target.rowId) + std::to_string(target.colId);
+    uv_mutex_lock(&::task_mtx);
+    cv::Mat src = cv::imread(::module_path + original_loc + suffix + extension,
+                             CV_LOAD_IMAGE_GRAYSCALE);
+    uv_mutex_unlock(&::task_mtx);
+    return src;
+}
+
+static cv::Mat load_mask_img(const Backend::Target & target) {
+    static const auto extension = ".png";
+    const std::string mask_loc = "/../../../frontend/temp/mask";
+    const auto suffix =
+                std::to_string(target.rowId) + std::to_string(target.colId);
+    uv_mutex_lock(&::task_mtx);
+    cv::Mat mask = cv::imread(::module_path + mask_loc + suffix + extension,
+			      CV_LOAD_IMAGE_GRAYSCALE);
+    uv_mutex_unlock(&::task_mtx);
+    return mask;
+}
+
 void Backend::run_user_metrics() {
     v8::Isolate * isolate = v8::Isolate::GetCurrent();
     auto context = v8::Context::New(isolate);
@@ -291,7 +320,13 @@ void Backend::run_user_metrics() {
 	auto entry = isolate->GetCurrentContext()->Global()->Get(v8::String::NewFromUtf8(isolate, "main"));
 	auto fn = v8::Local<v8::Function>::New(isolate, v8::Handle<v8::Function>::Cast(entry));
 	for (const auto & target : m_targets) {
-	    float result = fn->Call(isolate->GetCurrentContext()->Global(), 0, nullptr)->ToNumber()->Value();
+	    std::array<v8::Handle<v8::Value>, 2> argv {{
+		v8::Object::New(isolate), v8::Object::New(isolate)
+	    }};
+	    auto src = load_src_img(target);
+	    auto mask = load_mask_img(target);
+	    expose_src_and_mask_to_javascript(argv, src, mask);
+	    float result = fn->Call(isolate->GetCurrentContext()->Global(), argv.size(), argv.data())->ToNumber()->Value();
 	    m_results[{target.rowId, target.colId}].add_data({scr_node.first, result});
 	}
     }
@@ -314,20 +349,8 @@ void Backend::launch_analysis(const callback_info & args) {
     run_user_metrics();
     for (auto & target : m_targets) {
         async::start(js_callback, [&target] {
-            cv::Mat src, mask;
-            static const auto extension = ".png";
-            const std::string original_loc = "/../../../frontend/temp/original";
-            const std::string mask_loc = "/../../../frontend/temp/mask";
-            const auto suffix =
-                std::to_string(target.rowId) + std::to_string(target.colId);
-            uv_mutex_lock(&::task_mtx);
-            src = cv::imread(::module_path + original_loc + suffix + extension,
-                             CV_LOAD_IMAGE_GRAYSCALE);
-            mask = cv::imread(::module_path + mask_loc + suffix + extension,
-                              CV_LOAD_IMAGE_GRAYSCALE);
-            assert(!src.empty());
-            assert(!mask.empty());
-            uv_mutex_unlock(&::task_mtx);
+	    auto src = load_src_img(target);
+	    auto mask = load_mask_img(target);
             analyze_target(target, src, mask);
             uv_mutex_lock(&::task_mtx);
             --::task_count;
@@ -388,6 +411,7 @@ void Backend::configure(const callback_info & args) {
     ss << config_file.rdbuf();
     auto j = json::parse(ss.str());
     m_enabled_builtins.clear();
+    m_usr_scripts.clear();
     for (json::iterator it = j.begin(); it != j.end(); ++it) {
 	if (it.value()["enabled"].get<bool>()) {
 	    if (it.value()["builtin"].get<bool>()) {

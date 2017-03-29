@@ -85,15 +85,6 @@ public:
     //! to be loaded and a callback to execute upon completion.
     static void import_source_image(const callback_info & args);
 
-    //! @brief Imports the source gal into the Backend
-    //!
-    //! This function is part of the Backend javascript API. It takes
-    //! two javascript objects as parameters; a path to the gal file
-    //! to be loaded and a callback to execute upon completion.
-    //!
-    //! @deprecated The frontend now handles gal data imports.
-    [[deprecated]] static void import_source_gal(const callback_info & args);
-
     //! @brief Splits the Backend's heightmap into smaller chunks
     //!
     //! This function is part of the Backend javascript API. It splits
