@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-	<link href="../styles/spotcheck.css" type="text/css" rel="stylesheet">
-	<link href="../styles/configure.css" type="text/css" rel="stylesheet">
 	<link rel="stylesheet" href="../styles/codemirror/codemirror.css">
 	<link rel="stylesheet" href="../styles/codemirror/solarized.css">
+	<link href="../styles/spotcheck.css" type="text/css" rel="stylesheet">
+	<link href="../styles/configure.css" type="text/css" rel="stylesheet">
     </head>
     <body>
 	<div class="modal" id="modal">
@@ -12,8 +12,8 @@
 		<span class="close">&times;</span>
 		<h2 id="name-text">metric name:</h2>
 		<input type="text" id="script-name-field">
-		<form id="editor"><textarea id="code" name="code"></textarea></form>
-		<input type="button" id="script-save-btn" value="done" onclick="onDonePressed()">
+		<form id="editor" class="CodeMirror"><textarea id="code" name="code"></textarea></form>
+		<input type="button" id="script-save-btn" value="save" onclick="onSavePressed()">
 	    </div>
 	</div>
 	<header>
@@ -27,7 +27,7 @@
 	</main>
 	<button id="modal-btn"></button>
 	<footer>
-	    <input type="button" id="done-btn" value="save" onclick="onSavePressed()">
+	    <input type="button" id="done-btn" value="done" onclick="onDonePressed()">
 	    <script type="text/javascript" src="../scripts/codemirror/codemirror.js"></script>
 	    <script type="text/javascript" src="../scripts/codemirror/javascript.js"></script>
 	    <script type="text/javascript" src="../scripts/jquery-3.1.1.min.js"></script>

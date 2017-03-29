@@ -282,14 +282,14 @@ v8_wrap_cv_mat(v8::Isolate * isolate, cv::Mat & mat,
             auto mat_ptr = static_cast<cv::Mat *>(wrap->Value());
             const int row = v8::Local<v8::Number>::Cast(args[0])->Value();
             const int col = v8::Local<v8::Number>::Cast(args[1])->Value();
-	    if (row >= mat_ptr->rows || col > mat_ptr->cols || row < 0 ||
-		col < 0) {
-		args.GetReturnValue().Set(v8::Null(args.GetIsolate()));
-	    } else {
-		args.GetReturnValue().Set(v8::Integer::New(
-                args.GetIsolate(), mat_ptr->at<unsigned char>(row, col)));
-	    }
-            
+            if (row >= mat_ptr->rows || col > mat_ptr->cols || row < 0 ||
+                col < 0) {
+                args.GetReturnValue().Set(v8::Null(args.GetIsolate()));
+            } else {
+                args.GetReturnValue().Set(v8::Integer::New(
+                    args.GetIsolate(), mat_ptr->at<unsigned char>(row, col)));
+            }
+
         }));
     return obj;
 }
@@ -318,7 +318,10 @@ void Backend::run_user_metrics() {
             std::array<v8::Handle<v8::Value>, 2> argv{
                 {v8_wrap_cv_mat(isolate, srcMat, tmpl),
                  v8_wrap_cv_mat(isolate, maskMat, tmpl)}};
-            float result = v8::Local<v8::Number>::Cast(fn->Call(isolate->GetCurrentContext()->Global(), argv.size(), argv.data()))->Value();
+            float result = v8::Local<v8::Number>::Cast(
+                               fn->Call(isolate->GetCurrentContext()->Global(),
+                                        argv.size(), argv.data()))
+                               ->Value();
             m_results[{target.rowId, target.colId}].add_data(
                 {scr_node.first, result});
         }

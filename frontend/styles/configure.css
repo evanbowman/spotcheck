@@ -67,7 +67,8 @@ main {
     margin: 5% auto;
     padding: 20px;
     width: 80%;
-    height: 400px;
+    height: 70%;
+    position: relative;
 }
 
 .close {
@@ -75,6 +76,16 @@ main {
     float: right;
     font-size: 28px;
     font-weight: bold;
+}
+
+.CodeMirror {
+    min-height: calc(100% - 55px);
+}
+
+#script-save-btn {
+    position: absolute;
+    margin-bottom: 20px;
+    bottom: 0;
 }
 
 .close:hover,
@@ -89,6 +100,6 @@ main {
 }
 
 #editor {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 20px;
+    margin-bottom: 0px;
 }
