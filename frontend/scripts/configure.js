@@ -159,15 +159,15 @@ ready(()=>{
     }
     $("#config-xScaleField").on("input",function (){
         global.xScale = getTbValueAsInt(this);
-        global.scaleSet=1;
-    });
+        global.scaleSet=true;
+        });
     $("#config-yScaleField").on("input",function (){
         global.yScale = getTbValueAsInt(this);
-        global.scaleSet=1;
+        global.scaleSet=true;
     });
     $("#config-hScaleField").on("input",function (){
         global.hScale = getTbValueAsInt(this);
-        global.scaleSet=1;
+        global.scaleSet=true;
     });
     document.getElementById("config-xScaleField").value = global.xScale;
     document.getElementById("config-yScaleField").value = global.yScale;    document.getElementById("config-hScaleField").value = global.hScale;
