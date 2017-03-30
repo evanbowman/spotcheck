@@ -18,9 +18,22 @@
 	    </div>
 	</div>
 	<header>
+        <div class="toolbar">
+        <div class="toolbar-frame non-selectable" id="config-toolbar-lhs">
 	    <input type="button" id="create-btn" value="create metric" onclick="onCreatePressed()">
 	    <input type="button" id="remove-btn" value="remove metric" onclick="onRemovePressed()">
 	    <input type="button" id="edit-btn" value="edit metric" onclick="onEditPressed()">
+        </div>
+        <div class = "toolbar-frame" id="config-toolbar-rhs">
+        xScale:
+        <input type="text" id = "config-xScaleField" maxlength="3" size="3">
+        yScale:
+        <input type="text" id = "config-yScaleField" maxlength="3" size="3">
+        hScale:
+        <input type="text" id = "config-hScaleField" maxlength="3" size="3">
+        </div>
+        </div>
+
 	</header>
 	<main>
 	    <table id="table">
