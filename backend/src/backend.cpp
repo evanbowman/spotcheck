@@ -522,10 +522,9 @@ void Backend::configure(const callback_info & args) {
     for (auto it = d.MemberBegin(); it != d.MemberEnd(); ++it) {
 	if (it->value["enabled"].GetBool()) {
 	    if (it->value["builtin"].GetBool()) {
-		m_enabled_builtins.insert(it->name.GetString());
+            m_enabled_builtins.insert(it->name.GetString());
 	    } else {
-		m_usr_scripts[it->name.GetString()] = it->value["src"].GetString();
-		std::cout << it->value["src"].GetString();
+            m_usr_scripts[it->name.GetString()] = it->value["src"].GetString();
 	    }
 	}
     }
