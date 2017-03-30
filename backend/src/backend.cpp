@@ -512,22 +512,21 @@ void Backend::configure(const callback_info & args) {
     assert(args.Length() == 1);
     v8::String::Utf8Value str_arg(args[0]->ToString());
     std::string path(*str_arg);
-    using json = nlohmann::json;
     std::fstream config_file(path);
     std::stringstream ss;
     ss << config_file.rdbuf();
-    auto j = json::parse(ss.str());
+    // auto j = json::parse(ss.str());
     m_enabled_builtins.clear();
     m_usr_scripts.clear();
-    for (json::iterator it = j.begin(); it != j.end(); ++it) {
-        if (it.value()["enabled"].get<bool>()) {
-            if (it.value()["builtin"].get<bool>()) {
-                m_enabled_builtins.insert(it.key());
-            } else {
-                m_usr_scripts[it.key()] = it.value()["src"].get<std::string>();
-            }
-        }
-    }
+    // for (json::iterator it = j.begin(); it != j.end(); ++it) {
+    //     if (it.value()["enabled"].get<bool>()) {
+    //         if (it.value()["builtin"].get<bool>()) {
+    //             m_enabled_builtins.insert(it.key());
+    //         } else {
+    //             m_usr_scripts[it.key()] = it.value()["src"].get<std::string>();
+    //         }
+    //     }
+    // }
 }
 
 void Backend::clear_targets(const callback_info & args) {

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "async.hpp"
-#include "json.hpp"
+#include "rapidjson/document.h"
 #include "make_cv_roi.hpp"
 #include "preview_normalized.hpp"
 #include "results.hpp"
