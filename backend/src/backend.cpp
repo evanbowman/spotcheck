@@ -294,6 +294,19 @@ v8_wrap_cv_mat(v8::Isolate * isolate, cv::Mat & mat,
     return obj;
 }
 
+static void build_img_caches(std::map<std::pair<int64_t, int64_t>, cv::Mat> & src_cache,
+			     std::map<std::pair<int64_t, int64_t>, cv::Mat> & mask_cache,
+			     const std::vector<Backend::Target> & targets) {
+    for (auto & target : targets) {
+	if (src_cache.find({target.rowId, target.colId}) == src_cache.end()) {
+	    src_cache[{target.rowId, target.colId}] = load_src_img(target);
+	}
+	if (mask_cache.find({target.rowId, target.colId}) == mask_cache.end()) {
+	    mask_cache[{target.rowId, target.colId}] = load_mask_img(target);
+	}
+    }
+}
+
 void Backend::run_user_metrics() {
     v8::Isolate * isolate = v8::Isolate::GetCurrent();
     v8::HandleScope handle_scope(isolate);
@@ -303,6 +316,9 @@ void Backend::run_user_metrics() {
     v8::Handle<v8::FunctionTemplate> tmpl = v8::FunctionTemplate::New(isolate);
     v8::Local<v8::ObjectTemplate> instance_t = tmpl->InstanceTemplate();
     instance_t->SetInternalFieldCount(1);
+    std::map<std::pair<int64_t, int64_t>, cv::Mat> src_cache;
+    std::map<std::pair<int64_t, int64_t>, cv::Mat> mask_cache;
+    build_img_caches(src_cache, mask_cache, m_targets);
     for (const auto & scr_node : m_usr_scripts) {
         v8::Handle<v8::String> code =
             v8::String::NewFromUtf8(isolate, scr_node.second.c_str());
@@ -313,11 +329,9 @@ void Backend::run_user_metrics() {
         auto fn = v8::Local<v8::Function>::New(
             isolate, v8::Handle<v8::Function>::Cast(entry));
         for (const auto & target : m_targets) {
-            auto srcMat = load_src_img(target);
-            auto maskMat = load_mask_img(target);
-            std::array<v8::Handle<v8::Value>, 2> argv{
-                {v8_wrap_cv_mat(isolate, srcMat, tmpl),
-                 v8_wrap_cv_mat(isolate, maskMat, tmpl)}};
+	    std::array<v8::Handle<v8::Value>, 2> argv{
+                {v8_wrap_cv_mat(isolate, src_cache[{target.rowId, target.colId}], tmpl),
+                 v8_wrap_cv_mat(isolate, mask_cache[{target.rowId, target.colId}], tmpl)}};
             float result = v8::Local<v8::Number>::Cast(
                                fn->Call(isolate->GetCurrentContext()->Global(),
                                         argv.size(), argv.data()))
