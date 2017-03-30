@@ -4,6 +4,7 @@
 #pragma once
 
 #include "async.hpp"
+#include "rapidjson/document.h"
 #include "make_cv_roi.hpp"
 #include "preview_normalized.hpp"
 #include "results.hpp"
@@ -11,14 +12,17 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <chrono>
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <node.h>
 #include <node_object_wrap.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <random>
+#include <set>
 #include <stack>
 #include <string>
 #include <tuple>
@@ -82,15 +86,6 @@ public:
     //! two javascript objects as parameters; a path to the image
     //! to be loaded and a callback to execute upon completion.
     static void import_source_image(const callback_info & args);
-
-    //! @brief Imports the source gal into the Backend
-    //!
-    //! This function is part of the Backend javascript API. It takes
-    //! two javascript objects as parameters; a path to the gal file
-    //! to be loaded and a callback to execute upon completion.
-    //!
-    //! @deprecated The frontend now handles gal data imports.
-    [[deprecated]] static void import_source_gal(const callback_info & args);
 
     //! @brief Splits the Backend's heightmap into smaller chunks
     //!
@@ -180,11 +175,38 @@ public:
     //! if the Backend has no more analysis tasks to complete.
     static void is_busy(const callback_info & args);
 
+    //! @brief Configures backend test suite based on user config file.
+    //!
+    //! Responsible for populating the backend's table of enabled builtin
+    //! functions, as well as user defined metrics. It compiles each user
+    //! metric script and stores them internally for use when running analysis.
+    //!
+    //! This function is part of the Backend javascript API. It takes as a
+    //! parameter the path to load the config file from.
+    static void configure(const callback_info & args);
+
+    //! @brief Writes a default config file if the user does not have one.
+    //!
+    //! A default config file contains all of the builtin metrics available
+    //! to users.
+    static void write_default_config(const callback_info & args);
+
 private:
-    static std::vector<Result> m_results;
+    static std::map<std::pair<int64_t, int64_t>, Result> m_results;
     static cv::Mat m_source_image;
     static std::vector<Target> m_targets;
-    static float m_camera_pixel_pitch;
-    static float m_magnification;
-    static void load_profile_data();
+    static std::set<std::string> m_enabled_builtins;
+    static std::map<std::string, std::string> m_usr_scripts;
+
+    //! @brief Compiles each user script and runs it on all targets.
+    //!
+    //! To be safe, be sure to call this function in launch_analysis
+    //! PRIOR to the loop that launches the asynchronous builtin
+    //! analysis functions. This will ensure that all the data gets
+    //! written before the frontend requests the results.
+    //!
+    //! All of the user metrics run in a sandboxed, isolated context,
+    //! where there should be no risk of injection attacks. Eval is also
+    //! disabled.
+    static void run_user_metrics();
 };

@@ -172,6 +172,10 @@ function onNextPressed() {
     });
 }
 
+function onConfigurePressed() {
+    window.location.href = "configure.html";
+}
+
 function enableNextButton() {
     var nextButton = document.getElementById("index-next");
     nextButton.disabled = false;
