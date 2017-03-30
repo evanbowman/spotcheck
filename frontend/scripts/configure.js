@@ -39,6 +39,8 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
     styleActiveLine: true,
     matchBrackets: true,
+    gutters: ["CodeMirror-lint-markers"],
+    lint: true
 });
 
 editor.setOption("theme", "solarized dark");
@@ -128,13 +130,6 @@ document.getElementById("modal-btn").onclick = function() {
 span.onclick = function() {
     document.getElementById("script-name-field").value = "";
     document.getElementById("modal").style.display = "none";
-}
-
-window.onclick = function(event) {
-    var modal = document.getElementById("modal");
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
 }
 
 document.getElementById("remove-btn").style.display = "none";
