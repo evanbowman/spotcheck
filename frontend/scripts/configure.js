@@ -1,4 +1,5 @@
 var fs = require("fs");
+var check = require("syntax-error");
 
 var currentSelected = null;
 
@@ -46,6 +47,11 @@ editor.setOption("mode", "javascript");
 var g_editing = "";
 
 function onSavePressed() {
+    var err = check(editor.getValue());
+    if (err) {
+	window.alert(err);
+	return;
+    }
     var nameField = document.getElementById("script-name-field");
     if (nameField.value == "") {
 	nameField.focus();

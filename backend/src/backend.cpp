@@ -429,6 +429,54 @@ static void add_stdlib_to_default_config(std::string & buffer) {
         "}\\n";
     buffer += "\"volume\":{\"builtin\":false,\"enabled\":true,\"src\":\"" +
               volume_metric + "\"},";
+    static const std::string radius_metric =
+	"\\n"
+	"function main(src, mask) {\\n"
+	"  var centroid = findCentroid(mask);\\n"
+	"  var edges = findEdges(mask);\\n"
+	"  var radius = 0;\\n"
+	"  for (var edge of edges) {\\n"
+	"   \\tradius += Math.sqrt(Math.pow(centroid.x - edge.x, 2) +\\n"
+	"                        Math.pow(centroid.y - edge.y, 2));\\n"
+	"  }\\n"
+	"  return radius / Math.max(1, edges.length);\\n"
+	"}\\n"
+	"\\n"
+	"function findEdges(mask) {\\n"
+	"  edges = [];\\n"
+	"  for (var i = 0; i < mask.rows; ++i) {\\n"
+	"    for (var j = 0; j < mask.cols; ++j) {\\n"
+	"      if (mask.at(i, j) > 0) {\\n"
+	"       \\tif (mask.at(i - 1, j) == 0 ||\\n"
+	"            mask.at(i + 1, j) == 0 ||\\n"
+	"            mask.at(i, j - 1) == 0 ||\\n"
+	"            mask.at(i, j + 1) == 0) {\\n"
+	"          edges.push({\'x\': i, \'y\': j});\\n"
+	"        }\\n"
+	"      }\\n"
+	"    }\\n"
+	"  }\\n"
+	"  return edges;\\n"
+	"}\\n"
+	"\\n"
+	"function findCentroid(mask) {\\n"
+	"  var xSum = 0, ySum = 0, area = 0;\\n"
+	"  for (var i = 0; i < mask.rows; ++i) {\\n"
+	"    for (var j = 0; j < mask.cols; ++j) {\\n"
+	"      if (mask.at(i, j) != 0) {\\n"
+	"        xSum += i;\\n"
+	"        ySum += j;\\n"
+	"        area += 1;\\n"
+	"      }\\n"
+	"    }\\n"
+	"  }\\n"
+	"  return {\\n"
+	"    \'x\': xSum / area,\\n"
+	"    \'y\': ySum / area\\n"
+	"  };\\n"
+	"}\\n";
+    buffer += "\"average radius\":{\"builtin\":false,\"enabled\":true,\"src\":\"" +
+              radius_metric + "\"},";
 }
 
 void Backend::write_default_config(const callback_info & args) {
