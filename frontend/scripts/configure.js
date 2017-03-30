@@ -129,3 +129,48 @@ span.onclick = function() {
 document.getElementById("remove-btn").style.display = "none";
 
 document.getElementById("edit-btn").style.display = "none";
+
+//same function from roi.js, will i get an error for redefinieng
+//should be fine
+function getTbValueAsInt(callerCtx) {
+    if (callerCtx.value.length == 0) {
+	return 0;
+    }
+    var value = parseInt(callerCtx.value);
+    if (value <= 0) {
+	return 1;
+    }
+    return value;
+}
+
+function ready(fn){
+    if(document.readyState == "complete"){
+        fn();
+    } else{
+        document.addEventListener("DOMContentLoaded",fn);
+    }
+}
+
+ready(()=>{
+    //spawn global variables?
+    // global.xScale = document.getElementById("config-xScaleField").value;
+    // global.yScale = document.getElementById("config-yScaleField").value;
+    // global.hScale = document.getElementById("config-hScaleField").value;
+    $("#config-xScaleField").on("input",function (){
+        console.log(global.xScale);
+        global.xScale = getTbValueAsInt(this);
+        console.log(global.xScale);
+
+    });
+    $("#config-yScaleField").on("input",function (){
+        global.yScale = getTbValueAsInt(this);
+
+    });
+    $("#config-hScaleField").on("input",function (){
+        global.hScale = getTbValueAsInt(this);
+
+    });
+    document.getElementById("config-xScaleField").value = global.xScale;
+    document.getElementById("config-yScaleField").value = global.yScale;    document.getElementById("config-hScaleField").value = global.hScale;
+
+});
