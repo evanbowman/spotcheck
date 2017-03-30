@@ -152,23 +152,22 @@ function ready(fn){
 }
 
 ready(()=>{
-    //spawn global variables?
-    // global.xScale = document.getElementById("config-xScaleField").value;
-    // global.yScale = document.getElementById("config-yScaleField").value;
-    // global.hScale = document.getElementById("config-hScaleField").value;
+    if(!global.scaleSet){
+        global.xScale = 1;
+        global.yScale = 1;
+        global.hScale = 1;
+    }
     $("#config-xScaleField").on("input",function (){
-        console.log(global.xScale);
         global.xScale = getTbValueAsInt(this);
-        console.log(global.xScale);
-
+        global.scaleSet=1;
     });
     $("#config-yScaleField").on("input",function (){
         global.yScale = getTbValueAsInt(this);
-
+        global.scaleSet=1;
     });
     $("#config-hScaleField").on("input",function (){
         global.hScale = getTbValueAsInt(this);
-
+        global.scaleSet=1;
     });
     document.getElementById("config-xScaleField").value = global.xScale;
     document.getElementById("config-yScaleField").value = global.yScale;    document.getElementById("config-hScaleField").value = global.hScale;
