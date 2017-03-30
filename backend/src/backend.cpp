@@ -515,18 +515,20 @@ void Backend::configure(const callback_info & args) {
     std::fstream config_file(path);
     std::stringstream ss;
     ss << config_file.rdbuf();
-    // auto j = json::parse(ss.str());
+    rapidjson::Document d;
+    d.Parse(ss.str().c_str());
     m_enabled_builtins.clear();
     m_usr_scripts.clear();
-    // for (json::iterator it = j.begin(); it != j.end(); ++it) {
-    //     if (it.value()["enabled"].get<bool>()) {
-    //         if (it.value()["builtin"].get<bool>()) {
-    //             m_enabled_builtins.insert(it.key());
-    //         } else {
-    //             m_usr_scripts[it.key()] = it.value()["src"].get<std::string>();
-    //         }
-    //     }
-    // }
+    for (auto it = d.MemberBegin(); it != d.MemberEnd(); ++it) {
+	if (it->value["enabled"].GetBool()) {
+	    if (it->value["builtin"].GetBool()) {
+		m_enabled_builtins.insert(it->name.GetString());
+	    } else {
+		m_usr_scripts[it->name.GetString()] = it->value["src"].GetString();
+		std::cout << it->value["src"].GetString();
+	    }
+	}
+    }
 }
 
 void Backend::clear_targets(const callback_info & args) {

@@ -16,6 +16,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <node.h>
 #include <node_object_wrap.h>
 #include <opencv2/highgui/highgui.hpp>
