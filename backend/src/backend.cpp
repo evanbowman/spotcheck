@@ -495,13 +495,13 @@ static void add_stdlib_to_default_config(std::string & buffer) {
 
 void Backend::write_default_config(const callback_info & args) {
     assert(args.Length() == 1);
-    std::string out = "{";
+    std::string out = "{\"metrics\":{";
     for (const auto & builtin : g_builtins) {
         out += "\"" + builtin + "\":{\"builtin\":true,\"enabled\":true},";
     }
     add_stdlib_to_default_config(out);
     out.pop_back();
-    out += "}";
+    out += "}}";
     v8::String::Utf8Value str_arg(args[0]->ToString());
     std::string path(*str_arg);
     std::fstream out_file(path, std::fstream::out);
@@ -519,14 +519,15 @@ void Backend::configure(const callback_info & args) {
     d.Parse(ss.str().c_str());
     m_enabled_builtins.clear();
     m_usr_scripts.clear();
-    for (auto it = d.MemberBegin(); it != d.MemberEnd(); ++it) {
-	if (it->value["enabled"].GetBool()) {
-	    if (it->value["builtin"].GetBool()) {
-            m_enabled_builtins.insert(it->name.GetString());
-	    } else {
-            m_usr_scripts[it->name.GetString()] = it->value["src"].GetString();
-	    }
-	}
+    auto & metrics = d["metrics"];
+    for (auto it = metrics.MemberBegin(); it != metrics.MemberEnd(); ++it) {
+        if (it->value["enabled"].GetBool()) {
+            if (it->value["builtin"].GetBool()) {
+                m_enabled_builtins.insert(it->name.GetString());
+            } else {
+                m_usr_scripts[it->name.GetString()] = it->value["src"].GetString();
+            }
+        }
     }
 }
 

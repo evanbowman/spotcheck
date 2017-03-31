@@ -9,12 +9,12 @@ function onRemovePressed() {
 	$(currentSelected).remove();
 	document.getElementById("remove-btn").style.display = "none";
 	document.getElementById("edit-btn").style.display = "none";
-	delete g_metricTable[$(currentSelected).find("td:nth-child(1)").text()];
+	delete g_config.metrics[$(currentSelected).find("td:nth-child(1)").text()];
 	currentSelected = null;
     }
 }
 
-var g_metricTable = null;
+var g_config = null;
 
 const configFile = "/.spotcheck.json";
 
@@ -23,9 +23,9 @@ if (!fs.existsSync(homeDir + configFile)) {
     global.backend.write_default_config(homeDir + configFile);
 }
 var data = fs.readFileSync(homeDir + configFile, "utf8");
-g_metricTable = JSON.parse(data);
+g_config = JSON.parse(data);
 
-for (key in g_metricTable) {
+for (key in g_config.metrics) {
     $("#table").append([
 	"<tr>",
 	"<td>" + key + "</td>",
@@ -53,14 +53,14 @@ function onSavePressed() {
 	nameField.focus();
 	return;
     }
-    if (g_metricTable.hasOwnProperty(nameField.value)) {
+    if (g_config.metrics.hasOwnProperty(nameField.value)) {
 	if (nameField.value != g_editing) {
 	    window.alert("That metric name is already in use!");
 	    nameField.focus();
 	    return;
 	}
     }
-    g_metricTable[nameField.value] = {
+    g_config.metrics[nameField.value] = {
 	src: editor.getValue(),
 	builtin: false,
 	enabled: true,
@@ -75,11 +75,11 @@ function onSavePressed() {
     }
     span.click();
     g_editing = "";
-    fs.writeFileSync(homeDir + "/.spotcheck.json", JSON.stringify(g_metricTable));
+    fs.writeFileSync(homeDir + "/.spotcheck.json", JSON.stringify(g_config));
 }
 
 function onDonePressed() {
-    fs.writeFile(homeDir + "/.spotcheck.json", JSON.stringify(g_metricTable), function(err) {
+    fs.writeFile(homeDir + "/.spotcheck.json", JSON.stringify(g_config), function(err) {
 	if (err) {
 	    window.alert(err);
 	}
@@ -92,7 +92,7 @@ function onRowClicked() {
     $(this).addClass("selected").siblings().removeClass("selected");
     currentSelected = $(this);
     var $td = $(this).find("td:nth-child(1)");
-    if (!g_metricTable[$td.text()]["builtin"]) {
+    if (!g_config.metrics[$td.text()]["builtin"]) {
 	document.getElementById("remove-btn").style.display = "";
 	document.getElementById("edit-btn").style.display = "";
     } else {
@@ -108,7 +108,7 @@ function onCreatePressed() {
 
 function onEditPressed() {
     var currentName = $(currentSelected).find("td:nth-child(1)").text();
-    editor.setValue(g_metricTable[currentName]["src"]);
+    editor.setValue(g_config.metrics[currentName]["src"]);
     document.getElementById("script-name-field").value = currentName;
     document.getElementById("modal-btn").click();
     g_editing = currentName;
