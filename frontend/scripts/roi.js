@@ -155,7 +155,8 @@ function onNextPressed() {
 				      starty + dispy * i,
 				      startx + dispx * (j + 1),
 				      starty + dispy * (i + 1),
-				      0.0);
+				      0.0,
+global.xScale,global.yScale,global.hScale);
 	}
     }
     global.backend.split_sectors(() => {
