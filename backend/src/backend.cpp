@@ -294,53 +294,72 @@ v8_wrap_cv_mat(v8::Isolate * isolate, cv::Mat & mat,
     return obj;
 }
 
-static void build_img_caches(std::map<std::pair<int64_t, int64_t>, cv::Mat> & src_cache,
-			     std::map<std::pair<int64_t, int64_t>, cv::Mat> & mask_cache,
-			     const std::vector<Backend::Target> & targets) {
+static void
+build_img_caches(std::map<std::pair<int64_t, int64_t>, cv::Mat> & src_cache,
+                 std::map<std::pair<int64_t, int64_t>, cv::Mat> & mask_cache,
+                 const std::vector<Backend::Target> & targets) {
     for (auto & target : targets) {
-	if (src_cache.find({target.rowId, target.colId}) == src_cache.end()) {
-	    src_cache[{target.rowId, target.colId}] = load_src_img(target);
-	}
-	if (mask_cache.find({target.rowId, target.colId}) == mask_cache.end()) {
-	    mask_cache[{target.rowId, target.colId}] = load_mask_img(target);
-	}
+        if (src_cache.find({target.rowId, target.colId}) == src_cache.end()) {
+            src_cache[{target.rowId, target.colId}] = load_src_img(target);
+        }
+        if (mask_cache.find({target.rowId, target.colId}) == mask_cache.end()) {
+            mask_cache[{target.rowId, target.colId}] = load_mask_img(target);
+        }
     }
 }
 
 void Backend::run_user_metrics() {
-    v8::Isolate * isolate = v8::Isolate::GetCurrent();
-    v8::HandleScope handle_scope(isolate);
-    auto context = v8::Context::New(isolate);
-    context->AllowCodeGenerationFromStrings(false);
-    context->Enter();
-    v8::Handle<v8::FunctionTemplate> tmpl = v8::FunctionTemplate::New(isolate);
-    v8::Local<v8::ObjectTemplate> instance_t = tmpl->InstanceTemplate();
-    instance_t->SetInternalFieldCount(1);
-    std::map<std::pair<int64_t, int64_t>, cv::Mat> src_cache;
-    std::map<std::pair<int64_t, int64_t>, cv::Mat> mask_cache;
-    build_img_caches(src_cache, mask_cache, m_targets);
-    for (const auto & scr_node : m_usr_scripts) {
-        v8::Handle<v8::String> code =
-            v8::String::NewFromUtf8(isolate, scr_node.second.c_str());
-        auto script = v8::Script::Compile(code);
-        script->Run();
-        auto entry = isolate->GetCurrentContext()->Global()->Get(
-            v8::String::NewFromUtf8(isolate, "main"));
-        auto fn = v8::Local<v8::Function>::New(
-            isolate, v8::Handle<v8::Function>::Cast(entry));
-        for (const auto & target : m_targets) {
-	    std::array<v8::Handle<v8::Value>, 2> argv{
-                {v8_wrap_cv_mat(isolate, src_cache[{target.rowId, target.colId}], tmpl),
-                 v8_wrap_cv_mat(isolate, mask_cache[{target.rowId, target.colId}], tmpl)}};
-            float result = v8::Local<v8::Number>::Cast(
-                               fn->Call(isolate->GetCurrentContext()->Global(),
-                                        argv.size(), argv.data()))
-                               ->Value();
-            m_results[{target.rowId, target.colId}].add_data(
-                {scr_node.first, result});
+    auto params = v8::Isolate::CreateParams();
+    params.array_buffer_allocator =
+        v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+    v8::Isolate * isolate = v8::Isolate::New(params);
+    isolate->Enter();
+    {
+        v8::HandleScope scope(isolate);
+        auto context = v8::Context::New(isolate);
+        context->AllowCodeGenerationFromStrings(false);
+        context->Enter();
+        {
+            v8::Handle<v8::FunctionTemplate> tmpl =
+                v8::FunctionTemplate::New(isolate);
+            v8::Local<v8::ObjectTemplate> instance_t = tmpl->InstanceTemplate();
+            instance_t->SetInternalFieldCount(1);
+            std::map<std::pair<int64_t, int64_t>, cv::Mat> src_cache;
+            std::map<std::pair<int64_t, int64_t>, cv::Mat> mask_cache;
+            build_img_caches(src_cache, mask_cache, m_targets);
+            for (const auto & scr_node : m_usr_scripts) {
+                v8::Handle<v8::String> code =
+                    v8::String::NewFromUtf8(isolate, scr_node.second.c_str());
+                auto script = v8::Script::Compile(code);
+                script->Run();
+                auto entry = isolate->GetCurrentContext()->Global()->Get(
+                    v8::String::NewFromUtf8(isolate, "main"));
+                auto fn = v8::Local<v8::Function>::New(
+                    isolate, v8::Handle<v8::Function>::Cast(entry));
+                for (const auto & target : m_targets) {
+                    std::array<v8::Handle<v8::Value>, 2> argv{
+                        {v8_wrap_cv_mat(isolate,
+                                        src_cache[{target.rowId, target.colId}],
+                                        tmpl),
+                         v8_wrap_cv_mat(
+                             isolate, mask_cache[{target.rowId, target.colId}],
+                             tmpl)}};
+                    float result =
+                        v8::Local<v8::Number>::Cast(
+                            fn->Call(isolate->GetCurrentContext()->Global(),
+                                     argv.size(), argv.data()))
+                            ->Value();
+                    uv_mutex_lock(&::task_mtx);
+                    m_results[{target.rowId, target.colId}].add_data(
+                        {scr_node.first, result});
+                    uv_mutex_unlock(&::task_mtx);
+                }
+            }
         }
+        context->Exit();
     }
-    context->Exit();
+    isolate->Exit();
+    isolate->Dispose();
 }
 
 void Backend::launch_analysis(const callback_info & args) {
@@ -348,7 +367,7 @@ void Backend::launch_analysis(const callback_info & args) {
     m_results.clear();
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     uv_mutex_lock(&::task_mtx);
-    ::task_count = m_targets.size();
+    ::task_count = m_targets.size() + 1;
     uv_mutex_unlock(&::task_mtx);
     for (const auto & target : m_targets) {
         Result result;
@@ -356,7 +375,12 @@ void Backend::launch_analysis(const callback_info & args) {
         result.add_data({"col", target.colId});
         m_results[{target.rowId, target.colId}] = result;
     }
-    run_user_metrics();
+    async::start(js_callback, [] {
+        run_user_metrics();
+        uv_mutex_lock(&::task_mtx);
+        --::task_count;
+        uv_mutex_unlock(&::task_mtx);
+    });
     for (auto & target : m_targets) {
         async::start(js_callback, [&target] {
             auto src = load_src_img(target);
@@ -444,53 +468,54 @@ static void add_stdlib_to_default_config(std::string & buffer) {
     buffer += "\"volume\":{\"builtin\":false,\"enabled\":true,\"src\":\"" +
               volume_metric + "\"},";
     static const std::string radius_metric =
-	"\\n"
-	"function main(src, mask) {\\n"
-	"  var centroid = findCentroid(mask);\\n"
-	"  var edges = findEdges(mask);\\n"
-	"  var radius = 0;\\n"
-	"  for (var i = 0; i < edges.length; ++i) {\\n"
-	"    radius += Math.sqrt(Math.pow(centroid.x - edges[i].x, 2) +\\n"
-	"                        Math.pow(centroid.y - edges[i].y, 2));\\n"
-	"  }\\n"
-	"  return radius / Math.max(1, edges.length);\\n"
-	"}\\n"
-	"\\n"
-	"function findEdges(mask) {\\n"
-	"  edges = [];\\n"
-	"  for (var i = 0; i < mask.rows; ++i) {\\n"
-	"    for (var j = 0; j < mask.cols; ++j) {\\n"
-	"      if (mask.at(i, j) > 0) {\\n"
-	"        if (mask.at(i - 1, j) === 0 ||\\n"
-	"            mask.at(i + 1, j) === 0 ||\\n"
-	"            mask.at(i, j - 1) === 0 ||\\n"
-	"            mask.at(i, j + 1) === 0) {\\n"
-	"          edges.push({\'x\': i, \'y\': j});\\n"
-	"        }\\n"
-	"      }\\n"
-	"    }\\n"
-	"  }\\n"
-	"  return edges;\\n"
-	"}\\n"
-	"\\n"
-	"function findCentroid(mask) {\\n"
-	"  var xSum = 0, ySum = 0, area = 0;\\n"
-	"  for (var i = 0; i < mask.rows; ++i) {\\n"
-	"    for (var j = 0; j < mask.cols; ++j) {\\n"
-	"      if (mask.at(i, j) !== 0) {\\n"
-	"        xSum += i;\\n"
-	"        ySum += j;\\n"
-	"        area += 1;\\n"
-	"      }\\n"
-	"    }\\n"
-	"  }\\n"
-	"  return {\\n"
-	"    \'x\': xSum / area,\\n"
-	"    \'y\': ySum / area\\n"
-	"  };\\n"
-	"}\\n";
-    buffer += "\"average radius\":{\"builtin\":false,\"enabled\":true,\"src\":\"" +
-              radius_metric + "\"},";
+        "\\n"
+        "function main(src, mask) {\\n"
+        "  var centroid = findCentroid(mask);\\n"
+        "  var edges = findEdges(mask);\\n"
+        "  var radius = 0;\\n"
+        "  for (var i = 0; i < edges.length; ++i) {\\n"
+        "    radius += Math.sqrt(Math.pow(centroid.x - edges[i].x, 2) +\\n"
+        "                        Math.pow(centroid.y - edges[i].y, 2));\\n"
+        "  }\\n"
+        "  return radius / Math.max(1, edges.length);\\n"
+        "}\\n"
+        "\\n"
+        "function findEdges(mask) {\\n"
+        "  edges = [];\\n"
+        "  for (var i = 0; i < mask.rows; ++i) {\\n"
+        "    for (var j = 0; j < mask.cols; ++j) {\\n"
+        "      if (mask.at(i, j) > 0) {\\n"
+        "        if (mask.at(i - 1, j) === 0 ||\\n"
+        "            mask.at(i + 1, j) === 0 ||\\n"
+        "            mask.at(i, j - 1) === 0 ||\\n"
+        "            mask.at(i, j + 1) === 0) {\\n"
+        "          edges.push({\'x\': i, \'y\': j});\\n"
+        "        }\\n"
+        "      }\\n"
+        "    }\\n"
+        "  }\\n"
+        "  return edges;\\n"
+        "}\\n"
+        "\\n"
+        "function findCentroid(mask) {\\n"
+        "  var xSum = 0, ySum = 0, area = 0;\\n"
+        "  for (var i = 0; i < mask.rows; ++i) {\\n"
+        "    for (var j = 0; j < mask.cols; ++j) {\\n"
+        "      if (mask.at(i, j) !== 0) {\\n"
+        "        xSum += i;\\n"
+        "        ySum += j;\\n"
+        "        area += 1;\\n"
+        "      }\\n"
+        "    }\\n"
+        "  }\\n"
+        "  return {\\n"
+        "    \'x\': xSum / area,\\n"
+        "    \'y\': ySum / area\\n"
+        "  };\\n"
+        "}\\n";
+    buffer +=
+        "\"average radius\":{\"builtin\":false,\"enabled\":true,\"src\":\"" +
+        radius_metric + "\"},";
 }
 
 void Backend::write_default_config(const callback_info & args) {
@@ -525,7 +550,8 @@ void Backend::configure(const callback_info & args) {
             if (it->value["builtin"].GetBool()) {
                 m_enabled_builtins.insert(it->name.GetString());
             } else {
-                m_usr_scripts[it->name.GetString()] = it->value["src"].GetString();
+                m_usr_scripts[it->name.GetString()] =
+                    it->value["src"].GetString();
             }
         }
     }

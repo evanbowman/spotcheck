@@ -4,9 +4,9 @@
 #pragma once
 
 #include "async.hpp"
-#include "rapidjson/document.h"
 #include "make_cv_roi.hpp"
 #include "preview_normalized.hpp"
+#include "rapidjson/document.h"
 #include "results.hpp"
 
 #include <algorithm>
