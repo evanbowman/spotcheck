@@ -368,6 +368,7 @@ void Backend::launch_analysis(const callback_info & args) {
     m_results.clear();
     auto js_callback = v8::Local<v8::Function>::Cast(args[0]);
     uv_mutex_lock(&::task_mtx);
+    // Note: one task for each target, plus one more for running user scripts.
     ::task_count = m_targets.size() + 1;
     uv_mutex_unlock(&::task_mtx);
     for (const auto & target : m_targets) {
