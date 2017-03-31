@@ -360,6 +360,7 @@ void Backend::run_user_metrics() {
     }
     isolate->Exit();
     isolate->Dispose();
+    delete params.array_buffer_allocator;
 }
 
 void Backend::launch_analysis(const callback_info & args) {
