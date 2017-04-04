@@ -13,6 +13,8 @@ std::map<std::string, std::string> Backend::m_usr_scripts;
 
 std::string module_path;
 
+double Backend::m_pixel_width = 1.0;
+
 static const std::array<std::string, 1> g_builtins{{"circularity"}};
 
 std::set<std::string> Backend::m_enabled_builtins;
@@ -40,7 +42,7 @@ static size_t task_count;
 void Backend::init(v8::Local<v8::Object> exports,
                    v8::Local<v8::Object> module) {
     using membr_type = void (*)(const callback_info &);
-    static const std::array<std::pair<const char *, membr_type>, 12> mappings =
+    static const std::array<std::pair<const char *, membr_type>, 13> mappings =
         {{{"import_source_image", import_source_image},
           {"split_sectors", split_sectors},
           {"add_target", add_target},
@@ -52,6 +54,7 @@ void Backend::init(v8::Local<v8::Object> exports,
           {"get_target_thresh", get_target_thresh},
           {"provide_norm_preview", provide_norm_preview},
           {"configure", configure},
+	  {"set_pixel_width", set_pixel_width},
           {"write_default_config", write_default_config}}};
     static const char * js_class_name = "Backend";
     v8::Isolate * isolate = exports->GetIsolate();
@@ -67,6 +70,12 @@ void Backend::init(v8::Local<v8::Object> exports,
     exports->Set(v8::String::NewFromUtf8(isolate, js_class_name),
                  tpl->GetFunction());
     assert(uv_mutex_init(&::task_mtx) == 0);
+}
+
+void Backend::set_pixel_width(const callback_info & args) {
+    assert(args.Length() == 1);
+    auto num = v8::Local<v8::Number>::Cast(args[0]);
+    m_pixel_width = num->Value();
 }
 
 void Backend::alloc(const callback_info & args) {

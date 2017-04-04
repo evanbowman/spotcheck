@@ -99,6 +99,9 @@ public:
     //! viewing within the frontend.
     static void split_sectors(const callback_info & args);
 
+    //! fdfsdfsfe
+    static void set_pixel_width(const callback_info & args);
+    
     //! @brief Clears the Backend's analysis targets
     //!
     //! This function is part of the Backend javascript API. It clears
@@ -197,6 +200,7 @@ private:
     static std::vector<Target> m_targets;
     static std::set<std::string> m_enabled_builtins;
     static std::map<std::string, std::string> m_usr_scripts;
+    static double m_pixel_width;
 
     //! @brief Compiles each user script and runs it on all targets.
     //!
