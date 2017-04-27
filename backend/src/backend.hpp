@@ -99,8 +99,15 @@ public:
     //! viewing within the frontend.
     static void split_sectors(const callback_info & args);
 
-    //! fdfsdfsfe
+    //! @brief Sets the pixel width for unit scaling
+	//!
+
     static void set_pixel_width(const callback_info & args);
+
+	//! @brief Sets the pixel depth for unit scaling
+	//!
+
+	static void set_pixel_depth(const callback_info & args);
     
     //! @brief Clears the Backend's analysis targets
     //!
@@ -201,6 +208,7 @@ private:
     static std::set<std::string> m_enabled_builtins;
     static std::map<std::string, std::string> m_usr_scripts;
     static double m_pixel_width;
+	static double m_pixel_depth;
 
     //! @brief Compiles each user script and runs it on all targets.
     //!

@@ -25,6 +25,12 @@ table {
     width: 100%;
 }
 
+.formatted-text {
+    color: #8e9296;
+    font-size: 12.5px;
+    font-family: "open-sans-bold";
+}
+
 .selected {
     background: #A9CED1 !important;
 }	

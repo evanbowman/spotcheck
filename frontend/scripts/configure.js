@@ -25,6 +25,20 @@ if (!fs.existsSync(homeDir + configFile)) {
 var data = fs.readFileSync(homeDir + configFile, "utf8");
 g_config = JSON.parse(data);
 
+$("#pixel-width").on('input', function () {
+    global.backend.set_pixel_width($(this).val());
+    g_config["pixel-width"] = $(this).val();
+});
+
+$("#pixel-depth").on('input', function () {
+    global.backend.set_pixel_depth($(this).val());
+    g_config["pixel-depth"] = $(this).val();
+});
+
+$("#pixel-width").val(g_config["pixel-width"]);
+
+$("#pixel-depth").val(g_config["pixel-depth"]);
+
 for (key in g_config.metrics) {
     $("#table").append([
 	"<tr>",
