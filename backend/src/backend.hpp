@@ -4,9 +4,9 @@
 #pragma once
 
 #include "async.hpp"
-#include "rapidjson/document.h"
 #include "make_cv_roi.hpp"
 #include "preview_normalized.hpp"
+#include "rapidjson/document.h"
 #include "results.hpp"
 
 #include <algorithm>
@@ -100,15 +100,15 @@ public:
     static void split_sectors(const callback_info & args);
 
     //! @brief Sets the pixel width for unit scaling
-	//!
+    //!
 
     static void set_pixel_width(const callback_info & args);
 
-	//! @brief Sets the pixel depth for unit scaling
-	//!
+    //! @brief Sets the pixel depth for unit scaling
+    //!
 
-	static void set_pixel_depth(const callback_info & args);
-    
+    static void set_pixel_depth(const callback_info & args);
+
     //! @brief Clears the Backend's analysis targets
     //!
     //! This function is part of the Backend javascript API. It clears
@@ -208,7 +208,7 @@ private:
     static std::set<std::string> m_enabled_builtins;
     static std::map<std::string, std::string> m_usr_scripts;
     static double m_pixel_width;
-	static double m_pixel_depth;
+    static double m_pixel_depth;
 
     //! @brief Compiles each user script and runs it on all targets.
     //!

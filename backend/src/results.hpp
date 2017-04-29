@@ -4,15 +4,15 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
 
 //! @class Result
 //! @brief A class that encapsulate a result json object.
 class Result {
     std::vector<std::pair<std::string, double>> m_keyValuePairs;
-    
+
 public:
     //! @brief Adds a JSON key value pair to the Result
     void add_data(const std::pair<std::string, double> & data);
