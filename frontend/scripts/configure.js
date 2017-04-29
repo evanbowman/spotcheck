@@ -25,14 +25,16 @@ if (!fs.existsSync(homeDir + configFile)) {
 var data = fs.readFileSync(homeDir + configFile, "utf8");
 g_config = JSON.parse(data);
 
-$("#pixel-width").on('input', function () {
-    global.backend.set_pixel_width($(this).val());
-    g_config["pixel-width"] = $(this).val();
+$("#pixel-width").on("change", function () {
+    var value = parseFloat($(this).val());
+    global.backend.set_pixel_width(value);
+    g_config["pixel-width"] = value;
 });
 
-$("#pixel-depth").on('input', function () {
-    global.backend.set_pixel_depth($(this).val());
-    g_config["pixel-depth"] = $(this).val();
+$("#pixel-depth").on("change", function () {
+    var value = parseFloat($(this).val());
+    global.backend.set_pixel_depth(value);
+    g_config["pixel-depth"] = value;
 });
 
 $("#pixel-width").val(g_config["pixel-width"]);

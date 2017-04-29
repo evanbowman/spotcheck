@@ -12,7 +12,7 @@
 //! @brief A class that encapsulate a result json object.
 class Result {
     std::vector<std::pair<std::string, double>> m_keyValuePairs;
-
+    
 public:
     //! @brief Adds a JSON key value pair to the Result
     void add_data(const std::pair<std::string, double> & data);

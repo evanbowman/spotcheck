@@ -57,7 +57,7 @@ void Backend::init(v8::Local<v8::Object> exports,
           {"provide_norm_preview", provide_norm_preview},
           {"configure", configure},
 		  {"set_pixel_width", set_pixel_width},
-		  { "set_pixel_depth", set_pixel_depth},
+		  {"set_pixel_depth", set_pixel_depth},
           {"write_default_config", write_default_config}}};
     static const char * js_class_name = "Backend";
     v8::Isolate * isolate = exports->GetIsolate();
@@ -79,6 +79,7 @@ void Backend::set_pixel_width(const callback_info & args) {
     assert(args.Length() == 1);
     auto num = v8::Local<v8::Number>::Cast(args[0]);
     m_pixel_width = num->Value();
+    std::cout << m_pixel_width << std::endl;
 }
 
 void Backend::set_pixel_depth(const callback_info & args) {
@@ -331,6 +332,10 @@ void Backend::run_user_metrics() {
     auto context = v8::Context::New(isolate);
     context->AllowCodeGenerationFromStrings(false);
     context->Enter();
+    context->Global()->Set(v8::String::NewFromUtf8(isolate, "pixel_width"),
+                           v8::Number::New(isolate, m_pixel_width));
+    context->Global()->Set(v8::String::NewFromUtf8(isolate, "pixel_depth"),
+                           v8::Number::New(isolate, m_pixel_depth));
     v8::Handle<v8::FunctionTemplate> tmpl = v8::FunctionTemplate::New(isolate);
     v8::Local<v8::ObjectTemplate> instance_t = tmpl->InstanceTemplate();
     instance_t->SetInternalFieldCount(1);
@@ -427,7 +432,7 @@ static void add_stdlib_to_default_config(std::string & buffer) {
         "      }\\n"
         "    }\\n"
         "  }\\n"
-        "  return area;\\n"
+        "  return area * Math.pow(pixel_width, 2);\\n"
         "}";
     buffer += "\"area\":{\"builtin\":false,\"enabled\":true,\"src\":\"" +
               area_metric + "\"},";
@@ -443,7 +448,7 @@ static void add_stdlib_to_default_config(std::string & buffer) {
         "      }\\n"
         "    }\\n"
         "  }\\n"
-        "  return volume;\\n"
+        "  return volume * Math.pow(pixel_width, 2) * pixel_depth;\\n"
         "}\\n"
         "\\n"
         "function findAvgBackground(src, mask) {\\n"
@@ -468,8 +473,8 @@ static void add_stdlib_to_default_config(std::string & buffer) {
 	"  var edges = findEdges(mask);\\n"
 	"  var radius = 0;\\n"
 	"  for (var i = 0; i < edges.length; ++i) {\\n"
-	"    radius += Math.sqrt(Math.pow(centroid.x - edges[i].x, 2) +\\n"
-	"                        Math.pow(centroid.y - edges[i].y, 2));\\n"
+	"    radius += Math.sqrt(pixel_width * Math.pow(centroid.x - edges[i].x, 2) +\\n"
+	"                        pixel_width * Math.pow(centroid.y - edges[i].y, 2));\\n"
 	"  }\\n"
 	"  return radius / Math.max(1, edges.length);\\n"
 	"}\\n"
@@ -519,7 +524,10 @@ void Backend::write_default_config(const callback_info & args) {
     }
     add_stdlib_to_default_config(out);
     out.pop_back();
-    out += "}}";
+    out += "},";
+    out += "\"pixel-width\": 1,";
+    out += "\"pixel-depth\": 1";
+    out += "}";
     v8::String::Utf8Value str_arg(args[0]->ToString());
     std::string path(*str_arg);
     std::fstream out_file(path, std::fstream::out);
@@ -547,6 +555,8 @@ void Backend::configure(const callback_info & args) {
             }
         }
     }
+    m_pixel_width = d["pixel-width"].GetDouble();
+    m_pixel_depth = d["pixel-depth"].GetDouble();
 }
 
 void Backend::clear_targets(const callback_info & args) {
