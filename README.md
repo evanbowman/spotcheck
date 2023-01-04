@@ -1,5 +1,8 @@
 # SpotCheck
 
+## Note
+Archived and not maintained. Most likely the program targets dependencies that are too out of date anyway. My senior design project is now on the slow path to inevitable bitrot and eventual deletion when github gets rid of this repo someday in the far future.
+
 ## Introduction
 SpotCheck is a fast computer vision desktop app designed to identify and quantify eliptical features in three-dimensional height maps.
 
